@@ -464,7 +464,314 @@ def plot_uncertainty_histogram(mc_results: Dict,
 
 
 # =============================================================================
-# SECTION 7: MAIN EXECUTION
+# SECTION 7: O-PRIZE SENSITIVITY INDICES (QUANTITATIVE)
+# =============================================================================
+
+def calculate_sensitivity_indices_ecm():
+    """
+    Calculate normalized sensitivity indices for ECM model parameters.
+    
+    This provides the QUANTITATIVE analysis needed for O-Prize papers.
+    
+    Sensitivity Index (S) = (ΔY/Y₀) / (ΔX/X₀)
+    
+    Where:
+    - Y = Output (Time-to-Empty)
+    - X = Parameter
+    - Δ represents ±10% perturbation
+    
+    S = 1.0 means linear relationship (1% param change → 1% output change)
+    S > 1.0 means amplified sensitivity
+    S < 1.0 means damped sensitivity
+    
+    Returns:
+        Dictionary with parameter names and their sensitivity indices
+    """
+    import sys
+    sys.path.insert(0, '.')
+    from ecm_model import EquivalentCircuitModel, ECMParameters
+    
+    print("\n" + "="*60)
+    print("O-PRIZE SENSITIVITY INDICES (ECM Model)")
+    print("="*60)
+    
+    # Baseline simulation
+    def compute_tte(params):
+        """Compute time-to-empty for given parameters."""
+        model = EquivalentCircuitModel(params)
+        result = model.simulate(
+            I_func=lambda t: 500,  # 500mA moderate usage
+            t_span=(0, 16*3600),
+            T_amb=298.15
+        )
+        return result['time_to_empty'] if result['time_to_empty'] else 16.0
+    
+    base_params = ECMParameters()
+    base_tte = compute_tte(base_params)
+    print(f"\nBaseline TTE: {base_tte:.3f} hours")
+    
+    # Parameters to analyze (with units)
+    param_info = {
+        'Q_nom': ('Nominal Capacity', 'Ah'),
+        'R0_ref': ('Internal Resistance R₀', 'Ω'),
+        'R1_ref': ('RC1 Resistance R₁', 'Ω'),
+        'R2_ref': ('RC2 Resistance R₂', 'Ω'),
+        'tau1_ref': ('RC1 Time Constant τ₁', 's'),
+        'tau2_ref': ('RC2 Time Constant τ₂', 's'),
+        'M_th': ('Thermal Mass', 'J/K'),
+        'R_th': ('Thermal Resistance', 'K/W'),
+        'R0_temp_coeff': ('Temp Coefficient β', '1/K'),
+    }
+    
+    sensitivities = {}
+    perturbation = 0.10  # ±10%
+    
+    print(f"\nPerturbation: ±{perturbation*100:.0f}%")
+    print("-"*60)
+    print(f"{'Parameter':<30} {'S_index':>10} {'Interpretation':<20}")
+    print("-"*60)
+    
+    for param_name, (description, unit) in param_info.items():
+        # Get baseline value
+        base_value = getattr(base_params, param_name)
+        
+        # +10% perturbation
+        high_params = ECMParameters()
+        setattr(high_params, param_name, base_value * (1 + perturbation))
+        high_tte = compute_tte(high_params)
+        
+        # -10% perturbation
+        low_params = ECMParameters()
+        setattr(low_params, param_name, base_value * (1 - perturbation))
+        low_tte = compute_tte(low_params)
+        
+        # Calculate sensitivity index
+        # S = (ΔY/Y) / (ΔX/X) = (high - low) / base_tte / (2 * perturbation)
+        delta_tte = high_tte - low_tte
+        S = (delta_tte / base_tte) / (2 * perturbation)
+        
+        sensitivities[param_name] = {
+            'description': description,
+            'unit': unit,
+            'base_value': base_value,
+            'S_index': S,
+            'low_tte': low_tte,
+            'high_tte': high_tte,
+        }
+        
+        # Interpretation
+        if abs(S) > 0.8:
+            interp = "HIGH (Critical)"
+        elif abs(S) > 0.3:
+            interp = "MEDIUM"
+        else:
+            interp = "LOW (Robust)"
+        
+        print(f"{description:<30} {S:>10.3f} {interp:<20}")
+    
+    print("-"*60)
+    
+    # Generate LaTeX table for paper
+    print("\n" + "="*60)
+    print("LATEX TABLE (Copy to Paper)")
+    print("="*60)
+    print(r"""
+\begin{table}[h]
+\centering
+\caption{Normalized Sensitivity Indices for ECM Parameters}
+\label{tab:sensitivity}
+\begin{tabular}{lccl}
+\hline
+\textbf{Parameter} & \textbf{Symbol} & \textbf{$S$} & \textbf{Sensitivity} \\
+\hline""")
+    
+    for param_name, data in sensitivities.items():
+        symbol = param_name.replace('_', r'\_')
+        S = data['S_index']
+        level = "High" if abs(S) > 0.8 else ("Medium" if abs(S) > 0.3 else "Low")
+        print(f"{data['description']} & ${symbol}$ & {S:.3f} & {level} \\\\")
+    
+    print(r"""\hline
+\end{tabular}
+\end{table}
+""")
+    
+    return sensitivities
+
+
+def calculate_temperature_dependent_sensitivity():
+    """
+    Show how sensitivity indices change with temperature.
+    This reveals that parameters become critical in extreme conditions.
+    """
+    import sys
+    sys.path.insert(0, '.')
+    from ecm_model import EquivalentCircuitModel, ECMParameters
+    
+    print("\n" + "="*60)
+    print("TEMPERATURE-DEPENDENT SENSITIVITY ANALYSIS")
+    print("="*60)
+    
+    temperatures = [263.15, 273.15, 298.15, 313.15]  # -10°C, 0°C, 25°C, 40°C
+    temp_labels = ['-10°C', '0°C', '25°C', '40°C']
+    
+    # Key parameters to track
+    params_to_track = ['Q_nom', 'R0_ref', 'R0_temp_coeff', 'R_th']
+    param_names = ['Capacity', 'R₀', 'β (Temp Coeff)', 'R_th']
+    
+    perturbation = 0.10
+    results = {p: [] for p in params_to_track}
+    
+    print(f"\n{'Temp':<8}", end='')
+    for name in param_names:
+        print(f"{name:<15}", end='')
+    print()
+    print("-"*70)
+    
+    for T_amb, T_label in zip(temperatures, temp_labels):
+        # Baseline at this temperature
+        def compute_tte(params, T):
+            model = EquivalentCircuitModel(params)
+            result = model.simulate(
+                I_func=lambda t: 500,
+                t_span=(0, 16*3600),
+                T_amb=T
+            )
+            return result['time_to_empty'] if result['time_to_empty'] else 16.0
+        
+        base_params = ECMParameters()
+        base_tte = compute_tte(base_params, T_amb)
+        
+        print(f"{T_label:<8}", end='')
+        
+        for param_name in params_to_track:
+            base_value = getattr(base_params, param_name)
+            
+            # +10%
+            high_params = ECMParameters()
+            setattr(high_params, param_name, base_value * (1 + perturbation))
+            high_tte = compute_tte(high_params, T_amb)
+            
+            # -10%
+            low_params = ECMParameters()
+            setattr(low_params, param_name, base_value * (1 - perturbation))
+            low_tte = compute_tte(low_params, T_amb)
+            
+            # Sensitivity index
+            delta_tte = high_tte - low_tte
+            S = (delta_tte / base_tte) / (2 * perturbation) if base_tte > 0 else 0
+            
+            results[param_name].append(S)
+            print(f"{S:<15.3f}", end='')
+        
+        print()
+    
+    print("-"*70)
+    
+    # Plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    x = np.arange(len(temperatures))
+    width = 0.2
+    colors = ['#3498db', '#e74c3c', '#f39c12', '#27ae60']
+    
+    for i, (param, name) in enumerate(zip(params_to_track, param_names)):
+        offset = (i - 1.5) * width
+        bars = ax.bar(x + offset, results[param], width, label=name, color=colors[i], alpha=0.8)
+    
+    ax.set_xlabel('Ambient Temperature', fontsize=12)
+    ax.set_ylabel('Sensitivity Index (S)', fontsize=12)
+    ax.set_title('How Parameter Sensitivity Changes with Temperature\n(Critical insight: R₀ and β become important in cold weather)', 
+                 fontsize=12, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(temp_labels)
+    ax.legend(loc='upper right')
+    ax.axhline(y=0.3, color='orange', linestyle='--', alpha=0.5, label='Medium threshold')
+    ax.axhline(y=0.8, color='red', linestyle='--', alpha=0.5, label='High threshold')
+    ax.grid(True, alpha=0.3, axis='y')
+    
+    plt.tight_layout()
+    output_file = '../figures/figure_temp_sensitivity.png'
+    plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
+    print(f"\nSaved: {output_file}")
+    plt.close()
+    
+    return results
+
+
+def plot_sensitivity_indices_bar(sensitivities: dict = None, 
+                                  output_file: str = '../figures/figure_sensitivity_indices.png'):
+    """
+    Create a horizontal bar chart of sensitivity indices.
+    This is the "O-Prize" version of the tornado plot.
+    """
+    if sensitivities is None:
+        sensitivities = calculate_sensitivity_indices_ecm()
+    
+    # Sort by absolute sensitivity
+    sorted_params = sorted(sensitivities.items(), 
+                          key=lambda x: abs(x[1]['S_index']), reverse=True)
+    
+    names = [data['description'] for _, data in sorted_params]
+    values = [data['S_index'] for _, data in sorted_params]
+    
+    # Color by sensitivity level
+    colors = []
+    for v in values:
+        if abs(v) > 0.8:
+            colors.append('#e74c3c')  # Red - High
+        elif abs(v) > 0.3:
+            colors.append('#f39c12')  # Orange - Medium
+        else:
+            colors.append('#27ae60')  # Green - Low/Robust
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    y_pos = np.arange(len(names))
+    bars = ax.barh(y_pos, values, color=colors, edgecolor='black', alpha=0.8)
+    
+    # Add reference lines
+    ax.axvline(x=0, color='black', linewidth=1)
+    ax.axvline(x=1.0, color='gray', linestyle='--', alpha=0.5, label='Linear (S=1)')
+    ax.axvline(x=-1.0, color='gray', linestyle='--', alpha=0.5)
+    ax.axvline(x=0.3, color='orange', linestyle=':', alpha=0.5)
+    ax.axvline(x=-0.3, color='orange', linestyle=':', alpha=0.5)
+    
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(names)
+    ax.set_xlabel('Sensitivity Index (S)', fontsize=12)
+    ax.set_title('Parameter Sensitivity Analysis\n(S = % change in TTE per % change in parameter)', 
+                 fontsize=13, fontweight='bold')
+    
+    # Add value labels
+    for bar, val in zip(bars, values):
+        x_pos = val + 0.02 if val >= 0 else val - 0.02
+        ha = 'left' if val >= 0 else 'right'
+        ax.text(x_pos, bar.get_y() + bar.get_height()/2, f'{val:.3f}',
+                va='center', ha=ha, fontsize=9)
+    
+    # Legend
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='#e74c3c', label='High (|S| > 0.8)'),
+        Patch(facecolor='#f39c12', label='Medium (0.3 < |S| < 0.8)'),
+        Patch(facecolor='#27ae60', label='Low/Robust (|S| < 0.3)'),
+    ]
+    ax.legend(handles=legend_elements, loc='lower right')
+    
+    ax.grid(True, alpha=0.3, axis='x')
+    ax.set_xlim(-1.5, 1.5)
+    
+    plt.tight_layout()
+    plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
+    print(f"Saved: {output_file}")
+    plt.close()
+    
+    return fig
+
+
+# =============================================================================
+# SECTION 8: MAIN EXECUTION
 # =============================================================================
 
 def run_full_sensitivity_analysis():
@@ -490,6 +797,15 @@ def run_full_sensitivity_analysis():
     print("-"*60)
     mc_results = monte_carlo_uncertainty(n_samples=300)
     plot_uncertainty_histogram(mc_results)
+    
+    # O-Prize ECM Sensitivity Indices
+    print("\n[4] ECM Sensitivity Indices (O-Prize Metric)")
+    print("-"*60)
+    try:
+        ecm_sensitivities = calculate_sensitivity_indices_ecm()
+        plot_sensitivity_indices_bar(ecm_sensitivities)
+    except Exception as e:
+        print(f"ECM sensitivity analysis skipped: {e}")
     
     print("\n" + "="*60)
     print("SENSITIVITY ANALYSIS COMPLETE")
