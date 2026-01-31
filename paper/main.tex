@@ -13,9 +13,8 @@
 \newcommand{\Team}{2630352}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{newtxtext}
+\usepackage{mathptmx}  % Times font (standard, always available)
 \usepackage{amsmath,amssymb,amsthm}
-\usepackage{newtxmath}
 \usepackage[pdftex]{graphicx}
 \usepackage{xcolor}
 \usepackage{fancyhdr}
@@ -38,9 +37,12 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{definition}{Definition}
 
+\setlength{\headheight}{14.5pt}
+\addtolength{\topmargin}{-2.5pt}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-\graphicspath{{../figures/}}
+\graphicspath{{../figures/}{/home/funt1kk/zjui/SPRING26/IM2C/Problem_A/figures/}}
 \DeclareGraphicsExtensions{.pdf,.jpg,.tif,.png}
 \thispagestyle{empty}
 \vspace*{-16ex}
@@ -617,9 +619,9 @@ At high throughput, energy per bit drops dramatically. Steve's radio operates at
 \begin{figure}[H]
     \centering
     % \includegraphics[width=0.9\textwidth]{chatty_vs_streaming.png}
-    \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}FIGURE 10: The Chatty vs Streaming Paradox\\\\
-    \textbf{Emma (Chatter):} $\rule{0.3cm}{0.3cm}\rule{0.1cm}{0.1cm}\rule{0.3cm}{0.3cm}\rule{0.1cm}{0.1cm}\rule{0.3cm}{0.3cm}\rule{0.1cm}{0.1cm}\rule{0.3cm}{0.3cm}$ (never goes low)\\
-    \textbf{Steve (Streamer):} $\rule{0.1cm}{0.1cm}\rule{2cm}{0.3cm}\rule{0.1cm}{0.1cm}$ (one efficient burst)\\
+    \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}FIGURE 10: The Chatty vs Streaming Paradox\\[1em]
+    \textbf{Emma (Chatter):} $\rule{0.3cm}{0.3cm}\rule{0.1cm}{0.1cm}\rule{0.3cm}{0.3cm}\rule{0.1cm}{0.1cm}\rule{0.3cm}{0.3cm}\rule{0.1cm}{0.1cm}\rule{0.3cm}{0.3cm}$ (never goes low)\\[0.5em]
+    \textbf{Steve (Streamer):} $\rule{0.1cm}{0.1cm}\rule{2cm}{0.3cm}\rule{0.1cm}{0.1cm}$ (one efficient burst)\\[1em]
     \vspace{2cm}}}
     \caption{Power profiles for Chatty (Emma) vs.\ Streaming (Steve) users. Emma's frequent small messages prevent the radio from ever reaching the low-power IDLE state, while Steve's continuous stream operates at peak 5G efficiency.}
     \label{fig:paradox}
