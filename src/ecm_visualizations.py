@@ -737,12 +737,15 @@ def main():
         ('ecm_daily_simulation', draw_realistic_day_simulation),
     ]
     
+    import os
+    output_dir = os.path.join(os.path.dirname(__file__), '..', 'figures')
+    os.makedirs(output_dir, exist_ok=True)
+    
     for name, func in figures:
         print(f"\n[*] Generating {name}...", end=' ')
         try:
             fig = func()
-            fig.savefig(f'{name}.png', dpi=300, bbox_inches='tight', facecolor='white')
-            fig.savefig(f'{name}.pdf', bbox_inches='tight')
+            fig.savefig(os.path.join(output_dir, f'{name}.png'), dpi=300, bbox_inches='tight', facecolor='white')
             plt.close(fig)
             print("✓")
         except Exception as e:

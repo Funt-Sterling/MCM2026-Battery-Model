@@ -1,76 +1,108 @@
-# 2026 MCM Problem A: Smartphone Battery Model
+# MCM 2026 Problem A: Modeling Smartphone Battery Drain
 
-## Project Structure
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> **Mathematical Contest in Modeling (MCM) 2026**  
+> Problem A: Smartphone Battery Drain Modeling using Equivalent Circuit Model (ECM)
+
+## 📁 Project Structure
 
 ```
 Problem_A/
-├── battery_model.py          # Core model (KiBaM + Extended with thermal)
-├── visualizations.py         # O-Prize style figures
-├── sensitivity_analysis.py   # Parameter sensitivity & uncertainty
-├── recommendations.py        # User & OS recommendations
-├── run_analysis.py           # Main execution script
-└── README.md                 # This file
+├── src/                          # Source code
+│   ├── ecm_model.py              # Equivalent Circuit Model (main model)
+│   ├── battery_model.py          # KiBaM + Extended thermal model
+│   ├── ecm_visualizations.py     # ECM figure generation
+│   ├── visualizations.py         # KiBaM figure generation
+│   ├── sensitivity_analysis.py   # OAT & Monte Carlo analysis
+│   ├── recommendations.py        # User/OS recommendations
+│   └── run_analysis.py           # Main execution script
+│
+├── figures/                      # Generated visualizations
+│   ├── ecm_circuit_diagram.png   # ECM schematic
+│   ├── ecm_rc_dynamics.png       # RC transient response
+│   ├── ecm_scenario_comparison.png
+│   ├── ecm_thermal_feedback.png
+│   ├── ecm_aging_effects.png
+│   ├── ecm_daily_simulation.png
+│   └── figure*.png               # Additional figures
+│
+├── docs/                         # Documentation
+│   ├── ECM_EQUATIONS.md          # All equations (LaTeX)
+│   └── README.md                 # Detailed model documentation
+│
+├── data/                         # Input data
+│   ├── 2026_MCM_Problem_A.pdf    # Problem statement
+│   └── Formulas.png              # Reference formulas
+│
+└── .gitignore
 ```
 
-## Quick Start
+## 🔬 Model Overview
+
+This project implements an **Equivalent Circuit Model (ECM)** for smartphone battery drain, based on the industry-standard MathWorks Simscape Battery framework.
+
+### Key Equations
+
+**Terminal Voltage (Kirchhoff's Voltage Law):**
+```
+U = OCV(SOC, T) - I·R₀(SOC, T) - ΔU_RC1 - ΔU_RC2
+```
+
+**RC Dynamics:**
+```
+τₖ · d(ΔU_RCk)/dt + ΔU_RCk = I · Rₖ
+```
+
+**State of Charge (Coulomb Counting):**
+```
+dSOC/dt = -I / (C_aged · 3600)
+```
+
+**Thermal Model:**
+```
+M_th · dT/dt = Q_gen - Q_diss
+```
+
+## 🚀 Quick Start
 
 ```bash
-# Install dependencies
-pip install numpy scipy matplotlib seaborn
+# Navigate to source directory
+cd src
 
-# Run complete analysis
-python run_analysis.py
+# Run the ECM model
+python3 ecm_model.py
+
+# Generate all ECM figures
+python3 ecm_visualizations.py
+
+# Run sensitivity analysis
+python3 sensitivity_analysis.py
+
+# Generate recommendations
+python3 recommendations.py
 ```
 
-## Model Overview
+## 📊 Results Summary
 
-### Basic Model: Kinetic Battery Model (KiBaM)
-The battery is modeled as two charge reservoirs:
-- **q₁**: Available charge (directly powers the device)
-- **q₂**: Bound charge (chemical reservoir, slowly replenishes q₁)
+| Scenario | Avg Current | Battery Life |
+|----------|-------------|--------------|
+| Idle | 148 mA | >12 hours |
+| Light | 488 mA | 8.11 hours |
+| Moderate | 1014 mA | 3.90 hours |
+| Heavy | 1522 mA | 2.60 hours |
+| Gaming | 1920 mA | 2.06 hours |
+| Navigation | 1511 mA | 2.62 hours |
 
-$$\frac{dq_1}{dt} = -I(t) + k\left(q_2 - q_1\frac{1-c}{c}\right)$$
+## 📚 References
 
-$$\frac{dq_2}{dt} = -k\left(q_2 - q_1\frac{1-c}{c}\right)$$
+1. MathWorks Simscape Battery Documentation
+2. Tremblay, O. et al. "A Generic Battery Model for Hybrid Electric Vehicles" (2007)
+3. Chen, M. & Rincón-Mora, G.A. "Accurate Electrical Battery Model" (2006)
 
-### Extended Model: KiBaM + Thermal + Peukert + Aging
+## 👥 Team
 
-State vector: `[q₁, q₂, T]`
+MCM 2026 Submission
 
-Additional physics:
-1. **Arrhenius temperature correction** for effective capacity
-2. **Peukert's Law** for rate-dependent losses
-3. **Thermal dynamics** with self-heating feedback
-4. **Aging model** for capacity fade over cycles
-
-## Generated Figures
-
-| Figure | Description | Paper Section |
-|--------|-------------|---------------|
-| figure1_kibam_schematic | Two-tank KiBaM diagram | Section 3 |
-| figure2_thermal_feedback | Thermal feedback loop | Section 4 |
-| figure3_model_comparison | Linear vs Our Model | Section 5 |
-| figure4_temperature_effects | Temperature impact | Section 5 |
-| figure5_sensitivity_heatmap | 2D sensitivity map | Section 6 |
-| figure6_usage_scenarios | Real-world scenarios | Section 5 |
-| figure7_recovery_effect | Recovery demonstration | Section 5 |
-| figure8_aging_effect | Battery aging | Section 6 |
-| figure_tornado | Parameter sensitivity | Section 6 |
-| figure_recommendations | User recommendations | Section 7 |
-
-## Key Parameters
-
-| Parameter | Value | Description |
-|-----------|-------|-------------|
-| Q_nom | 4000 mAh | Nominal battery capacity |
-| c | 0.625 | KiBaM capacity ratio |
-| k | 0.002 /s | KiBaM recovery rate constant |
-| n_peukert | 1.05 | Peukert exponent |
-| E_a | 0.35 eV | Activation energy |
-
-## References
-
-1. Manwell & McGowan (1993) - Original KiBaM formulation
-2. Peukert (1897) - Capacity-rate relationship  
-3. Battery University - Li-ion specifications
-4. Arrhenius equation for temperature dependence
+---
+*This project satisfies MCM requirements for continuous-time differential equations, physics-based modeling, and practical recommendations.*

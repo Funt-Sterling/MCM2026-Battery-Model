@@ -14,6 +14,7 @@ Figure 7: Recovery Effect Demonstration
 =============================================================================
 """
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle, Rectangle
@@ -21,6 +22,8 @@ from matplotlib.patches import ConnectionPatch
 import matplotlib.patches as mpatches
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 # import seaborn as sns  # Optional, not required
+
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'figures')
 
 from battery_model import (
     BatteryParameters, KineticBatteryModel, ExtendedBatteryModel,
