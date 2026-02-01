@@ -1,0 +1,334 @@
+A Comparative Study on Power Consumption in
+Smartphone technology through communication
+standards
+Rahul V. Nale, M.Tech student, Veltech University, Chennai
+Dr.Shiyamala. S, Associate Professor, Veltech University, Chennai
+rahulnale4@gmail.com
+drshiyamala@veltechuniv.edu.in
+ABSTRACT- In twenty first centuries demand for smart phones and mobile primarily based applications
+is enlarged suddenly from past few years .now a day’s smart phones acquire the place of standard computers and
+laptops up to some limit. Due to smaller, lighter and simple to relinquishment. However, we've some limit of power
+in Smartphone technology. The new generation of communication commonplace system like third
+generation(3G),4th generation(4G),5th generation(5G), will provide higher service and performance to Smartphone
+users, this generation consumes additional power in smart phones .the term of battery backup is refer as electric
+battery life. This survey paper presents varied concepts and proposals for reducing the facility consumption in
+Smartphone technology which provides additional support to the new generation of communications.
+
+Keywords: Smartphone Technology, Communication Standard, Ultra FDD architecture, power consumption,
+wireless technology evolution.
+I. INTRODUCTION
+Smartphone needed some energy for his or her performing from storage devices. Except for some energy storage
+devices like smart phones battery restricted due to size and weight of the device. This means that
+energy potency and performance of those devices is extremely crucial to their usability. Hence, best management of
+power consumption of those devices is crucial. Most of the electronic widget is power-driven by storage batteries.
+For the designer and engineer square measure to provide the most effective device within the market with improved
+battery backup, performance, and life. A Smartphone may be a excellent example of the electronic devices and
+is charming several engineers and researchers during this field. The communication standards like 3G, 4G, and
+5G need giant power for his or her process. They’re facing battery backup issues in Smartphone. High rate services
+like
+audio/video
+streaming
+/gaming
+conference,
+video
+on
+demand, quicker web and
+plenty
+of alternative things beside the
+fundamental audio decision service.
+The mobile makers square
+measure competitor with one
+another to
+provide
+Smartphone
+with
+improved
+battery
+life and performance. It’s imperative to optimize and management energy usage with efficiency in network parts.
+The hardware parts of a typical Smartphone square measure processor/CPU, RAM (Random Access Memory),
+LCD, screen, electronic equipment (2G/3G/4G/5G all of it), GPS, Wi-Fi, Bluetooth, Hot-spot, NFC
+etc.The economical energy management needs a decent understanding of wherever and the way the energy is
+optimized.
+The
+paper gift a
+close analysis
+of the
+facility
+consumption
+of Smartphone,
+the
+Openmoko modern Freerunner . in Paper, measurements overall system power, yet as activity of power consumption
+in main hardware parts of device .new generation communication technologies, provides high-speed rate
+services. this can be thanks to the upper information measure allotted to those technologies. Thence power drain area
+
+Additional comparer 2G. To amend battery life and performance, it's necessary to effectively optimize power
+consumption in each attainable use case situation. With such optimization technique, one additionally ought
+to things is that the performance of the general system isn't affected, means that the output and quality of service
+(QoS) mustn't be affected. The rest of this paper is organized as follows. Section 2. The related work in power
+optimization techniques in smartphones. Section 3. Discusses the methodology along with the previous background
+study. Section 4. Discusses about power consumption analysis in smartphones technology and Section 5. The
+wireless technology evolution 1G.2G, 3G and 4G. Section 6. Conclusion
+II. RELATED WORK
+Experiment performs a power consumption analysis of on a laptop system. Approach to component power
+measurement is driven partially by direct power measurement, but largely by deduction using modeling and off-line
+piece-wise analysis. It show that the display and CPU are the main consumers of energy for their class of system,
+and that other components contribute substantially only when they are used intensively. Their results same like our
+observations that RAM power is insignificant in workloads .The analysis of power consumption in a smartphone
+various usage scenarios is described by‘ Openmoko Neo Freerunner ’ for 2G (GSM) connections by developing a
+power models [1]. In [2] the paper experiment identifies many components during various states of the smart phone
+where the power consumption will be more and critical. An comparison and analysis of power consumption
+measurements in smart phones for 2G, 3G networks is presented for the services-text messaging, voice and
+data.[3]The authors give the details information about evolution of wireless technology from 1G to 5G and it shows
+some specifications which is very helpful for our survey.[4] power consumption in Mobile devices they performed
+two experiments, first measures consumption for a set of usage scenarios, which represent common daily user
+activities, while second one analyzes a context-aware application with source code.[5] The battery powering a
+smartphone also has a size constraint and hence the capacity. Though communication standards systems such as 3rd
+Generation (3G), 4th Generation (4G) and 5th Generation (5G) can provide the high speed services to users, they
+draw considerably lagrge power in smartphones. This limits the battery backup of smart phones and hence the
+battery life. This survey presents various ideas and proposals published for reducing the power consumption in
+smartphones which support new generation communication standards. [6] Thesis is presented on Radio Resource
+management in 3G UMTS Networks which is used in 3G Smartphone technology. In [7] authors propose an
+evolution of these algorithms in the forward link. In [9] context –aware battery management foe mobile phones
+presents the information about computing and communication generations. In [10] paper presents on evolution of all
+communication generations which gives technical specifications which is very helpful for any further study.
+UMTS (Universal Mobile Communication Systems) is a 3rd generation (3G) telecommunication network based on
+the existing GSM (2nd generation, 2G) core network employing new radio access technology WCDMA (Wideband
+Code Division Multiple Access). LTE (Long Term Evolution )is a 4G speed is (200Mbps to 1Gbps) it gives high
+end live video streaming but 3G was developed mainly to provide high speed data rate (up to 2 Mbps) services like
+internet, video telephony, multimedia and audio/video streaming which 2G could not support due to bandwidth
+limitations. But 4G technologies give high end live video streaming. From 4G we fill the live streaming video calls.
+
+III.METHODOLOGY
+
+Figure 1. UTRA FDD Radio Interface protocol architecture.
+
+The UMTS -Universal Mobile Telecommunication System is a third generation mobile communication system,
+designed to support a wide range of applications with good quality of service (QoS). The 3G has efficiency of
+transporting wideband and high bit rate multimedia services with some traditional cellular services e.g. voice,
+messaging etc. To provide these services with better service quality and enhance the performance of wireless
+network, management of radio resources is necessary. To do this, UMTS tender many radio resource management
+(RRM) techniques. These RRM providing different services with better quality with keeping the end user happy and
+stable network. In paper, main objective is to explore some RRM techniques and understand their practical
+importance with simulation of RRM algorithms. Starting with UMTS overview and some important concept about
+UMTS architecture. Then going deep into physical layer of UMTS. In the wake of getting solid idea of UMTS radio
+design and methodology, chipped away at various RRM procedures and at last, investigate two power control
+calculations to comprehend and get some pragmatic experience of genuine RRM systems, in light of the fact that
+power control is the vital most and basic piece of RRM methods due to interference limited nature of CDMA
+systems. WCDMA is a wideband Direct-Sequence Code Division Multiple Access (DS-CDMA) system. Portable
+User data bits are spread over a wide transfer speed by duplicating the client information with semi arbitrary bits
+(called chips). The chip rate of 3. 84 Mcps (Million chips for every second) prompts a bearer transfer speed of
+around 5 MHz It bolsters very factor client information rates, as such the idea of getting Bandwidth capacity on
+Demand (BoD) is all around bolstered. It underpins two fundamental methods of operation-Frequency Division
+Duplex (FDD) and Time Division Duplex (TDD). In the FDD mode, isolate 5 MHz transporter frequencies are
+utilized for the uplink and downlink separately, while in TDD just a single 5 MHz is timeshared between the uplink
+and downlink. Uplink is the association from the versatile to the base station, and downlink is that from the base
+station to the portable. The radio interface traditions are required to set up, reconfigure and release the Radio Bearer
+organizations. The convention engineering [9] is appeared in Figure 1. The convention layers over the physical layer
+are known as the information interface layer (Layer2) and the system (Layer 3). In the UTRA FDD radio interface,
+Layer 2 is part into sub layers. In the control plane, Layer 2 contains two sub-layers – Medium Access Control
+
+(MAC) convention and Radio Link Control (RLC) convention. In the client plane, notwithstanding MAC and RLC,
+two extra administration subordinate conventions exist – Packet Data Convergence Protocol (PDCP) and
+Broadcast/Multicast Control Protocol (BMC). Layer 3 comprises of one convention, called Radio Resource Control
+(RRC) that incorporates a place with the management plane. There are 2 interfacing areas within the UMTS
+network, one is that the infrastructure domain that consists of the core network (CN) and second is that the UTRA
+(UTRAN) network, additionally user equipment (UE) domain. The UTRAN that consists of mobile station, the
+bottom station (Antenna, transceiver and controller) and radio interface is there between mobile station & base
+station. In UMTS network, the core network that's referred to as CN has the most responsibility to
+supply change and routing for user traffic.
+IV. POWER CONSUMPTION ANALYSIS
+
+Figure 2 . Power breakdown for sending an SMS
+
+Power consumed for causing associate degree SMS is dominated by the show elements and is as shown in Figure. 2.
+The GSM radio shows a mean power of sixty seven.3 ± 20.9 mW, only 7.9 mW bigger than idle over the total length
+of the benchmark, and accounting for twenty-two you look after the mixture power (excluding backlight). All
+alternative elements showed associate degree RSD of below 3 %.
+
+Fig 3.GSM phone call average power
+
+Figure 3. Shows the ability consumption once creating a GSM telephone call of 57-second period [1]. GSM power
+clearly dominates during this case at a median power of 832.4 ± 99.0 mW. the ability breakdown for emailing
+between the GPRS and Wi-Fi benchmarks is comparable, apart from the GSM and Wi-Fi radios. Despite presenting
+identical workloads to the radios, GSM consumes over 3 times the ability of Wi-Fi. For net browsing application,
+GPRS consumes a lot of power than Wi-Fi by an elementof two.5. just in case of a next-generation technology 3G,
+this issue might increase even a lot of thanks to the upper bandwidths supported by 3G. The results of this study
+
+show that the bulk of power consumption are often attributed to the GSM module and also the show, as well
+as the alphanumeric display panel and touchscreen, the graphics accelerator/driver, and also the backlight.
+
+Figure 4 . Power consumption for different services
+
+In
+Figure 4.
+Power
+consumption for
+various mobile
+services
+normalized
+facility
+to the consumption throughout downloading information victimisation High-Speed Downlink Packet Access
+(HSDPA)
+is
+shown
+[2].
+Downloading information victimisationWireless native space Network
+(WLAN) relatively drains
+lesser
+power.
+For causing associate SMS
+and creating a
+voice decision, the
+facility consumption is sort of comparable however considerably but that of HSDPA and wireless local area
+network. It is clear from the plot that each one the capabilities that imply the employment of a wireless air
+interface area unit power- hungry, there for considerably reducing the battery lifetime of the phone. The paper
+reports larger energy consumption in 4G networks for text electronic communication and voice services than energy
+consumption in 3G networks. On the opposite aspect, the 4G networks become additional energy
+friendly once giant volumes of information got to be downloaded additionally 4G provides the fastest speed as
+compare to others that ne'er seen before.
+Table – 1 Power consumption for voice service
+
+scenario
+Receiving a voice call
+
+GSM
+612.7mW
+
+UMTS
+1224.3mW
+
+LTE,WIMAX
+1838.1mW
+
+Making a voice call
+683.6mW
+
+1265.7mW
+
+2060.3mW
+
+15.1mW
+
+25.3mW
+
+32.7mW
+
+Idle mode
+
+Table .1 shows the values for power consumption on Mobile for GSM, UMTS, and LTE mistreatment the voice
+service. The ability values for the calls are obtained by creating and receiving a call of 5 minutes and conniving the
+common of the ability levels. The observation results show that creating a decision mistreatment GSM-47%, UMTS56%, and LTE-72%. For receiving a decision GSM-48%, UMTS-59%, LTE-74% and that i ideal mode GSM-15%,
+UMTS-25%, LTE-33%.LTE takes perpetually additional power as compared to others.
+
+Service
+
+2G
+
+3G
+
+4G
+
+50 SMS of 100 bytes
+
+90J
+
+110J
+
+150J
+
+100 Mbytes downloading
+
+10002.6J
+
+3512.1J
+
+2131.2J
+
+5 Hours voice calls
+
+12304.8J
+
+22782.6J
+
+28638.6J
+
+Total
+
+22404.0J
+
+26404.7J
+
+30919.8J
+
+Table - 2 Energy comparisons using 2G, 3G, 4G
+
+Table .2 shows a comparison of energy consumption mistreatment a pair ofG alone, 3G alone and
+intelligent shift [2] between these networks. it's clear from the observation that, 4G consumes additional power than
+3G for the text of the appliance electronic messaging, downloading knowledge and voice decision. Parallel
+connections save energy however the gains vary betting on the technology. transmission control
+protocol downloads throughout 3G voice calls result into 75%-90% energy savings, transmission control
+protocol downloads throughout VoIP calls result into 30%-40% savings and transmission protocol
+control downloads once different transmission control protocol streams square measure active at identical interface
+result into 0%- 20% savings. The results indicate that there's a big potential to avoid wasting energy if
+applications square measure designed to require advantage of this development.
+V.WIRELESS TECHNOLOGY EVOLUTION
+The first generation (1G) mobile wireless communication network was analog used for voice calls solely. The
+second generation (2G) could be a digital technology and supports text electronic communication. When this was
+3G that provided transmission support in
+conjunction
+with higher knowledge transmission
+rates
+and enlarged capability. The fourth generation (4G) integrates3G with fastened net to support wireless
+mobile net, that is an evolution to
+beat the
+constraints of
+3G
+and conjointly raises
+the
+QoS, will
+increase the information measure and reduces the price of resources.
+
+Figure 5 . Wireless Technology Evolution
+
+Figure 5. shows the entire wireless technology evolution from the year of 2000 to 2016, however wireless
+technology bit by bit rising the techniques furthermore as speed (172 kbps to 1gbps) still improvement goes on and
+axis shows the scores of subscribers exploitation this technology .we used 2G for long length as compare to others at
+the moment 3G, 4G and these days we tend to area unit exploitation 4G LTE advance which supplies speed up to
+1Gbps.
+
+Figure 6. Evolution digital cellular standards architecture
+
+Figure 6. Shows the evolution of digital cellular standards design in 2G we have a tendency to used GSM, in 2.5 G
+used GPRS and EDGE, in 3G used UMTS and in 4G we have a tendency to victimization LTE(wi-max)
+once following version of 4G is LTE advanced which supplies the most effective performance ever.
+VI. CONCLUSIONS
+This comparative survey given the Associate in analysis of power consumption and wireless technology evolution in
+smart phones technology in numerous use case state of affairs like causation an SMS, creating a voice decision,
+receiving a decision downloading information and plenty of alternative things. the end result of this analysis is
+that the facility consumption are a lot of and demanding in phone’s electronic equipment and thus are often thoughtabout as an honest candidate for optimizing power consumption. The surveys say that within the feature we should
+always be a lot of specialize in power savings techniques.
+REFERENCES
+[1] Aaron carroll and Gernot heiser, “ An Analysis of Power Consumption in a smartphone”, USENIXATC’10 Proceedings of the USENIX
+conference on USENIX annual technical conference,2010.
+[2] Kravets , R. and Krishnan, P. Power management techniques for mobile communication. In Proceedings of The Fourth Annual ACM/IEEE
+International Conference on Mobile Computing and Networking (MOBICOM ’98), pages 157-168,Dallas, TX, October 1998
+[3] Dr. Prinima, Dr. Jyoti Pruthi , “Evolution of Mobile Communication Network: from 1G to 5G” International Journal of Innovative Research
+in Computer and Communication Engineering, Vol. 4, Special Issue 4, August 2016.
+[4] Luca Ardito, Giuseppe Procaccianti, Marco Torchiano, Giuseppe Migliore ,“ Profiling Power Consumption on Mobile Devices .The Third
+International Conference on Smart Grids, Green Communications and IT Energy-aware Technologies ENERGY 2013.
+[5] Abhiman. K, Dr. S. Gayathri, “Optimizing Power Consumption in Smartphones: A Comprehensive Survey “International Journal of Latest
+Trends in Engineering and Technology (IJLTET) Vol 7 issue 2 July 2016.
+[6] Muhammad Abdur Rahman Haider, Abu Bakar Bhatti, Ammar Ahmad Kirmani ,“ Radio Resource Management In 3G UMTS Networks,
+This thesis is presented Blekinge Institute of Technology
+November 2007.
+[7] Jad Nasreddine, Louffi Nuagmi and Xavier Lagrange, “Downlink Adaptive Power Control Algorithm for 3g Cellular Cdma Networks”,
+15th IEEE International Symposium on Personal, Indoor and Mobile Radio Communications, Vol. 3, pp.2192-2196,2004.
+[8] Harri Holma and Antti Toskala, “WCDMA FOR UMTS: Radio Access for Third Generation Mobile Communications”, Third Edition.
+[9] N. Ravi, J. Scott, L. Han, and L. Iftode, “Context-aware battery management for mobile phones,” in Proceedings of the 2008 Sixth Annual
+IEEE International Conference on Pervasive Computing and Communications, ser. PERCOM ’08. Washington, DC, USA: IEEE Computer
+Society, 2008.
+
+[10] Jyotsna Agrawal1, Rakesh Patel2, Dr. P.Mor3, Dr. P.Dubey4 and Dr. J.M.keller ,“ Evolution of Mobile Communication Network: from 1G
+to 4G Int. J. of Multidisciplinary and Current Research, Vol.3 (Nov/Dec 2015).
+
+

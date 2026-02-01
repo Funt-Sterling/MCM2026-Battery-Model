@@ -1,0 +1,2016 @@
+Article
+
+Lifecycle Evaluation of Lithium-Ion Batteries Under Fast
+Charging and Discharging Conditions
+Olivia Bruj and Adrian Calborean *
+National Institute for Research and Development of Isotopic and Molecular Technologies, 67-103 Donath,
+400293 Cluj-Napoca, Romania; olivia.bruj@itim-cj.ro
+* Correspondence: adrian.calborean@itim-cj.ro
+
+Abstract: By employing electrochemical impedance spectroscopy, we performed an
+impedance analysis of three commercial Li-ion Panasonic NCR18650B cells in order to investigate the direct effects of their internal impedance on the operating voltage, rate capability,
+and efficiency and their practical capacity. We aimed to assess their performance, safety,
+and longevity when distinct fast charge/discharge rates were applied. By maintaining a
+constant fast discharge rate of 2C, we monitored the degradation speed and the influence of
+the C-rates on the LIBs by applying distinct charge rates, namely, 1C, 1.5C, and 2C. In order
+to understand how their performance correlates with usage conditions, an SoH evolution
+analysis, together with a Q–Q0 total charge and energy consumption examination, was
+performed, taking into account that cycling monitoring is vital for ensuring their longevity
+and/or safety. Increasing the Icharge from 1C to 1.5C reduces the battery lifetime by ~50%,
+while in the case of fast charge/discharge rates of 2C, the lifetime performance decrease is
+almost ~70% due to a capacity loss that accelerates quickly when the charge rates increase.
+Moreover, for the latter cell, the last discharge rate can only go up to ~80% SoH, as the
+battery charge rate can no longer support faster degradation. In agreement with these
+results, the fluctuations in the Q–Q0 total charge become more pronounced, clearly affecting
+LIB efficiency. High charge rates add an additional high voltage that increases the batteries’
+stress, leading to a shorter lifetime. Energy consumption data follow the same trend, in
+which efficiency decreases dramatically when losses appear because the internal resistance
+causes more and more heat to be produced during both fast charging and discharging.
+Academic Editors: Mei Luo and
+George Zheng Chen
+
+Keywords: lithium-ion cells; lifecycle prediction; electrochemical impedance spectroscoy
+
+Received: 27 December 2024
+Revised: 27 January 2025
+Accepted: 1 February 2025
+Published: 7 February 2025
+
+1. Introduction
+
+Citation: Bruj, O.; Calborean, A.
+
+Lithium-ion cells have evolved rapidly in the last decades, becoming the backbone
+of the rechargeable energy store. They are currently the most attractive products for
+manufacturers worldwide due to their easy customizable technology. We refer here to
+the tremendous potential for modifying features like the cathode chemistry [1,2] and/or
+the cell format [3], which allows their features to be continuously improved in terms of
+high energy density [4], lifespan [5], light weight [6], good long-term performance [7],
+low self-discharge [8], fast charge times [9], temperature tolerance [10], etc. Providing a
+strong combination of these unique properties, lithium-ion cells have revolutionized the
+manner in which we power our portable electronic devices, electric vehicles (Evs), hybrid
+electrical vehicles (HEVs), and energy storage systems. When compared to traditional
+batteries, they are highly superior in terms of leakage resistance under environmental
+variations due to organic electrolytes that have a solidifying point much lower than that of
+
+Lifecycle Evaluation of Lithium-Ion
+Batteries Under Fast Charging and
+Discharging Conditions. Batteries
+2025, 11, 65. https://doi.org/
+10.3390/batteries11020065
+Copyright: © 2025 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license
+(https://creativecommons.org/
+licenses/by/4.0/).
+
+Batteries 2025, 11, 65
+
+https://doi.org/10.3390/batteries11020065
+
+Batteries 2025, 11, 65
+
+2 of 19
+
+aqueous solution electrolytes, thus offering better operation capabilities at a wide range of
+temperatures [11–13].
+The vast amount of research in the field has brought significant refinements to lithium
+batteries. The most common types include the following: (i) lithium iron phosphate
+(LFP) [14], in which the energy is stored separately from its discharging sequence by
+using a lightweight LiFePO4 as a charge carrier; (ii) lithium cobalt oxide (LCO) [15],
+which incorporates layered LCOs in the positive electrode; (iii) lithium manganese oxide
+(LMO) [16], in which manganese dioxide is inserted into the cathode under different
+layers of LiMnO2 , LiMnO3 , Li2 MnO2 , and spinel LiMn2 O4 or is integrated in different
+forms; (iv) lithium nickel manganese cobalt oxide (NMC) [17–21], in which metal oxides
+of lithium, nickel, manganese, and cobalt are mixed; (v) lithium nickel cobalt aluminum
+oxide (NCA) [22], which are used as the active materials at the positive pole by mixing
+several chemical elements such as nickel, cobalt, and aluminum; (vi) lithium titanate and
+lithium titanate oxide (LTO) [23], which are used as nanocrystals on the anode surface
+instead of graphite; (vii) lithium-sulfur (Li-S) [24] type, which involves lithium dissolution
+from the anode surface during discharge and reverse lithium plating to the anode while
+charging, etc.
+Within all these technological developments, an accurate prediction and/or estimation of the state of health (SoH) is of tremendous importance not only for extending the
+batteries’ lifetime [25] but also in terms of monitoring downtime in battery management
+systems [26]. This parameter is crucial for assessing the performance, safety, and longevity
+of lithium-ion batteries (LIBs), and thus, several methods have been used to estimate
+the SoH. Here, we name some of the most important methods: (a) voltage-based methods, implying an open circuit voltage (OCV) vs. a state of charge (SOC) relationship [27]
+or the voltage relaxation approach [28]; (b) impedance spectroscopy by electrochemical
+impedance spectroscopy (EIS) [29] or AC impedance [30]; (c) coulomb counting [31]; (d) machine learning methods with supervised learning [32] and deep learning [33]; (e) Kalman
+filtering [34]; (f) capacity estimation methods by cycle life modeling [35] and capacity fade
+models [36]; (g) data-driven models through regression analysis [37] and a random forest
+approach [38]; (e) thermal analysis [39]; state of charge (SoC) and state of health (SoH)
+coupling [40]; (h) modeling based on electrochemical principles using equivalent circuit
+models (ECM) [41] or the Thevenin [42], Randles [43], and pseudo-2D models [44]. An interesting theoretical approach that can be applied to LIB electronic analysis was developed
+by Máthé et al. [45,46], in which the electrical transport properties can be simulated within
+cell conditions.
+In this context, we employed the electrochemical impedance spectroscopy (EIS)
+methodology [47–50] to study three commercial Panasonic lithium-ion cells in order to
+determine their lifetime performance when distinct fast charge/discharge rates were imposed. Applying this powerful diagnostic tool to LIBs to evaluate their performance [51],
+state of health (SoH) [52], and degradation mechanisms [53], we aimed to evaluate different approaches to the interpretation and validation of impedance measurements. In the
+particular context of lithium-ion cells, impedance reflects how the battery resists electrical
+current flow under alternating current (AC) conditions [54].
+Therefore, by characterizing impedance in defining battery operational boundaries, we
+can estimate the performance and track the state of health (SoH) of our LIBs. It is known that
+Li-ion batteries excel in fast charge and discharge conditions, as they can absorb and release
+energy very fast. We therefore focus on investigating how much fast charging decreases
+battery efficiency over time and reduces energy storage due to the unused capacity. Energy
+consumption is also investigated, taking into account some key factors that can contribute
+to energy fluctuations in terms of different charge and discharge rates. By applying
+
+Batteries 2025, 11, 65
+
+3 of 19
+
+fast charge rates, we try to understand when temporary voltage fluctuations appear (in
+which the battery may not absorb energy consistently, leading to thermal build up and
+internal resistance changes), and similarly, by fast discharging, how the energy output can
+fluctuate because the battery struggles to supply energy at a high rate, causing voltage
+sag. Understanding and controlling these factors can further improve the performance and
+longevity of LIBs, making them more reliable for a wide range of applications.
+The current literature on EIS methodology used for the determination of a range of
+aging effects on lithium cells is extremely vast, and we have observed in many cases that the
+results can be significantly affected by the battery equivalent model employed to analyze
+the elements [55–58]. In the process of optimizing parameters derived from a Nyquist
+diagram, there is a strong need for intensive processing and good initial estimation, which
+might be very difficult to acquire. Moreover, precise EIS measurements demand expensive
+facilities, long cycling procedures, and algorithms with high-computational efforts, which
+make them nearly unsuitable for on-board systems. As these restrictions clearly limit the
+EIS technique, we aimed here to find reliable and fast methods through EIS technology
+without using Randle equivalent circuit models with their parameter estimation. We refer
+here to SoH parameter analysis, Q–Q0 total charge parameters, or the energy consumption
+at fast charge and discharge rates. It is known that the available energy is the total energy
+released when the discharge is set at the lower voltage limit. This establishes a relationship
+between the remaining capacity and the time of use. The available capacity stored in the
+battery depends on the ambient temperature, the current, and the running conditions. As
+such, the current study encompasses distinct but related approaches that are capable of
+highlighting new diagnostic tools for aging prediction in lithium-ion cells. By keeping a
+constant fast discharge rate of 2C, we monitor the degradation speed and the influence of
+the C-rates on the LIBs by applying distinct charge rates, namely, 1C, 1.5C, and 2C. The
+dynamics of the lithium transport process is assessed, as well as its dependence on the
+charge rate with the aim of understanding how their performance correlates with usage
+conditions. The aim is to provide some reliable references for lithium-ion cell management,
+diagnose performance issues, and understand degradation mechanisms that depend on
+the charge/discharge rate variations, taking into account that cycling monitoring is vital
+for ensuring the longevity and/or safety of these cells.
+
+2. Materials
+2.1. Commercial Lithium-Ion Cells
+Three lithium-ion NCR18650B-type batteries, produced by Panasonic, were purchased
+from the market and used in this study. Currently, they are the 18650-type battery with the
+highest (real) capacity, and due to their superior quality, they are mainly used in newer LED
+flashlights but also as part of the assembly of various other devices, such as power banks
+(external batteries), jump starters (car starting robots), hoverboards, and electric scooters
+and bicycles [59,60]. Moreover, it should be mentioned that these batteries were previously
+used in the Tesla model S (the first model) electric vehicle, which was of great interest at
+that time [61,62]. In Table 1, the most important battery specifications are described.
+2.2. Experimental Setup
+The VSP electrical laboratory equipment of BioLogic [63] was employed for impedance
+acquisition within all measurements. This system consists of a single computer board
+associated with four potentiostat channel boards, which make the VSP a very versatile
+multichannel potentiostat. A modular booster unit module of 100 A was used, and all the
+data were acquired, processed, and analyzed through EC-Lab software (version v11.61).
+
+Nominal voltage
+3.6 V
+Packaging: industrial bu
+Charging method
+CC–CV
+Batteries 2025, 11, 65
+4 of 19
+Charging current
+1625 mA
+Charging
+voltage
+4.2 V
+In Figure 1, the setup prepared for the LIB measurements is shown, in which the cells are
+Batteries 2025, 11, x FOR PEER REVIEW
+4 of 20
+connected time
+to the VSP cables through crocodile
+Charging
+4 h clips.
+Energy
+Table 1.density
+NCR18650B battery features.676 Wh/L
+Table material
+1. NCR18650B battery features.
+Cathode
+Technical specifications Nickel oxide
+Dimensions
+
+Dimensions
+Rated Technical
+capacity specifications
+3200 mAh
+Length
+65.3 mm
+◦
+Rated
+capacity
+at 25 C
+3200
+mAh
+Length
+65.3 mm
+2.2.
+Setup
+at 25Experimental
+°C
+Nominal
+capacity
+Min. −3250 mAh
+Diameter
+18.5 mm
+◦C
+Nominal
+at 25capacity
+Min.
+−3250 mAhlaboratory
+Diameter
+18.5 mm [63] wa
+The
+VSP
+electrical
+equipment
+of
+BioLogic
+at 25 °C
+Typ. 3350 mAh
+Weight
+47.5 g
+Typ.within
+3350 mAhall measurements.
+Weight
+47.5 consists
+g
+ance acquisition
+This system
+of
+Nominal voltage
+3.6 V
+Packaging: industrial bulk (for industrial use)
+Nominal voltage
+3.6 V
+Packaging: industrial bulk (for industrial use)
+associated
+four
+potentiostat
+channel boards, which make t
+Charging
+method with CC–CV
+CC–CV
+Charging
+method
+Charging
+current
+1625
+mA
+Charging
+current
+1625
+mA
+multichannel
+potentiostat.
+A modular booster unit module of 100
+Charging
+voltage
+4.2
+V
+Charging
+4.2 V
+data voltage
+were acquired,
+processed, and analyzed through EC-Lab so
+Charging time
+4h
+Charging time
+4h
+Energy
+density 1, the 676
+Wh/Lprepared for the LIB measurements is show
+In Figure
+setup
+Energy density
+676 Wh/L
+Cathode material
+Nickel oxide
+connected
+VSPoxide
+cables through crocodile clips.
+Cathode
+material to the
+Nickel
+2.2. Experimental Setup
+The VSP electrical laboratory equipment of BioLogic [63] was employed for impedance acquisition within all measurements. This system consists of a single computer board
+associated with four potentiostat channel boards, which make the VSP a very versatile
+multichannel potentiostat. A modular booster unit module of 100 A was used, and all the
+data were acquired, processed, and analyzed through EC-Lab software (version v11.61).
+In Figure 1, the setup prepared for the LIB measurements is shown, in which the cells are
+connected to the VSP cables through crocodile clips.
+
+Figure 1. The experimental setup for PEIS acquisition.
+
+Figure 1. The experimental setup for PEIS acquisition.
+
+The PEIS experiment was employed, performing impedance measurements in potentiostatic mode. We registered the frequency-dependent impedance, with a particular
+The
+PEIS the
+experiment
+was
+employed,
+performing
+impedance
+focus The
+on
+monitoring
+variation
+in imaginary
+impedance
+values
+against the frequency
+PEIS experiment
+was employed,
+performing
+impedance
+measurements
+in potenoscillations.
+As
+such,
+we
+evaluated
+the
+heterogeneous
+charge-transfer
+parameters
+with
+tiostatic mode.
+We registered
+the frequency-dependent
+impedance, with a particular
+fotiostatic
+mode.
+We registered
+the frequency-dependent
+impedan
+high
+precision.
+Figure
+2
+shows
+the
+PEIS
+general
+diagram,
+in
+which
+the
+potential
+of
+cus on monitoring the variation in imaginary impedance values against the frequencythe
+oscus
+onelectrode
+monitoring
+the
+variation
+in imaginary
+impedance values a
+working
+the
+equation
+below [64]:
+cillations.
+As such,follows
+we evaluated
+the heterogeneous
+charge-transfer parameters with high
+Figure 1. The experimental setup for PEIS acquisition.
+
+precision. Figure
+shows the
+PEIS
+general diagram,
+which the potential of charge-transf
+the working
+cillations.
+As2 such,
+we
+evaluated
+theinheterogeneous
+Ewe = E + Va sin (2π f t)
+(1)
+electrode follows the equation below [64]:
+precision. Figure 2 shows the PEIS general diagram, in which the
+(1)
+𝐸𝐸𝑤𝑤𝑤𝑤 = 𝐸𝐸 + 𝑉𝑉𝑎𝑎 sin (2𝜋𝜋𝜋𝜋𝜋𝜋)
+electrode follows the equation below [64]:
+
+𝐸𝐸𝑤𝑤𝑤𝑤 = 𝐸𝐸 + 𝑉𝑉𝑎𝑎 sin (2𝜋𝜋𝜋𝜋𝜋𝜋)
+
+Batteries 2025, 11, x FOR PEER REVIEW
+Batteries 2025, 11, 65
+
+5 of 20
+5 of 19
+
+Figure 2. PEIS general diagram.
+Figure 2. PEIS general diagram.
+
+2.3. Electrochemical Impedance Spectroscopy (EIS)
+2.3. Electrochemical Impedance Spectroscopy (EIS)
+The non-invasive electrochemical impedance spectroscopy (EIS) technique was used in
+The
+non-invasive
+electrochemical
+impedance
+spectroscopy
+(EIS) technique
+was used
+different
+configurations
+of charge/discharge
+rates,
+offering important
+information
+about the
+in diﬀerent
+conﬁgurations
+of
+charge/discharge
+rates,
+oﬀering
+important
+information
+physical–chemical processes that occur at both electrodes of lithium-ion batteries with their
+aboutdistinct
+the physical–chemical
+processes
+that occur
+both electrodes
+of lithium-ion
+batterimpacts on degradation
+speed.
+Their at
+lifetime
+performance
+and aging mechanisms
+ies with
+their
+distinct
+degradation
+lifetime
+performance
+andimpedance,
+aging
+were
+analyzed
+byimpacts
+trackingon
+the
+changes in speed.
+internalTheir
+resistance
+and
+charge-transfer
+mechanisms
+were
+analyzed
+by
+tracking
+the
+changes
+in
+internal
+resistance
+and
+chargeand then, the data were correlated with the SoH. The differences in impedance profiles
+transfer
+impedance,
+then,discharging
+the data were
+correlated
+within
+theterms
+SoH.of
+The
+in
+during
+chargingand
+versus
+were
+interpreted
+thediﬀerences
+LIB degradation
+impedance
+proﬁles
+during
+charging
+versus
+discharging
+were
+interpreted
+in
+terms
+of
+the
+phenomena, as it is known that impedance usually increases as a function of cell aging due
+LIB degradation
+phenomena,
+it is known
+that impedance
+usually
+increasescontacts
+as a function
+to the degradation
+of the as
+electrode
+materials,
+electrolytes,
+and electrical
+within the
+of cellcell.
+aging
+due
+to
+the
+degradation
+of
+the
+electrode
+materials,
+electrolytes,
+and
+electrical
+Thus, we gathered in a simple manner EIS data on Li battery charging rates
+in order to
+contacts
+within
+cell. Thus,
+we gathered
+inand
+a simple
+data on Li battery
+provide
+thethe
+optimal
+link between
+the SoH
+batterymanner
+lifetimeEIS
+predictions.
+charging rates
+in
+order
+to
+provide
+the
+optimal
+link
+between
+the
+SoH
+and
+battery
+lifetime thus
+The overlapping processes across timescales were separated and
+interpreted,
+predictions.
+offering invaluable data for improving performance and longevity. In particular, we focused
+The
+overlapping
+across
+timescales
+were
+separatedthe
+and
+interpreted,
+thus
+on the
+charge andprocesses
+discharge
+processes
+of LIBs,
+monitoring
+impedance
+fluctuations
+oﬀering
+data
+for shifts
+improving
+and(SoC).
+longevity.
+In particular,
+we fo- and
+thatinvaluable
+appear due
+to the
+in theperformance
+state of charge
+Insights
+into key physical
+cusedelectrochemical
+on the charge and
+discharge
+processes
+of
+LIBs,
+monitoring
+the
+impedance
+ﬂuctuaphenomena during these processes were discussed, thus aiming to refine
+tionsthe
+thatcurrent
+appeardensities
+due to the
+in the
+state
+charge
+(SoC). Insights
+into
+key physical
+andshifts
+voltage
+limits
+inof
+order
+to minimize
+resistive
+losses
+and improve
+and electrochemical
+phenomena
+during
+these
+processes
+were
+discussed,
+thus
+aiming
+to
+cycling stability. However, performing EIS during active charging or discharging requires
+reﬁneprecise
+the current
+voltage limits
+in order
+to minimize resistive losses and
+controldensities
+to avoidand
+interference
+from DC
+signals.
+improve cycling
+stability.
+However,
+performing
+EIS
+during
+active charging or discharging
+All the EIS measurements were performed in a temperature-controlled
+room, in which
+requires
+control
+to avoid
+from DC signals.
+the precise
+temperature
+was
+set to interference
+21 degrees throughout
+the study period (several months of
+All
+the EIS
+in a temperature-controlled
+room,batteries,
+in
+cycling).
+Wemeasurements
+are fully awarewere
+of theperformed
+impact of temperature
+effects on lithium-ion
+which
+temperature
+was set to 21
+degreesthat
+throughout
+thecell
+study
+period (several
+months to
+inthe
+which
+the electrochemical
+reactions
+govern the
+performance
+are susceptible
+of cycling).
+We
+are
+fully
+aware
+of
+the
+impact
+of
+temperature
+eﬀects
+on
+lithium-ion
+battertemperature variations, but the scope of this paper is different.
+ies, in which the electrochemical reactions that govern the cell performance are susceptible
+2.4. Aging Protocol
+to temperature
+variations, but the scope of this paper is diﬀerent.
+We applied an aging protocol in two steps. In the first step, all three cells were cycled
+four times in order to estimate their initial capacity. These data were necessary for the
+SoH analysis, described in the next section. The potentiostatic electrochemical impedance
+
+Batteries 2025, 11, 65
+
+6 of 19
+
+spectroscopy (PEIS) technique was applied, using the Modulo Bat (MB) technique to
+improve the analysis of our LIB systems, particularly during dynamic testing scenarios
+such as the charge and discharge cycles. The MB technique incorporates features that allow
+impedance measurements during ongoing charge or discharge, which are traditionally
+difficult due to the presence of a DC current. At the same time, it synchronizes impedance
+measurements with the varying states of charge or discharge, ensures regular intervals
+of impedance data collection without disrupting the natural cycling process, and allows
+a small AC signal to be superimposed on the DC voltage or current during cycling, thus
+capturing the impedance at specific moments and providing insights into its dynamic
+behaviors. The combination of these techniques reflect the gradual degradation of the LIBs’
+performance over time and cycles.
+In our PEIS sequence under MB, the sinus signal was imposed only around the DC
+potential near to the equilibrium state, taking into account that this mechanism can easily
+lead to overcharging in a fully charged Li-ion cell, particularly at low frequencies (below
+50 mHz). As such, the PEIS settings in the stand-alone module gave us permission to
+superimpose a sinus signal over a fixed DC potential, E, that was sufficiently small, so
+the upper voltage limit was not surpassed at low frequencies. A potential of 10 mV was
+imposed within a frequency length of 10 kHz–5 mHz, while the sinus amplitude was
+set to 20 mV. We also applied 30 min of relaxation before each PEIS measurement to the
+aging protocol.
+By monitoring the voltage change difference after 30 min, we obtained a value smaller
+than 0.1%, indicating that the cells are in a stable state. The initial capacity of all three LIBs
+had closely related values, namely, 3.27 for B1, 3.26 for B2, and 3.24 for B3. The workflow
+Batteries 2025, 11, x FOR PEER REVIEW
+7 of 20
+diagram presented below in Figure 3 shows schematically the aging procedure applied in
+this investigation.
+
+Figure
+initiated
+for for
+battery
+aging.
+Figure3.3.Steps
+Steps
+initiated
+battery
+aging.
+
+3. Results
+3.1. SoH Dependence in Fast Charging and Fast Discharging Operations
+The SoH cycling evolution in the B1, B2, and B3 batteries was analyzed according to
+their distinct fast charging and fast discharging rates. The goal was to gain insights into
+their overall condition and remaining capacity relative to their initial states. It is well
+
+Batteries 2025, 11, 65
+
+7 of 19
+
+3. Results
+3.1. SoH Dependence in Fast Charging and Fast Discharging Operations
+The SoH cycling evolution in the B1, B2, and B3 batteries was analyzed according
+to their distinct fast charging and fast discharging rates. The goal was to gain insights
+into their overall condition and remaining capacity relative to their initial states. It is well
+known that, over time, lithium-ion cells degrade due to various chemical and physical
+processes, leading to a reduction in their performance. Thus, we aimed to understand the
+SoH behavior under particular conditions in order to further predict the battery lifetime,
+optimize battery usage, and improve safety conditions. This offers predictive maintenance
+to avoid unexpected failures and also an indication of battery replacement necessity.
+The following formula was employed for the SoH measurement, as already performed
+elsewhere [65,66]:
+Cdischarged
+SoH =
+× 100 [%]
+(2)
+Cinitial
+The capacity testing through the controlled (fast) charge–discharge rates of B1, B2, and
+B3 is shown in terms of the SoH vs. the cycle number in Figure 4a. Here, we define the
+charge or discharge current as a function of the capacity. As can be seen, when the Icharge is
+increased from 1C to 1.5C and 2C, the SoH decay curves behave differently, even if Idischarge
+remains constant at 2C. For B1, a smooth decay curve was obtained, and around 200 cycles
+were required until the battery was exhausted. An approximate half-cycle number of
+around 95 was obtained for the B2 cell when the Icharge was increased to a fast 1.5C, thus
+reducing the battery exhausting period by more than half. It seems that the gradual loss of
+the B2 charge storage capacity led to a significant reduction in performance, significantly
+affecting the loss of active lithium ions (i.e., lithium becomes trapped in the electrode side
+reactions), electrode degradation through structural damage to cathode or anode materials,
+or SEI (solid electrolyte interface) layer growth on the anode. Degradation due to repeated
+charge–discharge cycles occurred extremely fast for B3 when the fast charge rate of 2C was
+equal to the deep discharge rate. The SoH curve of B3 with error bars is shown in Figure 4b.
+The internal operation of inserting lithium ions, embedded in the negative electrode during
+charging, into the positive electrode during discharge became extremely difficult.
+As a direct consequence, the B3 cell damage occurred very fast, after ~25 cycling
+steps; thus, we assumed that the cell reversal had caused an electrical short. Within this
+fast-cycling process, the stress suffered is near to the maximum permissible tolerance,
+leading to the fast degradation of the electrode’s elasticity. These results demonstrate that
+by increasing the Icharge from 1C to 1.5C (with a 2C discharge rate), the battery lifetime
+is reduced by ~50%, while in the case of fast charge/discharge rates of 2C, the lifetime
+performance decreases by almost ~70%. As such, the capacity loss accelerates quickly when
+the charge rates increase from 1C to 1.5C and 2C, offering concrete data on the lifetime
+performance and efficiency of our LIBs in fast charging–fast discharging cycling operations.
+It should be mentioned that all the measurements were performed until the batteries
+were completely discharged; thus, we aimed to gain insights into how much of the battery’s
+lifetime available energy had been consumed and how much was left, anticipating further
+performance or replacement of the battery. A clear indication of battery degradation based
+on cycling rates can be easily seen on Figure 4, starting directly from the beginning, at 100%
+SoH, when a steeper increase for B1, B2, and B3 was obtained. Moreover, for the B3 cell,
+the last discharge rate can only go up to ~80% SoH, as the battery charge rate can no longer
+support faster degradation.
+
+110
+
+B1
+B2
+B3
+
+SoH [%]
+
+90
+70
+50
+30
+10
+
+0
+
+30
+
+60
+
+90
+
+120 150 180 210
+
+Cycle number
+(a)
+
+105
+
+B3
+
+100
+SoH [%]
+
+Batteries 2025, 11, 65
+
+due to repeated charge–discharge cycles occurred extremely fast for B3 when the fast
+charge rate of 2C was equal to the deep discharge rate. The SoH curve of B3 with error
+bars is shown in Figure 4b. The internal operation of inserting lithium ions, embedded in
+the negative electrode during charging, into the positive electrode during discharge be8 of 19
+came extremely diﬃcult.
+
+95
+90
+85
+80
+
+0
+
+5
+
+10
+15
+20
+Cycle number
+
+25
+
+30
+
+(b)
+Figure
+4. (a)4.The
+vs. the
+number
+in the
+(b) error
+bars bars
+for B3.
+Figure
+(a) SoH
+The SoH
+vs.cycle
+the cycle
+number
+inB1,
+theB2,
+B1,and
+B2, B3
+andbatteries;
+B3 batteries;
+(b) error
+for B3.
+
+As aIndirect
+consequence,
+the B3tocell
+damage
+fast, after
+cycling
+the second
+step, in order
+evaluate
+andoccurred
+comparevery
+the stability
+of ~25
+the B1,
+B2, and
+steps;
+that
+cell reversal
+had causedefficiency
+an electrical
+Within
+this
+B3thus,
+cells,we
+weassumed
+performed
+anthe
+analysis
+of the coulombic
+(CE)short.
+[67]. This
+parameter
+fast-cycling
+process,
+is near
+to theduring
+maximum
+permissible
+tolerance,
+can be defined
+as the
+the stress
+ratio ofsuﬀered
+the charge
+delivered
+the discharge,
+Qdischarge
+, to that
+leading
+to the
+fast the
+degradation
+the: electrode’s elasticity. These results demonstrate that
+stored
+during
+charge, Qof
+charge
+by increasing the Icharge from 1C to 1.5C (with a 2C discharge rate), the battery lifetime is
+dis
+reduced by ~50%, while in the case CE
+of =
+fastQcharge/discharge
+rates of 2C, the lifetime (3)
+× 100 [%]
+Qcha
+
+while the accuracy of the CE determination can be affected by the precision in the Q
+measurement. The charge delivered or stored during the discharge/charge at a constant
+current is thus defined by the following [68]:
+Qdis/cha = I × ∆t4 [Ah]
+
+(4)
+
+where I represents the discharge/charge current, and ∆t is the time interval during discharge/charge.
+
+is thus deﬁned by the following [68]:
+(4)
+
+where I represents the discharge/charge current, and Δt is the time interval during dis9 of 19
+charge/charge.
+Therefore, we used the CE in order to quantify the capacity of the batteries to restitute
+we energy
+used thestored
+CE induring
+order tothe
+quantify
+capacitythe
+of the
+during Therefore,
+discharge the
+charge.the
+However,
+CE batteries
+can only to
+berestitute
+comduring
+discharge
+theoccurs
+energyﬁrst
+stored
+charge. In
+However,
+can only
+puted
+when
+the charge
+and during
+then thethe
+discharge.
+Figure 5,the
+weCE
+illustrate
+the be
+computed
+when the
+occurs
+firstthe
+andcurve
+then shape
+the discharge.
+Figure
+5, we
+coulombic
+eﬃciency
+of charge
+our cells
+through
+of the B1In
+cell,
+which
+canillustrate
+be dithe correlated
+coulombic with
+efficiency
+our cells
+rectly
+B1 in of
+Figure
+4. through the curve shape of the B1 cell, which can be
+directly correlated with B1 in Figure 4.
+
+Efficiency [%]
+
+Batteries 2025, 11, 65
+
+Q dis/cha = I × ∆t 4 [Ah]
+
+115
+110
+105
+100
+95
+90
+85
+80
+
+B1
+B2
+B3
+
+0
+
+30
+
+60
+
+90 120 150 180 210
+
+Cycle number
+Figure 5. The coulombic efficiency of the LIB cells.
+
+Figure 5.AThe
+coulombic
+eﬃciency
+of theinLIB
+cells.
+similar
+smooth
+decrease
+efficiency
+is observed for B1 in the longest lasting
+
+cycling, while for B2 and B3, a much more dispersed behavior can be noticed. Again, this
+is in agreement with the SoH analysis, in which the smoothness of B2 and B3 is not as
+pronounced as for B1. By increasing the charge rate and using the already fast discharge
+rate, the LIB efficiency vs. cycle number, as plotted in Figure 5, highlights how the energy
+storage capability of B1, B2, and B3 decays, even after a few cycling steps. If we obtain a
+coulombic efficiency of ~97% for B1, the range increase for B2 is between 93% and 113%,
+while for B3, the radius increases by between 88% to 112%.
+To further correlate the behavior of the Li-ion batteries under fast-charging and fastdischarging conditions, impedance traces were calculated, as shown in Figure 6. We can see
+that impedance is charging-rate dependent. As the charging rate goes up, the impedance
+curve of the battery gradually increases, although the minimum impedance value always
+falls at around 3000 Hz, unconstrained by the charge or discharge rate. Each charge rate
+determines an increase of one order of magnitude in the cell impedance. A charging rate of
+2C determines an obvious impedance growth rate of up to 23%.
+3.2. Q–Q0 Total Charge Analysis
+We performed a total charge analysis, in which the Q–Q0 parameter can be regarded
+as the total charge exchanged since the beginning of the experiment, representing the ratio
+between the energy stored and the energy dissipated per cycle, or as a product of the
+electric current flowing throughout the battery and the time duration. Our goal was to
+identify a reliable method able to predict the aging status of lithium-ion cells based on
+the charge/discharge rates, thus greatly decreasing the number of elements to be studied
+(for example, Nyquist plots within their Randle equivalent circuit elements). In order to
+compare and/or correlate the cells’ tendencies as an indication of the behavior of the cell
+under cycling conditions, we used the data results after finishing the aging procedure.
+As a setup protocol, a small sinusoidal signal was applied around a DC potential in the
+frequency range of 0.2–200 Hz, while the amplitude of the voltage signal was set to 3 mV.
+
+Batteries 2025, 11, 65
+
+age capability of B1, B2, and B3 decays, even after a few cycling steps. If we obtain a coulombic eﬃciency of ~97% for B1, the range increase for B2 is between 93% and 113%, while
+for B3, the radius increases by between 88% to 112%.
+of 19
+To further correlate the behavior of the Li-ion batteries under fast-charging 10
+and
+fastdischarging conditions, impedance traces were calculated, as shown in Figure 6. We can
+see that impedance is charging-rate dependent. As the charging rate goes up, the impedThus, we have taken into account that the magnitude of the net charge on the plate will
+ance curve of the battery gradually increases, although the minimum impedance value
+increase with time, following the equation below [69]:
+always falls at around 3000 Hz, unconstrained by the charge or discharge rate. Each
+
+
+t
+charge rate determines an increase
+order
+in the cell impedance.
+[Ahmagnitude
+]
+(5) A
+Q =ofQ0one
+· 1−
+e τ of
+charging rate of 2C determines an obvious impedance growth rate of up to 23%.
+in which τ is considered the time constant of the circuit.
+
+Figure6.
+6. Impedance
+Impedance versus
+versus frequency.
+Figure
+frequency.
+
+By applying fast charge/discharge rates to B1, B2, and B3, we tried to gain insights
+3.2. Q–Q0 Total Charge Analysis
+into the batteries’ lifespan, in which performance may be significantly affected and safety
+be regarded
+performed
+a total
+charge
+analysis, inabove
+whichthe
+thespecified
+Q–Q0 parameter
+risksWe
+might
+arise from
+charging
+or discharging
+voltage. Incan
+Figure
+7, we
+as
+the total
+charge
+exchanged
+since
+beginning of the experiment, representing the ratio
+show
+the total
+charge
+results for
+ourthe
+cells.
+between
+energy
+stored
+andwe
+thecan
+energy
+dissipated
+per cycle,
+orB1ascell
+a product
+of the
+If wethe
+look
+at Figure
+7—top,
+observe
+a smooth curve
+for the
+type similar
+electric
+current
+ﬂowing
+throughout
+the
+battery
+and
+the
+time
+duration.
+Our
+goal
+was
+to that in the previous section (see Figures 4 and 5), regardless of whether we look at to
+the Qcharge or Qdischarge . This means that at a lower Icharge , the process of lithium-ion
+extraction from one electrode and the intercalation to the other is not affected during the
+aging procedure, thus emphasizing a smooth trend.
+This is not the case for the B2 or, in particular, the B3 cells (see Figure 7—middle and
+bottom), in which the fast-cycling rates emphasize more dispersive curves. It is clear that the
+process of inserting the lithium ions, embedded in the negative electrode during charging,
+into the positive electrode during the discharge, is significantly affected. Specifically, in
+
+Batteries 2025, 11, 65
+
+protocol, a small sinusoidal signal was applied around a DC potential in the frequency
+range of 0.2–200 Hz, while the amplitude of the voltage signal was set to 3 mV. Thus, we
+have taken into account that the magnitude of the net charge on the plate will increase
+11 of 19
+with time, following the equation below [69]:
+t
+
+(5)
+Q = Q 0 ∙ �1 − eτ � [Ah]
+Figure 7, the LIBs with the longer cycle life have a reduced charge/discharge growth
+in which
+is considered
+the time constant
+of the
+circuit.When the fluctuations in Qcharge
+during
+theτPEIS
+cycling measurements
+(Figure
+7—top).
+By
+applying
+fast
+charge/discharge
+rates
+to
+B1,
+B2, and7—middle
+B3, we tried
+to bottom),
+gain insights
+and Qdischarge become more and more pronounced (Figure
+and
+the
+into charge
+the batteries’
+lifespan,
+which
+performance
+may
+be signiﬁcantly
+aﬀected and
+safety
+total
+balance
+clearly in
+affects
+the
+LIB efficiency,
+which
+is in full agreement
+with
+the
+risks
+might
+arise
+from
+charging
+or
+discharging
+above
+the
+speciﬁed
+voltage.
+In
+Figure
+results described in Section 3.1. Because the LIBs have a high voltage per cell, with tighter7,
+we show
+the total and
+charge
+forofour
+cells. or float charge at full charge, they cannot
+voltage
+tolerances
+theresults
+absence
+a trickle
+If
+we
+look
+at
+Figure
+7—top,
+we
+can
+observe
+a smooth
+forto
+the
+cellB3
+type
+easily accept the overcharge. By increasing the charge
+rate curve
+from B1
+B2B1
+and
+andsimilar
+fully
+to that inthe
+thecells,
+previous
+section (see
+Figures
+4 and
+5), regardless
+of whether
+we look
+the
+charging
+an additional
+high
+voltage
+is added
+that stresses
+the battery
+moreatand
+charge
+or
+Q
+discharge
+.
+This
+means
+that
+at
+a
+lower
+I
+charge
+,
+the
+process
+of
+lithium-ion
+extraction
+Q
+more. This can be translated into a shorter lifetime, as was shown already here. In any case,
+from oneaelectrode
+and the
+intercalation
+to the other
+is saturation
+not aﬀected
+during
+the agingwill
+prochoosing
+lower voltage
+threshold,
+or eliminating
+the
+charge
+altogether,
+cedure,
+thus
+emphasizing
+a
+smooth
+trend.
+clearly prolong the battery aging process.
+
+B1
+
+B2
+Batteries 2025, 11, x FOR PEER REVIEW
+
+12 of 20
+
+B3
+
+Figure7.7.Total
+Totalcharge
+chargebehavior
+behaviorduring
+duringthe
+thefirst
+ﬁrst
+PEIS
+analysis:
+(top),
+(middle),
+and
+(botFigure
+PEIS
+analysis:
+B1B1
+(top),
+B2B2
+(middle),
+and
+B3 B3
+(bottom).
+tom).
+
+This is not the case for the B2 or, in particular, the B3 cells (see Figure 7—middle and
+bottom), in which the fast-cycling rates emphasize more dispersive curves. It is clear that
+
+Batteries 2025, 11, 65
+
+12 of 19
+
+3.3. Energy Consumption in the Charged and Discharged State
+Energy consumption in the charged and discharged state gives a good indication of
+the battery lifecycle, being fundamentally related to how the battery stores and releases
+electrical energy. In particular, in the charged state (we employed three different charge
+rates), the LIB has electrical energy stored in the form of chemical potential energy. When
+our cells are charged, lithium ions move from the positive electrode (cathode) to the
+negative electrode (anode) through the electrolyte. This process is accompanied by the flow
+of electrons through an external circuit, which allows energy to be supplied to devices like
+smartphones, electric vehicles, and other portable devices, as we mentioned in Section 3.1.
+The energy consumed during charging can be expressed as follows [70]:
+E = V·I·t [Wh]
+
+(6)
+
+where E represents the energy in watt-hours (Wh), V is the voltage, I is the current, and t is
+the charging time. It should be mentioned that the efficiency of charging is not 100%, and
+losses occur in the form of heat due to internal resistance, meaning that the total energy
+consumed from the power source will be higher than the energy stored in the battery.
+Regarding the discharge state, the battery supplies energy by allowing lithium ions to move
+from the anode back to the cathode. This flow of ions drives the movement of electrons
+through the external circuit, which powers the connected devices. The discharge process
+converts chemical energy back into electrical energy, where the energy E is released by the
+LIB and consumed by the device. Also in this case, we have energy loss due to internal
+resistance, and the efficiency of energy release is not perfect. This loss results in heat
+generation, reducing the effective energy output. As such, in both processes, inefficiencies
+appear due to internal resistance and other factors, but the overall energy consumption
+will be higher than the energy that is effectively stored or used due to these losses.
+In Figure 8, the resultant values (left) are shown together with the dE—the difference
+between the charge and the discharge states (right). The shifting of the curves that appears
+now in Figure 8 for B1, B2, and B3 (a), in comparison with those illustrated in Figure 7,
+comes from the V factor, but the trend is very similar. It is known that LIBs operate
+within a specific voltage range (typically from around 4.2 V when fully charged to around
+3.0 V when discharged). As the voltage decreases during discharge, the amount of energy
+available from the battery decreases, even if the current is constant.
+Moreover, the continuous high discharge rates rapidly deplete the battery capacity,
+reducing the energy storage capability and long-term performance. The battery efficiency
+decreases dramatically when losses appear because the internal resistance causes more
+and more heat to be produced during both fast charging and discharging. The difference,
+dE, between the energy in charged mode versus discharged mode has been captured in
+Figure 8b—B1, B2, and B3. For the 1C charge rate, the dE is quasi-constant around the
+value of 3 Wh throughout the interval, whereas for the 1.5C and 2C charging values, the dE
+increases above 3.5 Wh and has a descending irregular trend. By fast discharging, up to
+30% of the energy is lost, as seen in Figure 8b—B3. In other words, discharging the battery
+too much (deep discharge) will clearly result in a reduced voltage, lowering the amount of
+usable energy.
+
+from the V factor, but the trend is very similar. It is known that LIBs operate within a specific
+voltage range (typically from around 4.2 V when fully charged to around 3.0V when discharged). As the voltage decreases during discharge, the amount of energy available13from
+of 19
+the battery decreases, even if the current is constant.
+
+Batteries 2025, 11, 65
+
+B1
+
+B1
+
+B2
+
+B2
+
+B3
+
+B3
+
+(a)
+
+(b)
+
+Figure
+Energy
+consumption
+in the
+and discharged
+state ofstate
+B1, B2,
+dE—
+Figure 8.8.(a) (a)
+Energy
+consumption
+incharged
+the charged
+and discharged
+of and
+B1, B3;
+B2, (b)
+and
+B3;
+diﬀerence
+between between
+the charge
+the discharge
+states of states
+B1, B2,ofand
+(b) dE—difference
+theand
+charge
+and the discharge
+B1, B3.
+B2, and B3.
+
+3.4. Spline Interpolation
+Spline interpolation is a good choice for non-linear data point interpolation. Smoothing
+spline interpolation uses a special type of polynomial called a spline. The smoothing spline
+fs minimizes the following expression [71]:
+f s = ps ·∑
+
+n
+|y − f ( xi )|2 +
+i =1 i
+
+1 − ps
+
+Z
+
+d2 f
+dt2
+
+2
+
+!
+dt
+
+(7)
+
+where ps is the smoothing parameter, n is the number of x entries, and y is the vector of data
+values. The weights were considered to be 1. The sum of the first member measures the
+error, and the integral determines the roughness of the function. In order to evaluate the
+goodness of fit, one indicator has been determined, and that is the root mean squared error
+(RMSE). The RMSE indicator evaluates the capability of the model to predict the target
+
+Batteries 2025, 11, 65
+
+14 of 19
+
+value. Basically, it measures the difference between the values predicted by the model and
+the real values [72]:
+s
+RMSE =
+
+∑in=1 (yi − f ( xi ))
+n
+
+2
+
+(8)
+
+The rate of change of energy decay in each case was monitored by determining the
+slope in both the charged and discharged mode. A negative slope defines the decrease in
+energy as the number of cycles increases. As such, in Table 2, the calculated spline RMSE
+fit parameters for B1, B2, and B3 are shown.
+Batteries 2025, 11, x FOR PEER REVIEW
+15 of 20
+In Figure 9, the spline interpolation data for both Echarge and Edischarge are shown,
+emphasizing the resultant values of the B1, B2, and B3 curves.
+
+B1
+
+B2
+
+B3
+
+(a)
+
+(b)
+
+Figure 9. Spline interpolation of the B1, B2, and B3 energy curves: (a) in charge mode; (b) in disFigure 9. Spline interpolation of the B1, B2, and B3 energy curves: (a) in charge mode; (b) in
+charge mode.
+discharge mode.
+
+The smoothing parameter, ps, was set to 0.312 to achieve the ﬁdelity of the data and
+the smoothness of the curve. It can be noticed that the model ﬁt data accurately. The RMSE
+values stayed below 0.3, a slightly better ﬁt being obtained for the discharged modes. As
+the current rate increases the slope decreases. The slope is smaller in the charged mode
+
+Batteries 2025, 11, 65
+
+15 of 19
+
+Table 2. Spline RMSE fit parameters.
+
+RMSE
+
+B1
+
+B2
+
+B3
+
+Charged
+
+0.242
+
+0.288
+
+0.121
+
+Discharged
+
+0.180
+
+0.184
+
+0.107
+
+The smoothing parameter, ps , was set to 0.312 to achieve the fidelity of the data and
+the smoothness of the curve. It can be noticed that the model fit data accurately. The RMSE
+values stayed below 0.3, a slightly better fit being obtained for the discharged modes. As
+the current rate increases the slope decreases. The slope is smaller in the charged mode for
+all cases, as it starts from the maximum energy and decreases toward zero at the end of
+cycling. In B3, the slope decreased by 37% compared with the slope determined for B1.
+In Table 3, we present the battery performance indicators in order to provide a clear
+understanding of their relative performances.
+Table 3. LIB performance indicators.
+
+Battery
+
+B1
+
+B2
+
+B3
+
+Life cycles
+
+200
+
+95
+
+30
+
+SOH [%]
+
+14
+
+37.4
+
+81.6
+
+Min. impedance [%]
+
+0.07
+
+0.08
+
+0.09
+
+Rate of energy decrease
+charge/discharge
+
+−6.73/−4.3
+
+−8.7/−6.65
+
+−18.2/−12.5
+
+4. Conclusions
+By employing EIS methodology, the cycle life performance and the influence of the
+C-rate on the charge/discharge processes were investigated when Icharge evolved from
+1C, to 1.5C and 2C and Idischarge was set to 2C in all cases. First, we aimed to assess and
+monitor the batteries’ SoH at fast charge/discharge rates, as this parameter is a highly
+demanded attribute for advanced battery management systems (BMS). Capacity testing
+of the B1, B2, and B3 batteries, shown in terms of the SoH vs. the cycle number, was
+performed, emphasizing a different decay curve behavior, from a smooth fall in the case
+of the B1 cell type to a more disorderly disposition for B2, and even more so for the
+B3 type. Within the Icharge increment, we clearly observed a decrease in their lifetime
+performance and a fast-aging process; for B1, around 200 cycles were required until the
+battery was exhausted, while for B2, approximately half the number of cycles (around 90)
+were necessary, thus reducing the battery exhausting period by more than half. When
+fast charging/fast discharging 2C was applied, the B3 cell degradation occurred very
+rapidly, after ~30 cycling steps, assuming that the suffered stress was near to the maximum
+permissible tolerance, leading to fast degradation. As a consequence, when increasing the
+Icharge from 1C to 1.5C, both with a 2C discharge rate, the battery lifetime was reduced
+by ~50%, while in the case of fast charge/discharge rates of 2C, the lifetime performance
+decreased by almost ~80%. These results show how fast capacity loss accelerates when
+the charge rates increase, offering concrete data on the lifespan of our LIBs. The SoH
+determination, as a critical parameter of stability, provides a pre-warning of a failing LIB,
+enabling maintenance/replacement before damage actually occurs.
+Continuing with the SoH interpretation, we monitored the coulombic efficiency (CE)
+in order to express the capacity of the batteries to restitute during discharge the energy
+stored during the charge. This is in full agreement with the LIBs’ efficiency vs. cycle number
+behavior we observed, highlighting the different decay rates of the energy storage capability
+
+Batteries 2025, 11, 65
+
+16 of 19
+
+in B1, B2, and B3. A coulombic efficiency of ~97% was obtained for B1, while for B2 and B3,
+the range increased by between 93% and 113% and 88% to 112%, respectively. It seems that
+as the battery impedance reaches a certain level, the capacity significantly decreases until it
+cannot provide the required charge. Impedance traces were also employed, showing their
+dependency in terms of charging rates. To this end, for the three charge rates considered,
+the end of battery life was quantified as an impedance of 0.07, 0.08, and 0.09 Ohm and an
+SoH of 14%, 37.4%, and 80%, respectively.
+Second, we performed a total charge Q–Q0 analysis. A good agreement with the SoH
+data was achieved, in which a similar smooth curve for B1 was obtained and more dispersive fluctuations for B2 and B3 cells were seen. During the PEIS cycling measurements, a
+reduced charge/discharge growth was related to a longer cycle life, while the fluctuations
+in the total charge balance clearly affected the B2 and B3 efficiency. By increasing the charge
+rates and charging the cells at 100% SoC, an additional high voltage was added that affected
+the cells more and more. As a direct conclusion of this result, choosing a lower voltage
+threshold, or eliminating the saturation charge altogether, will definitely extend the LIBs’
+aging process.
+Finally, energy consumption estimation was performed to gain insights into how
+the batteries store and release electrical energy depending on their charge/discharge
+rates. Through Icharge increments, the LIBs’ efficiency decreased dramatically when losses
+appeared because the internal resistance caused more and more heat to be produced during
+both fast charging and discharging. By performing a dE analysis, which represents the
+difference between the energy in charged and discharged mode, we observed that for B1,
+this element is quasi-constant around the value of 3 Wh throughout the interval, whereas
+for the B2 and B3 cells, the dE increased above 3.5 Wh and had a descending irregular trend.
+Moreover, by fast discharging, up to 30% of the energy was lost, indicating that discharging
+the battery too much will clearly result in a reduced voltage, which decreases the amount
+of usable energy. The continuous fast discharge applied to our LIBs rapidly depleted cell
+capacity, thus reducing their energy storage capability and long-term performance. The
+rate of energy decay is directly proportional to the charge rates, and the spline interpolation
+was verified through RMSE fit parameters.
+Author Contributions: O.B.: methodology, validation, formal analysis, investigation, resources,
+data curation, and writing—original draft preparation. A.C.: conceptualization, investigation,
+writing—original draft preparation, writing—review and editing, visualization, supervision, project
+administration, and funding acquisition. All authors have read and agreed to the published version
+of the manuscript.
+Funding: This study was financially supported by the MCID Core Program within the National Plan
+for Research Development and Innovation 2022–2027 project PN 23 24 01 04.
+Data Availability Statement: Data are contained within the article.
+Conflicts of Interest: The authors declare no conflicts of interest.
+
+References
+1.
+2.
+3.
+4.
+
+Manthiram, A. A reflection on lithium-ion battery cathode chemistry. Nat. Commun. 2020, 11, 1550. [CrossRef] [PubMed]
+Stallard, J.C.; Wheatcroft, L.; Booth, S.G.; Boston, R.; Corr, S.A.; De Volder, M.F.; Inkson, B.J.; Fleck, N.A. Mechanical properties of
+cathode materials for lithium-ion batteries. Joule 2022, 6, 984–1007. [CrossRef]
+Bridgewater, G.; Capener, M.J.; Brandon, J.; Lain, M.J.; Copley, M.; Kendrick, E. A comparison of Lithium-Ion cell performance
+across three different cell formats. Batteries 2021, 7, 38. [CrossRef]
+Zhao, S.; Guo, Z.; Yan, K.; Wan, S.; He, F.; Sun, B.; Wang, G. Towards high-energy-density lithium-ion batteries: Strategies for
+developing high-capacity lithium-rich cathode materials. Energy Storage Mater. 2021, 34, 716–734. [CrossRef]
+
+Batteries 2025, 11, 65
+
+5.
+6.
+7.
+
+8.
+9.
+10.
+11.
+12.
+13.
+14.
+15.
+16.
+
+17.
+18.
+
+19.
+
+20.
+
+21.
+22.
+23.
+24.
+25.
+26.
+27.
+28.
+29.
+
+17 of 19
+
+Zhang, X.; Han, Y.; Zhang, W. A Review of Factors Affecting the Lifespan of Lithium-ion Battery and its Health Estimation
+Methods. Trans. Electr. Electron. Mater. 2021, 22, 567–574. [CrossRef]
+Peng, X.; Lin, Y.; Wang, Y.; Li, Y.; Zhao, T. A lightweight localized high-concentration ether electrolyte for high-voltage Li-Ion and
+Li-metal batteries. Nano Energy 2022, 96, 107102. [CrossRef]
+Liu, G.; Wan, W.; Nie, Q.; Zhang, C.; Chen, X.; Lin, W.; Wei, X.; Huang, Y.; Li, J.; Wang, C. Controllable long-term lithium
+replenishment for enhancing energy density and cycle life of lithium-ion batteries. Energy Environ. Sci. 2024, 17, 1163–1174.
+[CrossRef]
+Xiao, S.; Huang, L.; Lv, W.; He, Y.-B. A highly efficient ion and electron conductive interlayer to achieve low self-discharge of
+lithium-sulfur batteries. ACS Appl. Mater. Interfaces 2022, 14, 1783–1790. [CrossRef]
+He, J.; Meng, J.; Huang, Y. Challenges and recent progress in fast-charging lithium-ion battery materials. J. Power Sources 2023,
+570, 232965. [CrossRef]
+Rodrigues, M.-T.F.; Babu, G.; Gullapalli, H.; Kalaga, K.; Sayed, F.N.; Kato, K.; Joyner, J.; Ajayan, P.M. A materials perspective on
+Li-ion batteries at extreme temperatures. Nat. Energy 2017, 2, 17108. [CrossRef]
+Yudhistira, R.; Khatiwada, D.; Sanchez, F. A comparative life cycle assessment of lithium-ion and lead-acid batteries for grid
+energy storage. J. Clean. Prod. 2022, 358, 131999. [CrossRef]
+Ayeng’O, S.P.; Schirmer, T.; Kairies, K.-P.; Axelsen, H.; Sauer, D.U. Comparison of off-grid power supply systems using lead-acid
+and lithium-ion batteries. Sol. Energy 2018, 162, 140–152. [CrossRef]
+Hu, J.; Zhang, C.; Wang, Y.; Zhang, P.; Zhang, L.; Wang, J.; Lao, L. Multisource information fusion based parameterization study
+of lithium-ion battery electrolyte leakage. J. Energy Storage 2023, 73, 109017. [CrossRef]
+Tran, M.-K.; DaCosta, A.; Mevawalla, A.; Panchal, S.; Fowler, M. Comparative study of equivalent circuit model performance in
+four common lithium-ion batteries: LFP, NMC, LMO, NCA. Batteries 2021, 7, 51. [CrossRef]
+Wu, Q.; Zhang, B.; Lu, Y. Progress and perspective of high-voltage lithium cobalt oxide in lithium-ion batteries. J. Energy Chem.
+2022, 74, 283–308. [CrossRef]
+Baazizi, M.; Karbak, M.; Aqil, M.; Sayah, S.; Dahbi, M.; Ghamouss, F. High-valence surface modified LMO cathode materials
+for lithium-ion batteries: Diffusion kinetics and operando thermal stability investigation. ACS Appl. Mater. Interfaces 2023, 15,
+40385–40396. [CrossRef]
+Li, T.; Yuan, X.-Z.; Zhang, L.; Song, D.; Shi, K.; Bock, C. Degradation mechanisms and mitigation strategies of nickel-rich
+NMC-based lithium-ion batteries. Electrochem. Energy Rev. 2020, 3, 43–80. [CrossRef]
+Zeng, C.; Zheng, R.; Fan, F.; Wang, X.; Tian, G.; Liu, S.; Liu, P.; Wang, C.; Wang, S.; Shu, C. Phase compatible surface engineering
+to boost the cycling stability of single-crystalline Ni-rich cathode for high energy density lithium-ion batteries. Energy Storage
+Mater. 2024, 72, 103788. [CrossRef]
+Zeng, C.; Fan, F.; Zheng, R.; Wang, X.; Tian, G.; Liu, S.; Liu, P.; Wang, C.; Wang, S.; Shu, C. Structure and Charge Regulation
+Strategy Enabling Superior Cycling Stability of Ni-Rich Cathode Materials. ACS Appl. Mater. Interfaces 2024, 16, 11377–11388.
+[CrossRef]
+Fan, F.; Zheng, R.; Zeng, T.; Xu, H.; Wen, X.; Wang, X.; Tian, G.; Wang, S.; Zeng, C.; Xiang, W.; et al. Cation-ordered Ni-rich
+positive electrode material with superior chemical and structural stability enabled by atomic substitution for lithium-ion batteries.
+Chem. Eng. J. 2023, 477, 147181. [CrossRef]
+Yan, Y.; Shu, C.; Zheng, R.; Li, M.; Ran, Z.; He, M.; Hu, A.; Zeng, T.; Xu, H.; Zeng, Y. Modulating Sand’s time by ion-transportenhancement toward dendrite-free lithium metal anode. Nano Res. 2022, 15, 3150–3160. [CrossRef]
+Li, W.; Wang, H.; Zhang, Y.; Ouyang, M. Flammability characteristics of the battery vent gas: A case of NCA and LFP lithium-ion
+batteries during external heating abuse. J. Energy Storage 2019, 24, 100775. [CrossRef]
+Julien, C.M.; Mauger, A. Fabrication of Li4Ti5O12 (LTO) as Anode Material for Li-Ion Batteries. Micromachines 2024, 15, 310.
+[CrossRef]
+Liu, J.; Zhou, Y.; Yan, T.; Gao, X.-P. Perspectives of high-performance Li-S battery electrolytes. Adv. Funct. Mater. 2024, 34, 2309625.
+[CrossRef]
+Xia, F.; Wang, K.; Chen, J. State of health and remaining useful life prediction of lithium-ion batteries based on a disturbance-free
+incremental capacity and differential voltage analysis method. J. Energy Storage 2023, 64, 107161. [CrossRef]
+Lin, Q.; Wang, J.; Xiong, R.; Shen, W.; He, H. Towards a smarter battery management system: A critical review on optimal
+charging methods of lithium ion batteries. Energy 2019, 183, 220–234. [CrossRef]
+Li, Y.; Guo, H.; Qi, F.; Guo, Z.; Li, M. Comparative Study of the Influence of Open Circuit Voltage Tests on State of Charge Online
+Estimation for Lithium-Ion Batteries. IEEE Access 2020, 8, 17535–17547. [CrossRef]
+Zhu, J.; Wang, Y.; Huang, Y.; Gopaluni, R.B.; Cao, Y.; Heere, M.; Muhlbauer, M.J.; Mereacre, L.; Dai, H.; Liu, X.; et al. Data-driven
+capacity estimation of commercial lithium-ion batteries from voltage relaxation. Nat. Commun. 2022, 13, 2261. [CrossRef]
+Choi, W.; Shin, H.-C.; Kim, J.M.; Choi, J.-Y.; Yoon, W.-S. Modeling and Applications of Electrochemical Impedance Spectroscopy
+(EIS) for Lithium-ion Batteries. J. Electrochem. Sci. Technol. 2020, 11, 1–13. [CrossRef]
+
+Batteries 2025, 11, 65
+
+30.
+31.
+32.
+33.
+34.
+35.
+36.
+37.
+
+38.
+39.
+40.
+41.
+
+42.
+43.
+44.
+
+45.
+46.
+47.
+48.
+49.
+50.
+
+51.
+52.
+
+53.
+
+18 of 19
+
+Takeno, M.; Fukutsuka, T.; Miyazaki, K.; Abe, T. Investigation of electronic resistance in lithium-ion batteries by AC impedance
+spectroscopy. J. Electrochem. Soc. 2017, 164, A3862–A3867. [CrossRef]
+Huang, H.; Meng, J.; Wang, Y.; Feng, F.; Cai, L.; Peng, J.; Liu, T. A comprehensively optimized lithium-ion battery state-of-health
+estimator based on Local Coulomb Counting Curve. Appl. Energy 2022, 322, 119469. [CrossRef]
+Mayilvahanan, K.S.; Takeuchi, K.J.; Takeuchi, E.S.; Marschilok, A.C.; West, A.C. Supervised learning of synthetic Big Data for
+Li-ion battery degradation diagnosis. Batter. Supercaps 2022, 5, e202100166. [CrossRef]
+Zhang, Y.; Li, Y.-F. Prognostics and health management of Lithium-ion battery using deep learning methods: A review. Renew.
+Sustain. Energy Rev. 2022, 161, 112282. [CrossRef]
+Hossain, M.; Haque, M.; Arif, M. Kalman filtering techniques for the online model parameters and state of charge estimation of
+the Li-ion batteries: A comparative analysis. J. Energy Storage 2022, 51, 104174. [CrossRef]
+Motapon, S.N.; Lachance, E.; Dessaint, L.-A.; Al-Haddad, K. A Generic Cycle Life Model for Lithium-Ion Batteries Based on
+Fatigue Theory and Equivalent Cycle Counting. IEEE Open J. Ind. Electron. Soc. 2020, 1, 207–217. [CrossRef]
+Carnovale, A.; Li, X. A modeling and experimental study of capacity fade for lithium-ion batteries. Energy AI 2020, 2, 100032.
+[CrossRef]
+Vedel, P.; Hubka, L. Linear regression model of Li-ion battery capacity losing rate based on equivalent circuit model parameters
+and operation modes. In Proceedings of the 2022 International Conference on Smart Systems and Technologies (SST), Osijek,
+Croatia, 19–21 October 2022; pp. 243–248.
+Wang, G.; Lyu, Z.; Li, X. An optimized random forest regression model for Li-ion battery progonostics and health management.
+Batteries 2023, 9, 332. [CrossRef]
+Yao, P.; Liu, X. Electrochemical and thermal analysis of lithium-ion batteries based on variable solid-state diffusion coefficient
+concept. World Electr. Veh. J. 2024, 15, 416. [CrossRef]
+Dong, Y.; Chen, K.; Zhang, G.; Li, R. Joint estimation of state of charge and state of health of lithium-ion batteries based on
+stacking machine learning algorithm. World Electr. Veh. J. 2024, 15, 75. [CrossRef]
+Tran, M.-K.; Mathew, M.; Janhunen, S.; Panchal, S.; Raahemifar, K.; Fraser, R.; Fowler, M. A comprehensive equivalent circuit
+model for lithium-ion batteries, incorporating the effects of state of health, state of charge, and temperature on model parameters.
+J. Energy Storage 2021, 43, 103252. [CrossRef]
+Ding, X.; Zhang, D.; Cheng, J.; Wang, B.; Luk, P.C.K. An improved Thevenin model of lithium-ion battery with high accuracy for
+electric vehicles. Appl. Energy 2019, 254, 113615. [CrossRef]
+Simic, M.; Stavrakis, A.K.; Jeoti, V.; Stojanovic, G.M. A Randles Circuit Parameter Estimation of Li-Ion Batteries With Embedded
+Hardware. IEEE Trans. Instrum. Meas. 2022, 71, 1004312. [CrossRef]
+Hassanaly, M.; Weddle, P.J.; King, R.N.; De, S.; Doostan, A.; Randall, C.R.; Dufek, E.J.; Colclasure, A.M.; Smith, K. PINN surrogate
+of Li-ion battery models for parameter inference, Part II: Regularization and application of the pseudo-2D model. J. Energy Storage
+2024, 98, 113104. [CrossRef]
+Máthé, L.; Grosu, I. Transport Through a Quantum Dot with Electron-Phonon Interaction. Mater. Today Proc. 2018, 5, 15878–15887.
+[CrossRef]
+Máthé, L.; Grosu, I. Nonequilibrium Kondo effect in a graphene-coupled quantum dot in the presence of a magnetic field. Beilstein
+J. Nanotechnol. 2020, 11, 225–239. [CrossRef]
+Mustafa, H.; Bourelly, C.; Vitelli, M.; Milano, F.; Molinara, M.; Ferrigno, L. SoC estimation on Li-ion batteries: A new EIS-based
+dataset for data-driven applications. Data Brief 2024, 57, 110947. [CrossRef]
+Zhang, S.; Yuan, W.; Wang, Y.; Cheng, S.; Wang, J. Early-stage lifetime prediction for lithium-ion batteries: Linear regressionensemble learning hybrid model based on impedance spectroscopy geometry. J. Power Sources 2024, 617, 235153. [CrossRef]
+Nunes, H.; Martinho, J.; Fermeiro, J.; Pombo, J.; Mariano, S.; Calado, M.D.R. Impedance Analysis and Parameter Estimation of
+Lithium-Ion Batteries Using the EIS Technique. IEEE Trans. Ind. Appl. 2024, 60, 5048–5060. [CrossRef]
+Zhu, H.; Evans, T.A.P.; Weddle, P.J.; Colclasure, A.M.; Chen, B.-R.; Tanim, T.R.; Vincent, T.L.; Kee, R.J. Extracting and Interpreting
+Electrochemical Impedance Spectra (EIS) from Physics-Based Models of Lithium-Ion Batteries. J. Electrochem. Soc. 2024, 171,
+050512. [CrossRef]
+Jones, P.K.; Stimming, U.; Lee, A.A. Impedance-based forecasting of lithium-ion battery performance amid uneven usage. Nat.
+Commun. 2022, 13, 4806. [CrossRef]
+Li, C.; Yang, L.; Li, Q.; Zhang, Q.; Zhou, Z.; Meng, Y.; Zhao, X.; Wang, L.; Zhang, S.; Li, Y.; et al. SOH estimation method for
+lithium-ion batteries based on an improved equivalent circuit model via electrochemical impedance spectroscopy. J. Energy
+Storage 2024, 86, 111167. [CrossRef]
+Júnior, C.A.R.; Sanseverino, E.R.; Gallo, P.; Amaral, M.M.; Koch, D.; Kotak, Y.; Diel, S.; Walter, G.; Schweiger, H.-G.; Zanin, H.
+Unraveling the degradation mechanisms of lithium-ion batteries. Energies 2024, 17, 3372. Available online: https://opus4.kobv.
+de/opus4-haw/frontdoor/index/index/docId/4908 (accessed on 1 December 2024). [CrossRef]
+
+Batteries 2025, 11, 65
+
+54.
+
+55.
+56.
+57.
+58.
+
+59.
+60.
+61.
+62.
+63.
+64.
+65.
+66.
+67.
+68.
+69.
+70.
+71.
+72.
+
+19 of 19
+
+Meddings, N.; Heinrich, M.; Overney, F.; Lee, J.-S.; Ruiz, V.; Napolitano, E.; Seitz, S.; Hinds, G.; Raccichini, R.; Gaberšček, M.; et al.
+Application of electrochemical impedance spectroscopy to commercial Li-ion cells: A review. J. Power Sources 2020, 480, 228742.
+[CrossRef]
+Zhai, N.S.; Li, M.W.; Wang, W.L.; Zhang, D.L.; Xu, D.G. The application of the EIS on Li-ion batteries measurements. J. Phys. Conf.
+Ser. 2006, 48, 1157–1161. [CrossRef]
+Mingant, R.; Bernard, J.; Moynot, V.S.; Delaille, A.; Mailley, S.; Hognon, J.-L.; Huet, F. EIS Measurements for Determining the SoC
+and SoH of Li-Ion Batteries. ECS Trans. 2011, 33, 41–53. [CrossRef]
+Wildfeuer, L.; Gieler, P.; Karger, A. Combining the Distribution of Relaxation Times from EIS and Time-Domain Data for
+Parameterizing Equivalent Circuit Models of Lithium-Ion Batteries. Batteries 2021, 7, 52. [CrossRef]
+Xia, Z.; Abu Qahouq, J.A. Evaluation of Parameter Variations of Equivalent Circuit Model of Lithium-ion Battery under Different
+SOH Conditions. In Proceedings of the 2020 IEEE Energy Conversion Congress and Exposition (ECCE), Detroit, MI, USA, 11–15
+October 2020; pp. 1519–1523.
+Available online: https://www.dnkpower.com/ncr18650b/ (accessed on 3 December 2024).
+Available online: https://imrbatteries.com/products/panasonic-ncr18650b-3350mah-4-87a-battery (accessed on 3 December
+2024).
+Available online: https://radenite.com/product.php?prodid=0791126833886 (accessed on 1 December 2024).
+Available online: https://www.batteryspace.com/prod-specs/ncr18650b.pdf (accessed on 1 December 2024).
+Available online: https://www.biologic.net/products/vsp-potentiostat/ (accessed on 3 December 2024).
+Available online: https://mmrc.caltech.edu/BioLogic%20Echem/ECLab%20Manuals/EC-Lab%20software%20Techniques%
+20and%20Applications%20manual.pdf (accessed on 1 December 2024).
+Li, Y.; Luo, L.; Zhang, C.; Liu, H. State of Health Assessment for Lithium-Ion Batteries Using Incremental Energy Analysis and
+Bidirectional Long Short-Term Memory. World Electr. Veh. J. 2023, 14, 188. [CrossRef]
+Bruj, O.; Calborean, A. EIS ageing prediction of lithium-ion batteries depending on charge rates. Batteries 2024, 10, 247. [CrossRef]
+Liu, Y.; Wu, L. Recent advances of cathode materials for zinc-ion hybrid capacitors. Nano Energy 2023, 109, 108290. [CrossRef]
+Available online: https://www.biologic.net/documents/high-precision-coulometry-hpc-battery-application-note-53/ (accessed
+on 1 December 2024).
+Available online: http://labman.phys.utk.edu/phys222core/modules/m3/RC%20circuits.html (accessed on 1 December 2024).
+Available online: https://www.bbc.co.uk/bitesize/guides/zbf6cqt/revision/1 (accessed on 1 December 2024).
+Available online: https://physics.info/electric-power/summary.shtml (accessed on 1 December 2024).
+Available online:
+https://eng.libretexts.org/Courses/Oxnard_College/Matlab_and_Octave_Programming_for_STEM_
+Applications_(Smith)/10:__Interpolation_and_Curve_Fitting/10.02:_Nonlinear_Interpolation (accessed on 1 December 2024).
+
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.
+
+

@@ -4,12 +4,17 @@
 =============================================================================
 Based on: Narayanan et al., "A Variegated Look at 5G in the Wild" (SIGCOMM 2021)
 
+CRITICAL CORRECTION (verified 2025-02-01):
+- The 1092 mW from Table 2 is TAIL power (DRX period), NOT active transmission!
+- Active transmission power is 2-8 WATTS depending on throughput (Figure 11)
+- We now use a throughput-dependent model: P(T) = P0 + k*T
+
 This is the "secret weapon" - models the HIDDEN battery drain from 5G networks.
 Key insight: 5G radios stay "hot" for 10-20 seconds AFTER data transfer stops.
 
-This explains the "Chatty vs Streaming Paradox":
-- Chatty user (100 small messages): Radio NEVER sleeps → HIGH drain
-- Streaming user (continuous data): Efficient high-throughput mode → LOW drain
+The "Chatty vs Streaming Paradox" is driven by TAIL energy, not active power:
+- Chatty user (100 small messages): Radio NEVER sleeps → HIGH tail drain
+- Streaming user (continuous data): Efficient high-throughput mode → lower energy/bit
 =============================================================================
 """
 
@@ -31,59 +36,113 @@ class RRCState(Enum):
 class NetworkConfig:
     """
     Network power configuration from Narayanan et al. (2021).
-    Table 2: RRC State Power Consumption
+    
+    CORRECTED based on paper re-analysis:
+    - Table 2 shows TAIL power (DRX period after data transfer)
+    - Figure 11 shows ACTIVE power during data transfer (2-8W)
+    
+    Active power model: P(T) = P0 + k*T where T = throughput (Mbps)
     """
     network_type: str = "5G_mmWave"
     
-    # Power values in mW (from Table 2 of the paper)
-    # 4G/LTE
-    power_4g_idle: float = 178.0
-    power_4g_connected: float = 800.0
-    power_4g_tail: float = 400.0
-    tail_duration_4g: float = 10.0  # seconds
+    # ==========================================================================
+    # IDLE POWER (RRC_IDLE state - radio sleeping)
+    # ==========================================================================
+    power_4g_idle: float = 100.0       # ~100 mW typical
+    power_5g_low_idle: float = 150.0   # Slightly higher baseline
+    power_5g_mm_idle: float = 200.0    # mmWave has higher idle
     
-    # 5G Low-Band (Sub-6 GHz)
-    power_5g_low_idle: float = 300.0
-    power_5g_low_connected: float = 450.0  # Average of 260-593
-    power_5g_low_tail: float = 600.0
-    tail_duration_5g_low: float = 12.0  # seconds
+    # ==========================================================================
+    # TAIL POWER (DRX period - FROM TABLE 2 - the 1092 mW value!)
+    # This is the "hidden" drain after data transfer stops
+    # ==========================================================================
+    power_4g_tail: float = 178.0       # Verizon 4G Table 2
+    power_5g_low_tail: float = 400.0   # Average of 249-593 from Table 2
+    power_5g_mm_tail: float = 1092.0   # Verizon mmWave Table 2 - THE KEY NUMBER!
     
-    # 5G mmWave (High-band) - THE BATTERY KILLER
-    power_5g_mm_idle: float = 300.0
-    power_5g_mm_connected: float = 1092.0  # This is the key number!
-    power_5g_mm_tail: float = 600.0
+    # Tail duration (inactivity timer before entering IDLE)
+    tail_duration_4g: float = 10.0     # seconds
+    tail_duration_5g_low: float = 12.0 # seconds
     tail_duration_5g_mm: float = 15.0  # 10-20 seconds
     
+    # ==========================================================================
+    # ACTIVE (CONNECTED) POWER - Throughput-dependent from Figure 11
+    # Model: P(T) = P0 + k * T, clamped to [P_min, P_max]
+    # ==========================================================================
+    # Baseline power P0 (W) - power at zero throughput but radio active
+    power_4g_active_baseline: float = 2000.0      # ~2W baseline (mW)
+    power_5g_low_active_baseline: float = 2500.0  # ~2.5W baseline
+    power_5g_mm_active_baseline: float = 3000.0   # ~3W baseline for mmWave
+    
+    # Slope k (mW per Mbps) - incremental power per Mbps
+    power_4g_active_slope: float = 10.0           # ~10 mW/Mbps
+    power_5g_low_active_slope: float = 8.0        # ~8 mW/Mbps (more efficient)
+    power_5g_mm_active_slope: float = 3.0         # ~3 mW/Mbps (most efficient per bit)
+    
+    # Maximum power (mW)
+    power_4g_active_max: float = 4000.0           # ~4W max
+    power_5g_low_active_max: float = 5000.0       # ~5W max
+    power_5g_mm_active_max: float = 8000.0        # ~8W max at peak throughput
+    
     # Handoff penalties (4G ↔ 5G switch)
-    handoff_power_nsa: float = 799.0   # NSA 5G handoff spike (mW)
-    handoff_power_sa: float = 245.0    # SA 5G handoff (lower)
+    handoff_power_nsa: float = 1494.0  # NSA 5G handoff spike (mW) - Table 2
+    handoff_power_sa: float = 245.0    # SA 5G handoff (lower) - Table 2
     handoff_duration: float = 0.5      # Duration of power spike (seconds)
     
     # Efficiency crossover point (from paper)
     crossover_throughput_dl: float = 187.0  # Mbps - below this, 4G wins
     crossover_throughput_ul: float = 40.0   # Mbps - uplink crossover
     
-    def get_power(self, state: RRCState) -> float:
-        """Get power for current network type and state."""
+    def get_active_power(self, throughput_mbps: float = 0) -> float:
+        """
+        Get ACTIVE (CONNECTED) state power based on throughput.
+        Uses linear model: P(T) = P0 + k*T, clamped to max.
+        """
         if self.network_type == "4G":
-            powers = {
-                RRCState.IDLE: self.power_4g_idle,
-                RRCState.CONNECTED: self.power_4g_connected,
-                RRCState.TAIL: self.power_4g_tail
-            }
+            p0, k, p_max = self.power_4g_active_baseline, self.power_4g_active_slope, self.power_4g_active_max
         elif self.network_type == "5G_low":
-            powers = {
-                RRCState.IDLE: self.power_5g_low_idle,
-                RRCState.CONNECTED: self.power_5g_low_connected,
-                RRCState.TAIL: self.power_5g_low_tail
-            }
-        else:  # 5G_mmWave (default)
-            powers = {
-                RRCState.IDLE: self.power_5g_mm_idle,
-                RRCState.CONNECTED: self.power_5g_mm_connected,
-                RRCState.TAIL: self.power_5g_mm_tail
-            }
-        return powers[state]
+            p0, k, p_max = self.power_5g_low_active_baseline, self.power_5g_low_active_slope, self.power_5g_low_active_max
+        else:  # 5G_mmWave
+            p0, k, p_max = self.power_5g_mm_active_baseline, self.power_5g_mm_active_slope, self.power_5g_mm_active_max
+        
+        power = p0 + k * throughput_mbps
+        return min(power, p_max)
+    
+    def get_tail_power(self) -> float:
+        """Get TAIL state power (DRX period - the 1092 mW value for mmWave)."""
+        if self.network_type == "4G":
+            return self.power_4g_tail
+        elif self.network_type == "5G_low":
+            return self.power_5g_low_tail
+        else:  # 5G_mmWave
+            return self.power_5g_mm_tail
+    
+    def get_idle_power(self) -> float:
+        """Get IDLE state power."""
+        if self.network_type == "4G":
+            return self.power_4g_idle
+        elif self.network_type == "5G_low":
+            return self.power_5g_low_idle
+        else:
+            return self.power_5g_mm_idle
+    
+    def get_power(self, state: RRCState, throughput_mbps: float = 0) -> float:
+        """
+        Get power for current network type, state, and throughput.
+        
+        Args:
+            state: RRC state (IDLE, CONNECTED, or TAIL)
+            throughput_mbps: Current throughput (only matters for CONNECTED state)
+        
+        Returns:
+            Power in mW
+        """
+        if state == RRCState.IDLE:
+            return self.get_idle_power()
+        elif state == RRCState.CONNECTED:
+            return self.get_active_power(throughput_mbps)
+        else:  # TAIL
+            return self.get_tail_power()
     
     def get_tail_duration(self) -> float:
         """Get tail duration for current network type."""
@@ -138,7 +197,8 @@ class RRCStateMachine:
         Returns:
             Power consumption for this time step (mW)
         """
-        power = self.config.get_power(self.state)
+        # Get power based on state AND throughput (for CONNECTED state)
+        power = self.config.get_power(self.state, throughput_mbps)
         tail_duration = self.config.get_tail_duration()
         
         # State transitions

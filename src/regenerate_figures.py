@@ -37,8 +37,8 @@ def save_fig(name):
 # 1. RRC STATE MACHINE DIAGRAM
 # =============================================================================
 def generate_rrc_state_machine():
-    """Generate RRC state machine diagram."""
-    fig, ax = plt.subplots(figsize=(10, 6))
+    """Generate RRC state machine diagram with CORRECTED power values."""
+    fig, ax = plt.subplots(figsize=(12, 7))
     
     # Draw states as circles
     circle_idle = plt.Circle((0.2, 0.5), 0.12, color='green', alpha=0.3)
@@ -49,10 +49,10 @@ def generate_rrc_state_machine():
     ax.add_patch(circle_conn)
     ax.add_patch(circle_tail)
     
-    # State labels
-    ax.text(0.2, 0.5, 'IDLE\n178-300 mW', ha='center', va='center', fontsize=11, fontweight='bold')
-    ax.text(0.5, 0.5, 'CONNECTED\n800-1092 mW', ha='center', va='center', fontsize=11, fontweight='bold')
-    ax.text(0.8, 0.5, 'TAIL\n400-600 mW', ha='center', va='center', fontsize=11, fontweight='bold')
+    # State labels - CORRECTED: 1092 mW is TAIL, not CONNECTED!
+    ax.text(0.2, 0.5, 'IDLE\n100-200 mW', ha='center', va='center', fontsize=11, fontweight='bold')
+    ax.text(0.5, 0.5, 'CONNECTED\n(Active Tx)\n2000-8000 mW', ha='center', va='center', fontsize=11, fontweight='bold')
+    ax.text(0.8, 0.5, 'TAIL (DRX)\n178-1092 mW\n(THE KEY!)', ha='center', va='center', fontsize=11, fontweight='bold')
     
     # Arrows
     ax.annotate('', xy=(0.38, 0.55), xytext=(0.32, 0.55),
@@ -71,11 +71,19 @@ def generate_rrc_state_machine():
                 arrowprops=dict(arrowstyle='->', color='black', lw=2, connectionstyle='arc3,rad=0.5'))
     ax.text(0.72, 0.3, 'New data\n(reset timer)', ha='center', fontsize=9)
     
+    # Add note about the key insight
+    ax.text(0.5, 0.08, 'KEY INSIGHT: mmWave TAIL power (1092 mW) > 4G ACTIVE power (~800 mW)!\n'
+            'Short, bursty traffic keeps radio in high-power TAIL state.',
+            ha='center', fontsize=10, style='italic',
+            bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.8))
+    
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.set_aspect('equal')
     ax.axis('off')
-    ax.set_title('5G RRC State Machine\n(The Hidden Battery Killer)', fontsize=14, fontweight='bold')
+    ax.set_title('5G RRC State Machine (Corrected)\n'
+                 'Source: Narayanan et al. SIGCOMM 2021, Table 2 & Figure 11', 
+                 fontsize=14, fontweight='bold')
     
     save_fig('rrc_state_machine.png')
 
@@ -105,21 +113,23 @@ def generate_chatty_vs_streaming():
     axes[0, 0].set_xlabel('Time (minutes)')
     axes[0, 0].set_ylabel('Power (mW)')
     axes[0, 0].set_title('Emma (Chatter): Radio Power Profile')
-    axes[0, 0].axhline(y=1092, color='darkred', linestyle='--', alpha=0.5, label='CONNECTED')
-    axes[0, 0].axhline(y=600, color='orange', linestyle='--', alpha=0.5, label='TAIL')
-    axes[0, 0].axhline(y=300, color='green', linestyle='--', alpha=0.5, label='IDLE')
+    # CORRECTED labels: 1092 is TAIL, CONNECTED is higher
+    axes[0, 0].axhline(y=3000, color='darkred', linestyle='--', alpha=0.5, label='CONNECTED (~3W)')
+    axes[0, 0].axhline(y=1092, color='orange', linestyle='--', alpha=0.5, label='TAIL (1092 mW)')
+    axes[0, 0].axhline(y=200, color='green', linestyle='--', alpha=0.5, label='IDLE')
     axes[0, 0].legend()
-    axes[0, 0].set_ylim([0, 1200])
+    axes[0, 0].set_ylim([0, 3500])
     
     axes[0, 1].plot(t_stream[idx_stream]/60, p_stream[idx_stream], 'b-', alpha=0.8, linewidth=0.5)
     axes[0, 1].set_xlabel('Time (minutes)')
     axes[0, 1].set_ylabel('Power (mW)')
     axes[0, 1].set_title('Steve (Streamer): Radio Power Profile')
-    axes[0, 1].axhline(y=1092, color='darkred', linestyle='--', alpha=0.5, label='CONNECTED')
-    axes[0, 1].axhline(y=600, color='orange', linestyle='--', alpha=0.5, label='TAIL')
-    axes[0, 1].axhline(y=300, color='green', linestyle='--', alpha=0.5, label='IDLE')
+    # CORRECTED labels
+    axes[0, 1].axhline(y=3000, color='darkred', linestyle='--', alpha=0.5, label='CONNECTED (~3W)')
+    axes[0, 1].axhline(y=1092, color='orange', linestyle='--', alpha=0.5, label='TAIL (1092 mW)')
+    axes[0, 1].axhline(y=200, color='green', linestyle='--', alpha=0.5, label='IDLE')
     axes[0, 1].legend()
-    axes[0, 1].set_ylim([0, 1200])
+    axes[0, 1].set_ylim([0, 3500])
     
     # State distribution pie charts
     labels = ['IDLE', 'CONNECTED', 'TAIL']

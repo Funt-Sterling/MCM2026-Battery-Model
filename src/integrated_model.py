@@ -52,14 +52,20 @@ class IntegratedModelParameters:
     R_gas: float = 8.314    # Gas constant (J/mol·K)
     T_ref: float = 298.15   # Reference temperature (K)
     
-    # Network (5G mmWave from Narayanan et al.)
-    P_idle: float = 0.300     # Idle power (W)
-    P_connected: float = 1.092  # Connected power (W)
-    P_tail: float = 0.600     # Tail power (W)
-    tau_tail: float = 15.0    # Tail duration (s)
+    # Network (5G mmWave from Narayanan et al. 2021 - CORRECTED)
+    # CRITICAL: 1092 mW is TAIL power, NOT connected power!
+    P_idle: float = 0.200         # Idle power (W) - radio sleeping
+    P_tail: float = 1.092         # TAIL power (W) - the 1092 mW from Table 2!
+    P_active_baseline: float = 3.0  # Active baseline power (W) at zero throughput
+    P_active_slope: float = 0.003   # W per Mbps (3 mW/Mbps)
     
-    # Aging parameters (√N law)
-    alpha_aging: float = 0.000894  # Aging coefficient
+    # Energy efficiency crossover (Narayanan et al. 2021 Figure 11)
+    crossover_throughput_mbps: float = 187.0  # Below this, 4G more efficient
+    P_active_max: float = 8.0      # Maximum active power (W) at peak throughput
+    tau_tail: float = 15.0        # Tail duration (s)
+    
+    # Aging parameters (√N law - fitted to NASA B0005 REAL data)
+    alpha_aging: float = 0.022    # Aging coefficient (28.6% fade over 168 cycles)
 
 
 class IntegratedSmartphoneBattery:
@@ -104,12 +110,19 @@ class IntegratedSmartphoneBattery:
         return np.exp(exponent)
     
     def get_network_power(self, data_active: bool, throughput_mbps: float = 0) -> float:
-        """Get network power based on RRC state."""
+        """
+        Get network power based on RRC state and throughput.
+        
+        CORRECTED: Uses throughput-dependent model for CONNECTED state.
+        P(T) = P_baseline + slope * T, clamped to P_max
+        """
         if self.rrc_state == 'IDLE':
             return self.p.P_idle
         elif self.rrc_state == 'CONNECTED':
-            return self.p.P_connected
-        else:  # TAIL
+            # Throughput-dependent active power
+            power = self.p.P_active_baseline + self.p.P_active_slope * throughput_mbps
+            return min(power, self.p.P_active_max)
+        else:  # TAIL - the 1092 mW value!
             return self.p.P_tail
     
     def update_rrc_state(self, dt: float, data_active: bool):

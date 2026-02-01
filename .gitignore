@@ -22,3 +22,9 @@ Thumbs.db
 # Temp files
 *.tmp
 *.bak
+
+# Large data files
+data/nasa_raw/*.zip
+data/nasa_raw/**/*.zip
+*.zip
+
