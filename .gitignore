@@ -28,3 +28,5 @@ data/nasa_raw/*.zip
 data/nasa_raw/**/*.zip
 *.zip
 
+.env
+venv/
