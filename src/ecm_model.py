@@ -580,6 +580,60 @@ class SmartphoneLoadModel:
         
         return I_total
 
+    def get_current_breakdown(self,
+                              screen_on: bool = True,
+                              brightness: float = 0.5,
+                              refresh_rate: int = 60,
+                              cpu_util: float = 0.3,
+                              network_mode: str = 'wifi',
+                              network_active: bool = True,
+                              gps_on: bool = False,
+                              bluetooth_on: bool = False,
+                              sensors_active: bool = True) -> Dict[str, float]:
+        """
+        Get breakdown of current draw by component.
+        
+        Returns:
+            Dictionary {component_name: current_mA}
+        """
+        breakdown = {'baseline': self.I_base}
+        
+        # Screen
+        if screen_on:
+            brightness = np.clip(brightness, 0, 1)
+            I_screen = self.I_screen_min + \
+                       (self.I_screen_max - self.I_screen_min) * brightness
+            if refresh_rate >= 90:
+                I_screen *= self.refresh_120Hz
+            breakdown['screen'] = I_screen
+        else:
+            breakdown['screen'] = 0.0
+        
+        # CPU
+        cpu_util = np.clip(cpu_util, 0, 1)
+        breakdown['cpu'] = self.I_cpu_idle + (self.I_cpu_max - self.I_cpu_idle) * cpu_util
+        
+        # Network
+        I_net = 0.0
+        if network_mode == 'wifi':
+            I_net = self.I_wifi if network_active else self.I_wifi * 0.3
+        elif network_mode == '4g':
+            I_net = self.I_4g_active if network_active else self.I_4g_idle
+        elif network_mode == '5g':
+            I_net = self.I_5g_active if network_active else self.I_5g_idle
+        breakdown['network'] = I_net
+        
+        # GPS
+        breakdown['gps'] = self.I_gps if gps_on else 0.0
+        
+        # Bluetooth
+        breakdown['bluetooth'] = self.I_bluetooth_idle if bluetooth_on else 0.0
+        
+        # Sensors
+        breakdown['sensors'] = (self.I_sensors_base + self.I_accelerometer) if sensors_active else 0.0
+        
+        return breakdown
+
 
 # =============================================================================
 # SECTION 6: PREDEFINED USAGE SCENARIOS

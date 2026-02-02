@@ -1042,6 +1042,153 @@ def draw_generalization_foldable():
     return fig
 
 
+def draw_energy_consumption_breakdown():
+    """
+    Draw component-level power breakdown visualization.
+
+    Shows:
+    - Stacked area chart of power consumption over 24h by component
+    - Bar chart of total energy by component
+    """
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+    load_model = SmartphoneLoadModel()
+
+    # Simulate 24-hour day with different activities
+    hours = np.linspace(0, 24, 288)  # 5-minute intervals
+
+    # Define activity schedule
+    def get_activity(hour):
+        """Return activity parameters based on hour of day."""
+        if 0 <= hour < 7:  # Sleep
+            return {'screen_on': False, 'cpu_util': 0.05, 'network_mode': 'wifi',
+                    'network_active': False, 'gps_on': False}
+        elif 7 <= hour < 8:  # Morning routine
+            return {'screen_on': True, 'brightness': 0.6, 'cpu_util': 0.3,
+                    'network_mode': 'wifi', 'network_active': True, 'gps_on': False}
+        elif 8 <= hour < 9:  # Commute
+            return {'screen_on': True, 'brightness': 0.8, 'cpu_util': 0.4,
+                    'network_mode': '4g', 'network_active': True, 'gps_on': True}
+        elif 9 <= hour < 12:  # Work morning
+            return {'screen_on': True, 'brightness': 0.5, 'cpu_util': 0.25,
+                    'network_mode': 'wifi', 'network_active': True, 'gps_on': False}
+        elif 12 <= hour < 13:  # Lunch
+            return {'screen_on': True, 'brightness': 0.7, 'cpu_util': 0.5,
+                    'network_mode': 'wifi', 'network_active': True, 'gps_on': False}
+        elif 13 <= hour < 17:  # Work afternoon
+            return {'screen_on': True, 'brightness': 0.5, 'cpu_util': 0.25,
+                    'network_mode': 'wifi', 'network_active': True, 'gps_on': False}
+        elif 17 <= hour < 18:  # Commute home
+            return {'screen_on': True, 'brightness': 0.8, 'cpu_util': 0.4,
+                    'network_mode': '4g', 'network_active': True, 'gps_on': True}
+        elif 18 <= hour < 19:  # Gaming session
+            return {'screen_on': True, 'brightness': 1.0, 'refresh_rate': 120,
+                    'cpu_util': 0.95, 'network_mode': '5g', 'network_active': True, 'gps_on': False}
+        elif 19 <= hour < 22:  # Evening relaxation
+            return {'screen_on': True, 'brightness': 0.5, 'cpu_util': 0.3,
+                    'network_mode': 'wifi', 'network_active': True, 'gps_on': False}
+        else:  # Late night
+            return {'screen_on': False, 'cpu_util': 0.05, 'network_mode': 'wifi',
+                    'network_active': False, 'gps_on': False}
+
+    # Collect breakdown data
+    components = ['baseline', 'screen', 'cpu', 'network', 'gps', 'sensors']
+    data = {comp: [] for comp in components}
+
+    for hour in hours:
+        activity = get_activity(hour)
+        breakdown = load_model.get_current_breakdown(**activity)
+        for comp in components:
+            data[comp].append(breakdown.get(comp, 0))
+
+    # Convert to arrays
+    for comp in components:
+        data[comp] = np.array(data[comp])
+
+    # === Plot 1: Stacked Area Chart ===
+    ax1 = axes[0]
+
+    colors = {
+        'baseline': '#95a5a6',
+        'screen': '#f1c40f',
+        'cpu': '#e74c3c',
+        'network': '#3498db',
+        'gps': '#2ecc71',
+        'sensors': '#9b59b6'
+    }
+
+    labels = {
+        'baseline': 'Baseline',
+        'screen': 'Display (OLED)',
+        'cpu': 'CPU/SoC',
+        'network': 'Network (WiFi/4G/5G)',
+        'gps': 'GPS',
+        'sensors': 'Sensors'
+    }
+
+    # Stack the data
+    stack_data = [data[comp] for comp in components]
+    stack_colors = [colors[comp] for comp in components]
+    stack_labels = [labels[comp] for comp in components]
+
+    ax1.stackplot(hours, stack_data, colors=stack_colors, labels=stack_labels, alpha=0.8)
+
+    # Add activity annotations
+    activities = [
+        (3.5, 'Sleep', '#2c3e50'),
+        (7.5, 'Morning', '#3498db'),
+        (8.5, 'Commute', '#e67e22'),
+        (10.5, 'Work', '#27ae60'),
+        (12.5, 'Lunch', '#f39c12'),
+        (15, 'Work', '#27ae60'),
+        (17.5, 'Commute', '#e67e22'),
+        (18.5, 'Gaming', '#e74c3c'),
+        (20.5, 'Evening', '#9b59b6'),
+        (23, 'Sleep', '#2c3e50'),
+    ]
+
+    ymax = sum(data[comp].max() for comp in components) * 0.95
+    for hour, label, color in activities:
+        ax1.annotate(label, xy=(hour, ymax), fontsize=8, ha='center',
+                    color=color, fontweight='bold', alpha=0.8)
+
+    ax1.set_xlabel('Hour of Day')
+    ax1.set_ylabel('Current Draw (mA)')
+    ax1.set_title('Power Consumption by Component (24h Profile)', fontweight='bold')
+    ax1.legend(loc='upper right', fontsize=9)
+    ax1.set_xlim(0, 24)
+    ax1.set_xticks(range(0, 25, 3))
+    ax1.grid(True, alpha=0.3)
+
+    # === Plot 2: Total Energy Bar Chart ===
+    ax2 = axes[1]
+
+    # Calculate total energy (mAh) for each component
+    dt_hours = 24 / len(hours)
+    energy = {comp: np.sum(data[comp]) * dt_hours for comp in components}
+
+    # Sort by energy
+    sorted_comps = sorted(components, key=lambda c: energy[c], reverse=True)
+
+    bars = ax2.barh([labels[c] for c in sorted_comps],
+                    [energy[c] for c in sorted_comps],
+                    color=[colors[c] for c in sorted_comps], alpha=0.8)
+
+    # Add value labels
+    for bar, comp in zip(bars, sorted_comps):
+        width = bar.get_width()
+        ax2.text(width + 5, bar.get_y() + bar.get_height()/2,
+                f'{energy[comp]:.0f} mAh', va='center', fontsize=10, fontweight='bold')
+
+    total_energy = sum(energy.values())
+    ax2.set_xlabel('Energy Consumption (mAh)')
+    ax2.set_title(f'Total Daily Energy by Component\n(Total: {total_energy:.0f} mAh)', fontweight='bold')
+    ax2.grid(True, alpha=0.3, axis='x')
+
+    plt.tight_layout()
+    return fig
+
+
 def main():
     """Generate all ECM visualizations."""
     print("="*70)
@@ -1057,6 +1204,7 @@ def main():
         ('ecm_daily_simulation', draw_realistic_day_simulation),
         ('thermal_runaway', draw_thermal_runaway_phase_plane),
         ('generalization_fold', draw_generalization_foldable),
+        ('ecm_component_breakdown', draw_energy_consumption_breakdown),
     ]
     
     import os
