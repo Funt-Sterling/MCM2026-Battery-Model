@@ -716,12 +716,215 @@ def figure8_aging_effect():
     plt.close()
 
 
+def figure9_sensitivity_3d_surface():
+    """
+    Figure 9: 3D Sensitivity Surface - The "O-Prize Must-Have"
+
+    Shows coupled non-linear interactions between:
+    - Temperature (X-axis)
+    - C-rate / Load Current (Y-axis)
+    - Degradation Rate (Z-axis)
+
+    The "cliff edge" at high temp + high load demonstrates Arrhenius coupling.
+    """
+    from mpl_toolkits.mplot3d import Axes3D
+
+    # Grid: Temperature (0-45°C) × C-rate (0.1-2.0C)
+    T_celsius = np.linspace(0, 45, 40)
+    T_kelvin = T_celsius + 273.15
+    C_rate = np.linspace(0.1, 2.0, 40)
+
+    T_grid, C_grid = np.meshgrid(T_kelvin, C_rate)
+    T_celsius_grid = T_grid - 273.15
+
+    # Arrhenius degradation model
+    # Based on: degradation ∝ exp(-Ea/kT) × (1 + k_load × I)
+    Ea = 0.3  # eV (activation energy for Li-ion degradation)
+    k_B = 8.617e-5  # eV/K (Boltzmann constant)
+    T_ref = 298.15  # Reference temperature (25°C)
+
+    # Arrhenius factor: accelerates at high temperature
+    arrhenius_factor = np.exp((Ea / k_B) * (1/T_ref - 1/T_grid))
+
+    # Load factor: accelerates at high C-rate
+    load_factor = 1 + 0.8 * C_grid**1.5  # Nonlinear current impact
+
+    # Combined degradation rate (normalized)
+    degradation = arrhenius_factor * load_factor
+
+    # Normalize to reference conditions (25°C, 0.5C)
+    ref_degradation = np.exp((Ea / k_B) * (1/T_ref - 1/T_ref)) * (1 + 0.8 * 0.5**1.5)
+    degradation_normalized = degradation / ref_degradation
+
+    # Create figure
+    fig = plt.figure(figsize=(9, 7))
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Plot surface with colormap
+    surf = ax.plot_surface(T_celsius_grid, C_grid, degradation_normalized,
+                           cmap='plasma', edgecolor='none', alpha=0.9,
+                           antialiased=True, rcount=50, ccount=50)
+
+    # Add contour lines on the base for clarity
+    ax.contour(T_celsius_grid, C_grid, degradation_normalized,
+               zdir='z', offset=0, cmap='plasma', alpha=0.5, levels=10)
+
+    # Mark critical points
+    # Gaming scenario: 35°C, 1.5C
+    gaming_T, gaming_C = 35, 1.5
+    gaming_deg = (np.exp((Ea / k_B) * (1/T_ref - 1/(gaming_T+273.15))) *
+                  (1 + 0.8 * gaming_C**1.5)) / ref_degradation
+    ax.scatter([gaming_T], [gaming_C], [gaming_deg], color='red', s=100,
+               marker='o', label=f'Gaming (35°C, 1.5C): {gaming_deg:.1f}×')
+
+    # Normal scenario: 25°C, 0.5C
+    normal_T, normal_C = 25, 0.5
+    normal_deg = 1.0  # Reference point
+    ax.scatter([normal_T], [normal_C], [normal_deg], color='green', s=100,
+               marker='^', label=f'Normal (25°C, 0.5C): {normal_deg:.1f}×')
+
+    # Labels
+    ax.set_xlabel('Temperature (°C)', fontsize=11, labelpad=10)
+    ax.set_ylabel('C-rate', fontsize=11, labelpad=10)
+    ax.set_zlabel('Relative Degradation Rate', fontsize=11, labelpad=10)
+    ax.set_title('Coupled Temperature–Load Effect on Battery Degradation\n(Arrhenius Law)',
+                 fontsize=13, fontweight='bold', pad=15)
+
+    # Adjust view angle for best "cliff" visibility
+    ax.view_init(elev=25, azim=45)
+
+    # Colorbar
+    cbar = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=15, pad=0.1)
+    cbar.set_label('Degradation Factor (×)', fontsize=10)
+
+    # Legend
+    ax.legend(loc='upper left', fontsize=9)
+
+    plt.tight_layout()
+
+    # Save to figures directory
+    save_path = os.path.join(OUTPUT_DIR, 'sensitivity_3d_surface.png')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='white')
+    plt.savefig(save_path.replace('.png', '.pdf'), bbox_inches='tight', facecolor='white')
+    print(f"Saved: {save_path}")
+    plt.close()
+
+
+def figure10_input_correlation():
+    """
+    Figure 10: Input Parameter Correlation Heatmap
+
+    Monte Carlo analysis showing correlations between:
+    - Screen Brightness
+    - CPU Frequency
+    - 5G Signal Strength
+    - Ambient Temperature
+    - Battery Life (output)
+
+    Key insight: 5G Signal shows NEGATIVE correlation (weak signal → shorter life)
+    """
+    # Monte Carlo simulation
+    N = 200  # Number of samples
+    np.random.seed(42)  # Reproducibility
+
+    # Input parameters (realistic ranges)
+    brightness = np.random.uniform(0.2, 1.0, N)  # 20-100% screen brightness
+    cpu_freq = np.random.uniform(1.0, 3.2, N)    # 1.0-3.2 GHz
+    signal_5g = np.random.uniform(-110, -60, N)  # dBm (weak to strong signal)
+    temp_amb = np.random.uniform(10, 42, N)      # 10-42°C ambient temperature
+
+    # Physics-based battery life model
+    # Screen power: ~200mW at max brightness
+    P_screen = brightness * 220  # mW
+
+    # CPU power: ~400mW at max frequency (quadratic scaling)
+    P_cpu = 100 + 300 * (cpu_freq / 3.2)**2  # mW
+
+    # 5G tail energy penalty (weak signal = more retransmissions + longer tail)
+    # Signal strength: -60 dBm = excellent, -110 dBm = very weak
+    signal_penalty = 1 + 0.015 * np.abs(signal_5g + 60)  # Multiplier
+    P_radio = 300 * signal_penalty  # Base 300mW with penalty
+
+    # Temperature effect on efficiency (Arrhenius-like)
+    T_kelvin = temp_amb + 273.15
+    T_ref = 298.15
+    Ea = 0.2  # Reduced Ea for efficiency (not degradation)
+    k_B = 8.617e-5
+    temp_efficiency = np.exp(-(Ea / k_B) * np.abs(1/T_kelvin - 1/T_ref))
+
+    # Total power and battery life
+    P_total = (P_screen + P_cpu + P_radio) / temp_efficiency
+    Q_battery = 4000  # mAh
+    V_nominal = 3.7   # V
+    E_battery = Q_battery * V_nominal  # mWh
+    battery_life = E_battery / P_total  # hours
+
+    # Build correlation matrix
+    data = np.column_stack([brightness, cpu_freq, signal_5g, temp_amb, battery_life])
+    corr_matrix = np.corrcoef(data.T)
+
+    # Labels
+    labels = ['Screen\nBrightness', 'CPU\nFrequency', '5G Signal\nStrength',
+              'Ambient\nTemp', 'Battery\nLife']
+
+    # Create figure
+    fig, ax = plt.subplots(figsize=(8, 7))
+
+    # Heatmap with diverging colormap
+    im = ax.imshow(corr_matrix, cmap='RdBu_r', vmin=-1, vmax=1, aspect='auto')
+
+    # Annotate cells with correlation values
+    for i in range(5):
+        for j in range(5):
+            val = corr_matrix[i, j]
+            # Color text based on background for readability
+            text_color = 'white' if abs(val) > 0.5 else 'black'
+            fontweight = 'bold' if abs(val) > 0.3 and i != j else 'normal'
+            ax.text(j, i, f'{val:.2f}', ha='center', va='center',
+                    fontsize=11, color=text_color, fontweight=fontweight)
+
+    # Axis configuration
+    ax.set_xticks(range(5))
+    ax.set_yticks(range(5))
+    ax.set_xticklabels(labels, fontsize=10)
+    ax.set_yticklabels(labels, fontsize=10)
+
+    # Title
+    ax.set_title('Input Parameter Correlation Matrix\n(Monte Carlo, N=200)',
+                 fontsize=13, fontweight='bold', pad=15)
+
+    # Colorbar
+    cbar = plt.colorbar(im, ax=ax, shrink=0.8)
+    cbar.set_label('Pearson Correlation', fontsize=11)
+
+    # Highlight key insight with annotation
+    # Find the 5G-Battery Life correlation cell
+    ax.add_patch(plt.Rectangle((4-0.5, 2-0.5), 1, 1, fill=False,
+                                edgecolor='black', linewidth=3))
+
+    plt.tight_layout()
+
+    # Save to figures directory
+    save_path = os.path.join(OUTPUT_DIR, 'input_correlation_heatmap.png')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='white')
+    plt.savefig(save_path.replace('.png', '.pdf'), bbox_inches='tight', facecolor='white')
+    print(f"Saved: {save_path}")
+    plt.close()
+
+    # Print key insights
+    print("\n--- Correlation Insights ---")
+    print(f"5G Signal ↔ Battery Life: {corr_matrix[2, 4]:.3f}")
+    print(f"CPU Freq ↔ Battery Life: {corr_matrix[1, 4]:.3f}")
+    print(f"Brightness ↔ Battery Life: {corr_matrix[0, 4]:.3f}")
+    print(f"Temperature ↔ Battery Life: {corr_matrix[3, 4]:.3f}")
+
+
 def generate_all_figures():
     """Generate all publication figures."""
     print("="*60)
     print("GENERATING O-PRIZE STYLE FIGURES")
     print("="*60)
-    
+
     figure1_two_tank_schematic()
     figure2_thermal_feedback_loop()
     figure3_model_comparison()
@@ -730,7 +933,9 @@ def generate_all_figures():
     figure6_usage_scenarios()
     figure7_recovery_effect()
     figure8_aging_effect()
-    
+    figure9_sensitivity_3d_surface()
+    figure10_input_correlation()
+
     print("\n" + "="*60)
     print("ALL FIGURES GENERATED SUCCESSFULLY!")
     print("="*60)

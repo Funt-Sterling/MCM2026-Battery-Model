@@ -1,0 +1,219 @@
+\documentclass[tikz,border=20pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, shadows, calc, fit, backgrounds, decorations.pathreplacing}
+
+% Define Professional Colors with better contrast
+\definecolor{layerCognitive}{HTML}{2C3E50}  % Dark Blue/Grey
+\definecolor{layerNetwork}{HTML}{F39C12}    % Orange
+\definecolor{layerPhysics}{HTML}{C0392B}    % Deep Red
+\definecolor{layerOutput}{HTML}{27AE60}     % Green
+\definecolor{boxFill}{HTML}{FDFFE6}         % Very light cream for boxes
+\definecolor{lineColor}{HTML}{34495E}
+
+\begin{document}
+
+\begin{tikzpicture}[
+    node distance=1.5cm and 1.0cm,
+    font=\sffamily,
+    % Core Styles
+    block/.style={
+        rectangle, 
+        rounded corners=4pt, 
+        fill=boxFill,
+        draw=lineColor,
+        very thick,
+        text width=3.2cm, 
+        minimum height=1.6cm, 
+        align=center, 
+        drop shadow={opacity=0.3},
+        font=\small
+    },
+    header/.style={
+        rectangle,
+        rounded corners=2pt,
+        text=white,
+        font=\bfseries\Large,
+        align=center,
+        minimum height=1.0cm,
+        minimum width=16cm,
+        inner sep=5pt
+    },
+    % Connectors
+    arrow/.style={very thick, ->, >=Stealth, color=lineColor},
+    feedback/.style={very thick, dashed, ->, >=Stealth, color=layerPhysics}
+]
+
+% =================================================================================
+% LAYER 1: COGNITIVE AGENTS
+% =================================================================================
+
+\node[header, fill=layerCognitive] (Header1) {LAYER 1: COGNITIVE AGENTS (User Behavior)};
+
+% Personas (Tallest element determining layer height)
+\node[block, below=1.0cm of Header1.west, anchor=north west, xshift=0.5cm, text width=3.5cm] (Personas) {
+    \textbf{5 Personas}\\
+    \raggedright
+    \scriptsize
+    1. Gamer Gary\\
+    2. Creator Chloe\\
+    3. Commuter Chris\\
+    4. Chatter Emma\\
+    5. Streamer Steve
+};
+
+% LLM Agent
+\node[block, right=1.0cm of Personas, text width=4.5cm] (LLM) {
+    \textbf{Learning LLM Agent}\\
+    \scriptsize (GPT-4 + Memory)\\
+    \vspace{0.1cm}
+    \textit{"Reflects \& Adapts Strategies based on Thermal History"}
+};
+
+% RL Agent
+\node[block, right=1.0cm of LLM, text width=4.5cm] (RL) {
+    \textbf{Deep RL Agent (DQN)}\\
+    \scriptsize Double DQN + Epsilon Greedy\\
+    \vspace{0.1cm}
+    \textit{"Optimizes Satisfaction vs Power Consumption"}
+};
+
+% Internal Connections
+\draw[arrow] (Personas) -- (LLM);
+\draw[arrow] (LLM) -- node[above, font=\scriptsize] {Guidance} (RL);
+
+% Draw Frame for Layer 1
+\begin{scope}[on background layer]
+    \node[draw=layerCognitive, dashed, very thick, inner sep=10pt, fit=(Header1) (Personas) (RL)] (Layer1Frame) {};
+\end{scope}
+
+% =================================================================================
+% LAYER 2: NETWORK & HARDWARE
+% =================================================================================
+
+% Important: Position Header 2 relative to the FRAME of Layer 1, not the Header 1
+\node[header, fill=layerNetwork, below=1.5cm of Layer1Frame.south] (Header2) {LAYER 2: NETWORK \& HARDWARE LOADING};
+
+% RRC State Machine
+\node[block, below=1.0cm of Header2.west, anchor=north west, xshift=1.5cm] (RRC) {
+    \textbf{5G RRC State Machine}\\
+    \scriptsize IDLE $\leftrightarrow$ CONNECTED $\leftrightarrow$ TAIL\\
+    \vspace{0.1cm}
+    \textit{"The Tail Energy Penalty"}
+};
+
+% GPU Model
+\node[block, right=1.0cm of RRC] (GPU) {
+    \textbf{APGPM GPU Model}\\
+    \scriptsize Render / Compute / AI Loads\\
+    \vspace{0.1cm}
+    \textit{Thermal Throttling Logic}
+};
+
+% Fast Charging
+\node[block, right=1.0cm of GPU] (Charging) {
+    \textbf{Fast Charging Tracker}\\
+    \scriptsize Stress Factors $\sigma(I)$\\
+    \vspace{0.1cm}
+    \textit{LifecyclE 2025 Model}
+};
+
+% Connections Layer 1 -> Layer 2 (Action Bus)
+% Route from RL Agent -> Right -> Down (Past Header 2) -> Left -> Down
+\draw[arrow] (RL.east) -- ++(1.0,0) coordinate(busStart) 
+    -- (busStart |- Header2.south) coordinate(busTurn) % Go down to below Header 2
+    -- ++(0,-0.5) coordinate(busUnder) % Go a bit lower
+    -| (RRC.north); % Connect to RRC
+
+\draw[arrow] (busUnder) -| (GPU.north);
+\draw[arrow] (busUnder) -| (Charging.north);
+
+% Label for the Action
+\node[right, font=\bfseries\small, color=lineColor] at ($(busStart)!0.5!(busTurn)$) {Action $A_t$};
+
+% Layer 2 Frame
+\begin{scope}[on background layer]
+    \node[draw=layerNetwork, dashed, very thick, inner sep=10pt, fit=(Header2) (RRC) (Charging)] (Layer2Frame) {};
+\end{scope}
+
+% =================================================================================
+% LAYER 3: UNIFIED PHYSICS ENGINE
+% =================================================================================
+
+\node[header, fill=layerPhysics, below=1.5cm of Layer2Frame.south] (Header3) {LAYER 3: UNIFIED PHYSICS ENGINE (ODE Solver)};
+
+% KiBaM
+\node[block, below=1.0cm of Header3.west, anchor=north west, xshift=1.5cm] (KiBaM) {
+    \textbf{Model I: KiBaM}\\
+    \scriptsize Two-Tank Recovery\\
+    \vspace{0.1cm}
+    $k(h_1 - h_2)$
+};
+
+% ECM
+\node[block, right=1.0cm of KiBaM] (ECM) {
+    \textbf{Model II: ET-SSF}\\
+    \scriptsize 2-RC Pairs + OCV(SOC)\\
+    \vspace{0.1cm}
+    $V_{term} = V_{oc} - IR - V_{p}$
+};
+
+% Thermal
+\node[block, right=1.0cm of ECM] (Thermal) {
+    \textbf{Thermal Dynamics}\\
+    \scriptsize Arrhenius Coupling\\
+    \vspace{0.1cm}
+    $R(T) = R_{ref} \exp(E_a/kT)$
+};
+
+% Connections Layer 2 -> Layer 3
+\draw[arrow] (RRC.south) -- node[right, font=\tiny] {Power} (ECM.north);
+\draw[arrow] (GPU.south) -- node[right, font=\tiny] {Heat} (Thermal.north);
+\draw[arrow] (ECM) -- node[above, font=\tiny] {Joule Heat} (Thermal);
+\draw[arrow] (ECM) -- node[above, font=\tiny] {I(t)} (KiBaM);
+
+% Layer 3 Frame
+\begin{scope}[on background layer]
+    \node[draw=layerPhysics, dashed, very thick, inner sep=10pt, fit=(Header3) (KiBaM) (Thermal)] (Layer3Frame) {};
+\end{scope}
+
+% =================================================================================
+% LAYER 4: OUTPUTS
+% =================================================================================
+
+\node[header, fill=layerOutput, below=1.5cm of Layer3Frame.south] (Header4) {LAYER 4: OUTPUTS & STRATEGIES};
+
+\node[block, below=0.5cm of Header4, text width=14cm, minimum height=2cm] (Results) {
+    \textbf{Key Insights \& Optimizations}\\
+    \raggedright
+    \begin{itemize}
+        \item \textbf{Smart-5G Throttling:} Shift background sync to LTE reduces tail energy (-15\%).
+        \item \textbf{Batching:} Grouping notifications reduces RRC state transitions.
+        \item \textbf{Emergent Behavior:} LLM agent learns to pre-cool phone before gaming.
+    \end{itemize}
+};
+
+% Layer 4 Frame
+\begin{scope}[on background layer]
+    \node[draw=layerOutput, dashed, very thick, inner sep=10pt, fit=(Header4) (Results)] (Layer4Frame) {};
+\end{scope}
+
+
+% =================================================================================
+% GLOBAL FEEDBACK LOOP
+% =================================================================================
+
+% =================================================================================
+% GLOBAL FEEDBACK LOOP
+% =================================================================================
+
+% Route: ECM.south -> Down (below Layer 3 frame) -> Right (margin) -> Up -> RL.north
+\draw[feedback] (ECM.south) 
+    -- ++(0,-0.8) coordinate(fbLow) % Drop below Layer 3 blocks
+    -| ($(Layer1Frame.east) + (1.5,0)$) coordinate(fbTurn) % Go Right to margin then Up
+    |- (RL.north); % Connect to top of RL Agent
+
+% Label on the vertical rising segment
+\node[above, rotate=90, font=\bfseries\large, color=layerPhysics] at ($(fbTurn)!0.7!(fbTurn |- RL.north)$) {State Feedback: $S_{t+1}$ (SOC, Temp)};
+
+\end{tikzpicture}
+\end{document}

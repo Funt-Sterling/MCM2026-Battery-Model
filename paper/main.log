@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.12.16)  2 FEB 2026 23:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.12.16)  3 FEB 2026 03:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -960,14 +960,7 @@ File: ../figures/ecm_circuit_diagram.png Graphic file (type png)
 <use ../figures/ecm_circuit_diagram.png>
 Package pdftex.def Info: ../figures/ecm_circuit_diagram.png  used on input line
  191.
-(pdftex.def)             Requested size: 317.08165pt x 213.22556pt.
-
-pdfTeX warning (ext4): destination with the same identifier (name{page.3}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.208 \end{equation}
-                     [3 <../figures/ecm_circuit_diagram.png>]
+(pdftex.def)             Requested size: 243.91125pt x 164.01765pt.
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 2
 12.
 
@@ -980,72 +973,81 @@ m/m/n/12 s: \OT1/ptm/b/n/12 Ac-ti-va-tion po-lar-iza-tion\OT1/ptm/m/n/12 ---the
  time for charge-transfer re-ac-tions at the elec-trode/electrolyte
  []
 
-<../figures/ocv_soc_curve.png, id=281, 571.4148pt x 353.6412pt>
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.3}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.213     \item $
+                 \tau_2 \approx 300$ s: \textbf{Concentration polarization}-...
+[3 <../figures/ecm_circuit_diagram.png>]
+<../figures/ocv_soc_curve.png, id=283, 571.4148pt x 353.6412pt>
 File: ../figures/ocv_soc_curve.png Graphic file (type png)
 <use ../figures/ocv_soc_curve.png>
 Package pdftex.def Info: ../figures/ocv_soc_curve.png  used on input line 233.
-(pdftex.def)             Requested size: 292.69647pt x 181.14784pt.
-[4 <../figures/ocv_soc_curve.png>]
-<../figures/ecm_thermal_feedback.png, id=294, 1003.1076pt x 352.6776pt>
+(pdftex.def)             Requested size: 234.15271pt x 144.91287pt.
+ [4 <../figures/ocv_soc_curve.png>]
+<../figures/ecm_thermal_feedback.png, id=295, 1003.1076pt x 352.6776pt>
 File: ../figures/ecm_thermal_feedback.png Graphic file (type png)
 <use ../figures/ecm_thermal_feedback.png>
 Package pdftex.def Info: ../figures/ecm_thermal_feedback.png  used on input lin
 e 268.
-(pdftex.def)             Requested size: 317.08165pt x 111.48149pt.
-<../figures/thermal_runaway.png, id=295, 714.0276pt x 488.3043pt>
+(pdftex.def)             Requested size: 243.91125pt x 85.75291pt.
+<../figures/thermal_runaway.png, id=296, 714.0276pt x 488.3043pt>
 File: ../figures/thermal_runaway.png Graphic file (type png)
 <use ../figures/thermal_runaway.png>
 Package pdftex.def Info: ../figures/thermal_runaway.png  used on input line 276
 .
-(pdftex.def)             Requested size: 331.71573pt x 226.85797pt.
- [5 <../figures/ecm_thermal_feedback.png>]
-<../figures/rrc_state_machine.png, id=308, 446.1468pt x 497.2176pt>
+(pdftex.def)             Requested size: 243.91125pt x 166.8036pt.
+
+[5 <../figures/ecm_thermal_feedback.png> <../figures/thermal_runaway.png>]
+<../figures/rrc_state_machine.png, id=309, 446.1468pt x 497.2176pt>
 File: ../figures/rrc_state_machine.png Graphic file (type png)
 <use ../figures/rrc_state_machine.png>
 Package pdftex.def Info: ../figures/rrc_state_machine.png  used on input line 3
 17.
-(pdftex.def)             Requested size: 292.69647pt x 326.21478pt.
+(pdftex.def)             Requested size: 219.51863pt x 244.64781pt.
 
-[6 <../figures/thermal_runaway.png>] [7 <../figures/rrc_state_machine.png>]
-[8] [9]
-<../figures/validation_plot.png, id=354, 1003.5894pt x 781.4796pt>
+[6] [7 <../figures/rrc_state_machine.png>] [8]
+<../figures/validation_plot.png, id=348, 1003.5894pt x 781.4796pt>
 File: ../figures/validation_plot.png Graphic file (type png)
 <use ../figures/validation_plot.png>
 Package pdftex.def Info: ../figures/validation_plot.png  used on input line 438
 .
-(pdftex.def)             Requested size: 341.47426pt x 265.90227pt.
- [10 <../figures/validation_plot.png>]
-<../figures/validation_residuals.png, id=362, 859.2903pt x 711.3777pt>
+(pdftex.def)             Requested size: 268.30386pt x 208.92746pt.
+ [9 <../figures/validation_plot.png>]
+<../figures/validation_residuals.png, id=357, 859.2903pt x 711.3777pt>
 File: ../figures/validation_residuals.png Graphic file (type png)
 <use ../figures/validation_residuals.png>
 Package pdftex.def Info: ../figures/validation_residuals.png  used on input lin
 e 458.
-(pdftex.def)             Requested size: 380.50096pt x 315.00443pt.
- [11 <../figures/validation_residuals.png>]
-<../figures/chatty_vs_streaming.png, id=374, 1003.5894pt x 711.6186pt>
+(pdftex.def)             Requested size: 317.08165pt x 262.50006pt.
+ [10 <../figures/validation_residuals.png>]
+<../figures/chatty_vs_streaming.png, id=370, 860.4948pt x 363.759pt>
 File: ../figures/chatty_vs_streaming.png Graphic file (type png)
 <use ../figures/chatty_vs_streaming.png>
 Package pdftex.def Info: ../figures/chatty_vs_streaming.png  used on input line
  524.
-(pdftex.def)             Requested size: 390.25949pt x 276.72661pt.
-<../figures/ecm_scenario_comparison.png, id=375, 858.5676pt x 714.2685pt>
+(pdftex.def)             Requested size: 317.08165pt x 134.03922pt.
+<../figures/ecm_scenario_comparison.png, id=371, 858.3267pt x 714.0276pt>
 File: ../figures/ecm_scenario_comparison.png Graphic file (type png)
 <use ../figures/ecm_scenario_comparison.png>
 Package pdftex.def Info: ../figures/ecm_scenario_comparison.png  used on input 
 line 539.
-(pdftex.def)             Requested size: 341.47426pt x 284.0784pt.
-<../figures/persona_radar.png, id=376, 702.2235pt x 584.1825pt>
+(pdftex.def)             Requested size: 268.30386pt x 223.19844pt.
+<../figures/persona_radar.png, id=372, 702.2235pt x 584.1825pt>
 File: ../figures/persona_radar.png Graphic file (type png)
 <use ../figures/persona_radar.png>
 Package pdftex.def Info: ../figures/persona_radar.png  used on input line 547.
-(pdftex.def)             Requested size: 331.71573pt x 275.95638pt.
- [12] [13 <../figures/chatty_vs_streaming.png>]
-<../figures/device_comparison.png, id=393, 1074.414pt x 356.532pt>
+(pdftex.def)             Requested size: 268.30386pt x 223.20393pt.
+ [11 <../figures/chatty_vs_streaming.png>] [12 <../figures/ecm_scenario_compari
+son.png> <../figures/persona_radar.png>]
+<../figures/device_comparison.png, id=391, 1074.414pt x 356.532pt>
 File: ../figures/device_comparison.png Graphic file (type png)
 <use ../figures/device_comparison.png>
 Package pdftex.def Info: ../figures/device_comparison.png  used on input line 5
 87.
-(pdftex.def)             Requested size: 292.69647pt x 97.12447pt.
+(pdftex.def)             Requested size: 243.91125pt x 80.93434pt.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 599.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
@@ -1065,62 +1067,74 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 599.
 
-[14 <../figures/ecm_scenario_comparison.png>] [15 <../figures/persona_radar.png
-> <../figures/device_comparison.png>]
-<../figures/ecm_aging_effects.png, id=409, 858.5676pt x 712.8231pt>
+[13 <../figures/device_comparison.png>]
+<../figures/ecm_aging_effects.png, id=401, 858.3267pt x 714.0276pt>
 File: ../figures/ecm_aging_effects.png Graphic file (type png)
 <use ../figures/ecm_aging_effects.png>
 Package pdftex.def Info: ../figures/ecm_aging_effects.png  used on input line 6
 14.
-(pdftex.def)             Requested size: 317.08165pt x 263.25096pt.
-<../figures/charging_comparison.png, id=410, 1003.5894pt x 426.8748pt>
+(pdftex.def)             Requested size: 243.91125pt x 202.90074pt.
+ [14 <../figures/ecm_aging_effects.png>]
+<../figures/charging_comparison.png, id=412, 1003.5894pt x 426.8748pt>
 File: ../figures/charging_comparison.png Graphic file (type png)
 <use ../figures/charging_comparison.png>
 Package pdftex.def Info: ../figures/charging_comparison.png  used on input line
  647.
-(pdftex.def)             Requested size: 317.08165pt x 134.8701pt.
- [16 <../figures/ecm_aging_effects.png>]
-<../figures/figure_sensitivity_indices.png, id=421, 715.473pt x 425.6703pt>
+(pdftex.def)             Requested size: 243.91125pt x 103.74173pt.
+[15 <../figures/charging_comparison.png>]
+<../figures/figure_sensitivity_indices.png, id=421, 715.473pt x 434.3427pt>
 File: ../figures/figure_sensitivity_indices.png Graphic file (type png)
 <use ../figures/figure_sensitivity_indices.png>
 Package pdftex.def Info: ../figures/figure_sensitivity_indices.png  used on inp
-ut line 698.
-(pdftex.def)             Requested size: 292.69647pt x 174.13623pt.
-
-[17 <../figures/charging_comparison.png>] [18 <../figures/figure_sensitivity_in
-dices.png>]
-<../figures/generalization_fold.png, id=440, 1002.6258pt x 428.3202pt>
+ut line 697.
+(pdftex.def)             Requested size: 292.69647pt x 177.684pt.
+<../figures/sensitivity_3d_surface.png, id=422, 567.3195pt x 501.5538pt>
+File: ../figures/sensitivity_3d_surface.png Graphic file (type png)
+<use ../figures/sensitivity_3d_surface.png>
+Package pdftex.def Info: ../figures/sensitivity_3d_surface.png  used on input l
+ine 707.
+(pdftex.def)             Requested size: 234.15271pt x 207.00829pt.
+<../figures/input_correlation_heatmap.png, id=423, 563.4651pt x 496.9767pt>
+File: ../figures/input_correlation_heatmap.png Graphic file (type png)
+<use ../figures/input_correlation_heatmap.png>
+Package pdftex.def Info: ../figures/input_correlation_heatmap.png  used on inpu
+t line 715.
+(pdftex.def)             Requested size: 243.91125pt x 215.12904pt.
+ [16 <../figures/figure_sensitivity_indices.png> <../figures/sensitivity_3d_sur
+face.png>]
+<../figures/generalization_fold.png, id=436, 1002.6258pt x 428.3202pt>
 File: ../figures/generalization_fold.png Graphic file (type png)
 <use ../figures/generalization_fold.png>
 Package pdftex.def Info: ../figures/generalization_fold.png  used on input line
- 727.
-(pdftex.def)             Requested size: 341.47426pt x 145.87529pt.
- [19 <../figures/generalization_fold.png>] [20]
+ 742.
+(pdftex.def)             Requested size: 268.30386pt x 114.6219pt.
+ [17 <../figures/input_correlation_heatmap.png>] [18 <../figures/generalization
+_fold.png>]
 LaTeX Font Info:    Trying to load font information for OML+ptm on input line 7
-68.
+83.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlptm.fd
 File: omlptm.fd 
 )
 LaTeX Font Info:    Font shape `OML/ptm/m/n' in size <12> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 768.
- [21] [22]
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 783.
+ [19] [20]
 (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 1908F429651EA37F4106568DC935A5DA;8999.
+(rerunfilecheck)             Checksum: AB871AED88437A7CD43DE99D7E53F77F;8999.
  ) 
 Here is how much of TeX's memory you used:
- 25383 strings out of 476182
- 493299 string characters out of 5795594
- 1940975 words of memory out of 5000000
- 46799 multiletter control sequences out of 15000+600000
+ 25403 strings out of 476182
+ 494125 string characters out of 5795594
+ 1938975 words of memory out of 5000000
+ 46819 multiletter control sequences out of 15000+600000
  597660 words of font info for 123 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 84i,12n,87p,636b,531s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,12n,87p,636b,533s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texl
@@ -1130,10 +1144,10 @@ t/fonts/type1/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/ur
 w/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/
 texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (25 pages, 4507094 bytes).
+Output written on main.pdf (23 pages, 5252087 bytes).
 PDF statistics:
- 549 PDF objects out of 1000 (max. 8388607)
- 462 compressed objects within 5 object streams
+ 546 PDF objects out of 1000 (max. 8388607)
+ 457 compressed objects within 5 object streams
  138 named destinations out of 1000 (max. 500000)
- 442 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 452 words of extra memory for PDF output out of 10000 (max. 10000000)
 
