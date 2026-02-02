@@ -540,51 +540,87 @@ def compare_chatty_vs_streaming(save_path: str = None):
 
 
 def plot_rrc_state_machine(save_path: str = None):
-    """Generate RRC state machine diagram for paper."""
-    fig, ax = plt.subplots(figsize=(10, 6))
+    """Generate RRC state machine diagram for paper - FIXED version."""
+    fig, ax = plt.subplots(figsize=(12, 7))
     
-    # Draw states as circles
-    circle_idle = plt.Circle((0.2, 0.5), 0.12, color='green', alpha=0.3)
-    circle_conn = plt.Circle((0.5, 0.5), 0.12, color='red', alpha=0.3)
-    circle_tail = plt.Circle((0.8, 0.5), 0.12, color='orange', alpha=0.3)
+    # Consistent colors
+    colors = {'IDLE': '#27AE60', 'CONNECTED': '#E74C3C', 'TAIL': '#F39C12'}
     
-    ax.add_patch(circle_idle)
-    ax.add_patch(circle_conn)
-    ax.add_patch(circle_tail)
+    # Larger circles for better text fit
+    radius = 0.13
+    centers = {'IDLE': (0.18, 0.5), 'CONNECTED': (0.5, 0.5), 'TAIL': (0.82, 0.5)}
     
-    # State labels
-    ax.text(0.2, 0.5, 'IDLE\n178-300 mW', ha='center', va='center', fontsize=11, fontweight='bold')
-    ax.text(0.5, 0.5, 'CONNECTED\n800-1092 mW', ha='center', va='center', fontsize=11, fontweight='bold')
-    ax.text(0.8, 0.5, 'TAIL\n400-600 mW', ha='center', va='center', fontsize=11, fontweight='bold')
+    for state, (cx, cy) in centers.items():
+        circle = plt.Circle((cx, cy), radius, color=colors[state], alpha=0.4, 
+                            ec=colors[state], linewidth=3)
+        ax.add_patch(circle)
     
-    # Arrows
-    ax.annotate('', xy=(0.38, 0.55), xytext=(0.32, 0.55),
-                arrowprops=dict(arrowstyle='->', color='black', lw=2))
-    ax.text(0.35, 0.62, 'Data\nstarts', ha='center', fontsize=9)
+    # State labels with CORRECTED power values from Narayanan et al. 2021
+    # IDLE: DRX mode sleep
+    # CONNECTED: Active transmission (2-8W depending on throughput)  
+    # TAIL: DRX period after data stops (1092 mW for 5G mmWave)
+    ax.text(0.18, 0.52, 'IDLE', ha='center', va='center', fontsize=13, fontweight='bold')
+    ax.text(0.18, 0.45, '100-300 mW', ha='center', va='center', fontsize=10)
     
-    ax.annotate('', xy=(0.68, 0.55), xytext=(0.62, 0.55),
-                arrowprops=dict(arrowstyle='->', color='black', lw=2))
-    ax.text(0.65, 0.62, 'Data\nstops', ha='center', fontsize=9)
+    ax.text(0.5, 0.52, 'CONNECTED', ha='center', va='center', fontsize=13, fontweight='bold')
+    ax.text(0.5, 0.45, '2000-8000 mW', ha='center', va='center', fontsize=10)
     
-    ax.annotate('', xy=(0.32, 0.45), xytext=(0.68, 0.45),
-                arrowprops=dict(arrowstyle='->', color='black', lw=2, connectionstyle='arc3,rad=-0.3'))
-    ax.text(0.5, 0.25, 'Tail timer expires\n(10-20 seconds)', ha='center', fontsize=9)
+    ax.text(0.82, 0.52, 'TAIL', ha='center', va='center', fontsize=13, fontweight='bold')
+    ax.text(0.82, 0.45, '400-1092 mW', ha='center', va='center', fontsize=10)
     
-    ax.annotate('', xy=(0.62, 0.42), xytext=(0.68, 0.42),
-                arrowprops=dict(arrowstyle='->', color='black', lw=2, connectionstyle='arc3,rad=0.5'))
-    ax.text(0.72, 0.3, 'New data\n(reset timer)', ha='center', fontsize=9)
+    # Arrow 1: IDLE → CONNECTED (straight)
+    ax.annotate('', xy=(0.37, 0.55), xytext=(0.31, 0.55),
+                arrowprops=dict(arrowstyle='->', color='black', lw=2.5))
+    ax.text(0.34, 0.63, 'Data\nstarts', ha='center', fontsize=10, fontweight='bold')
+    
+    # Arrow 2: CONNECTED → TAIL (straight)
+    ax.annotate('', xy=(0.69, 0.55), xytext=(0.63, 0.55),
+                arrowprops=dict(arrowstyle='->', color='black', lw=2.5))
+    ax.text(0.66, 0.63, 'Data\nstops', ha='center', fontsize=10, fontweight='bold')
+    
+    # Arrow 3: TAIL → IDLE (curved, bottom)
+    from matplotlib.patches import FancyArrowPatch
+    arrow3 = FancyArrowPatch((0.70, 0.40), (0.30, 0.40),
+                             connectionstyle="arc3,rad=-0.4",
+                             arrowstyle='->', mutation_scale=20,
+                             color='black', linewidth=2.5)
+    ax.add_patch(arrow3)
+    ax.text(0.50, 0.22, 'Tail timer expires\n(10-20 seconds)', 
+            ha='center', fontsize=10, fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='gray', alpha=0.9))
+    
+    # Arrow 4: TAIL → CONNECTED (curved, top - reset timer)
+    arrow4 = FancyArrowPatch((0.70, 0.58), (0.62, 0.58),
+                             connectionstyle="arc3,rad=0.6",
+                             arrowstyle='->', mutation_scale=15,
+                             color='#E74C3C', linewidth=2)
+    ax.add_patch(arrow4)
+    ax.text(0.66, 0.73, 'New data\n(reset timer)', ha='center', fontsize=9, 
+            color='#E74C3C', fontweight='bold')
+    
+    # Key insight box
+    key_text = ("Key Insight: 5G mmWave TAIL power (1092 mW)\n"
+                "is higher than 4G active power!\n"
+                "This is the 'hidden battery killer'.")
+    ax.text(0.50, 0.08, key_text, ha='center', fontsize=10, 
+            bbox=dict(boxstyle='round,pad=0.5', facecolor='#FFF3CD', 
+                     edgecolor='#856404', linewidth=2),
+            transform=ax.transAxes)
     
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.set_aspect('equal')
     ax.axis('off')
-    ax.set_title('5G RRC State Machine\n(The Hidden Battery Killer)', fontsize=14, fontweight='bold')
+    ax.set_title('5G RRC State Machine\n(The Hidden Battery Killer)', 
+                 fontsize=16, fontweight='bold', pad=20)
+    
+    plt.tight_layout()
     
     if save_path:
         plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
         print(f"Saved: {save_path}")
     
-    plt.show()
+    plt.close()
 
 
 if __name__ == "__main__":

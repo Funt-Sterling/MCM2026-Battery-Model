@@ -21,29 +21,28 @@ from typing import Dict, List, Tuple
 from dataclasses import dataclass
 import warnings
 
-from battery_model import (
-    BatteryParameters, ExtendedBatteryModel,
-    constant_current, compute_time_to_empty
+from ecm_model import (
+    EquivalentCircuitModel, ECMParameters
 )
+from battery_model import constant_current
 
 # =============================================================================
 # SECTION 1: PARAMETER RANGES FOR SENSITIVITY ANALYSIS
 # =============================================================================
 
 PARAM_RANGES = {
-    # Battery parameters
-    'Q_nom': (3000, 5000, 'mAh', 'Nominal Capacity'),
-    'c': (0.4, 0.8, '-', 'KiBaM Capacity Ratio'),
-    'k': (0.001, 0.005, '1/s', 'KiBaM Rate Constant'),
-    
-    # Peukert effect
-    'n_peukert': (1.02, 1.15, '-', 'Peukert Exponent'),
+    # ECM electrical parameters
+    'Q_nom': (3.0, 5.0, 'Ah', 'Nominal Capacity'),
+    'R0_ref': (0.05, 0.15, 'Ω', 'Internal Resistance R₀'),
+    'R1_ref': (0.015, 0.05, 'Ω', 'RC1 Resistance R₁'),
+    'R2_ref': (0.01, 0.04, 'Ω', 'RC2 Resistance R₂'),
+    'tau1_ref': (20, 80, 's', 'RC1 Time Constant τ₁'),
+    'tau2_ref': (150, 500, 's', 'RC2 Time Constant τ₂'),
+    'R0_temp_coeff': (0.01, 0.03, '1/K', 'R₀ Temp Coefficient β'),
     
     # Thermal parameters
-    'E_a': (0.2, 0.5, 'eV', 'Activation Energy'),
-    'C_th': (30, 60, 'J/K', 'Thermal Capacitance'),
+    'M_th': (35, 60, 'J/K', 'Thermal Mass'),
     'R_th': (5, 15, 'K/W', 'Thermal Resistance'),
-    'R_int_ref': (0.05, 0.20, 'Ω', 'Internal Resistance'),
     
     # External conditions
     'T_ambient': (263, 313, 'K', 'Ambient Temperature'),  # -10°C to 40°C
@@ -62,14 +61,64 @@ class SensitivityResult:
     elasticity: float
 
 
+def compute_time_to_empty_ecm(model: EquivalentCircuitModel,
+                              I_func,
+                              SOC_0: float = 1.0,
+                              T_ambient: float = 298.15,
+                              max_hours: float = 24) -> float:
+    """
+    Compute time-to-empty for ECM model using voltage/SOC cutoff events.
+    """
+    t_span = (0, max_hours * 3600)
+    result = model.simulate(I_func=I_func, t_span=t_span, SOC_0=SOC_0, T_amb=T_ambient)
+    return result.get('time_to_empty')
+
+
+def compute_energy_efficiency(model: EquivalentCircuitModel,
+                              I_func,
+                              SOC_0: float = 1.0,
+                              T_ambient: float = 298.15,
+                              max_hours: float = 24) -> float:
+    """
+    Compute energy efficiency = Energy delivered / Theoretical max energy.
+    
+    This metric IS affected by R0 because:
+    - Higher R0 → more I²R losses → lower terminal voltage → less energy delivered
+    - Energy = integral of V(t) * I(t) dt
+    - Theoretical max = Q_nom * V_nom * (SOC_start - SOC_end)
+    """
+    t_span = (0, max_hours * 3600)
+    result = model.simulate(I_func=I_func, t_span=t_span, SOC_0=SOC_0, T_amb=T_ambient)
+    
+    # Calculate delivered energy (Wh)
+    t = result['t']
+    V = result['voltage']
+    I_A = result['current_A']
+    
+    # Trapezoidal integration: E = ∫V·I dt (in Wh)
+    E_delivered = np.trapz(V * I_A, t) / 3600.0  # Wh
+    
+    # Theoretical energy = Q * V_nom * ΔSOC
+    SOC_start = result['SOC'][0]
+    SOC_end = result['SOC'][-1]
+    Q_nom = model.params.Q_nom  # Ah
+    V_nom = model.params.V_nom  # V
+    E_theoretical = Q_nom * V_nom * (SOC_start - SOC_end)  # Wh
+    
+    # Efficiency = delivered / theoretical
+    efficiency = E_delivered / E_theoretical if E_theoretical > 0 else 0
+    
+    return efficiency
+
+
 # =============================================================================
 # SECTION 2: ONE-AT-A-TIME SENSITIVITY ANALYSIS
 # =============================================================================
 
 def oat_sensitivity(param_name: str, 
                    n_samples: int = 20,
-                   base_params: BatteryParameters = None,
-                   I_load: float = 500,
+                   base_params: ECMParameters = None,
+                   I_load: float = 1500,
                    T_ambient: float = 298.15) -> SensitivityResult:
     """
     One-at-a-Time (OAT) sensitivity analysis.
@@ -80,14 +129,14 @@ def oat_sensitivity(param_name: str,
         param_name: Name of parameter to vary
         n_samples: Number of samples in the range
         base_params: Baseline parameter set
-        I_load: Load current [mA]
+        I_load: Load current [mA] (default 1500mA high-load for R0 sensitivity)
         T_ambient: Ambient temperature [K]
     
     Returns:
         SensitivityResult object
     """
     if base_params is None:
-        base_params = BatteryParameters()
+        base_params = ECMParameters()
     
     # Get parameter range
     if param_name not in PARAM_RANGES:
@@ -102,19 +151,20 @@ def oat_sensitivity(param_name: str,
         # Create modified parameters
         params_dict = {
             'Q_nom': base_params.Q_nom,
-            'c': base_params.c,
-            'k': base_params.k,
-            'n_peukert': base_params.n_peukert,
-            'E_a': base_params.E_a,
-            'C_th': base_params.C_th,
+            'R0_ref': base_params.R0_ref,
+            'R1_ref': base_params.R1_ref,
+            'R2_ref': base_params.R2_ref,
+            'tau1_ref': base_params.tau1_ref,
+            'tau2_ref': base_params.tau2_ref,
+            'R0_temp_coeff': base_params.R0_temp_coeff,
+            'M_th': base_params.M_th,
             'R_th': base_params.R_th,
-            'R_int_ref': base_params.R_int_ref,
         }
         
         # Update the varied parameter
         if param_name in params_dict:
             params_dict[param_name] = val
-            params = BatteryParameters(**params_dict)
+            params = ECMParameters(**params_dict)
         else:
             params = base_params
         
@@ -129,11 +179,11 @@ def oat_sensitivity(param_name: str,
             T_amb = T_ambient
             I = I_load
         
-        # Run simulation
-        model = ExtendedBatteryModel(params)
-        tte = compute_time_to_empty(model, constant_current(I), 
-                                    T_ambient=T_amb, max_hours=24)
-        outputs.append(tte if tte else 24.0)
+        # Run simulation - use energy efficiency (affected by R0!)
+        model = EquivalentCircuitModel(params)
+        efficiency = compute_energy_efficiency(model, constant_current(I), 
+                        T_ambient=T_amb, max_hours=24)
+        outputs.append(efficiency if efficiency else 0.0)
     
     outputs = np.array(outputs)
     
@@ -244,13 +294,13 @@ def plot_tornado_diagram(results: Dict[str, SensitivityResult],
     ax.set_title('Tornado Diagram: Parameter Sensitivity Analysis',
                  fontsize=14, fontweight='bold')
     
-    # Legend
+    # Legend - move to UPPER LEFT to avoid overlap with bars
     from matplotlib.patches import Patch
     legend_elements = [
         Patch(facecolor='#81C784', label='Increases Battery Life'),
         Patch(facecolor='#E57373', label='Decreases Battery Life')
     ]
-    ax.legend(handles=legend_elements, loc='lower right')
+    ax.legend(handles=legend_elements, loc='upper left', fontsize=10)
     
     ax.grid(True, axis='x', alpha=0.3)
     
@@ -371,27 +421,28 @@ def monte_carlo_uncertainty(n_samples: int = 500,
     tte_samples = []
     
     # Define parameter distributions (uniform within ±10% of nominal)
-    base = BatteryParameters()
+    base = ECMParameters()
     
     for i in range(n_samples):
         if (i + 1) % 100 == 0:
             print(f"  Sample {i+1}/{n_samples}")
         
         # Sample parameters
-        params = BatteryParameters(
+        params = ECMParameters(
             Q_nom=np.random.uniform(0.9, 1.1) * base.Q_nom,
-            c=np.random.uniform(0.55, 0.70),
-            k=np.random.uniform(0.0015, 0.0025),
-            n_peukert=np.random.uniform(1.03, 1.08),
-            E_a=np.random.uniform(0.30, 0.40),
-            C_th=np.random.uniform(40, 50),
-            R_th=np.random.uniform(6, 10),
-            R_int_ref=np.random.uniform(0.08, 0.12),
+            R0_ref=np.random.uniform(0.9, 1.1) * base.R0_ref,
+            R1_ref=np.random.uniform(0.9, 1.1) * base.R1_ref,
+            R2_ref=np.random.uniform(0.9, 1.1) * base.R2_ref,
+            tau1_ref=np.random.uniform(0.9, 1.1) * base.tau1_ref,
+            tau2_ref=np.random.uniform(0.9, 1.1) * base.tau2_ref,
+            R0_temp_coeff=np.random.uniform(0.9, 1.1) * base.R0_temp_coeff,
+            M_th=np.random.uniform(0.9, 1.1) * base.M_th,
+            R_th=np.random.uniform(0.9, 1.1) * base.R_th,
         )
         
-        model = ExtendedBatteryModel(params)
-        tte = compute_time_to_empty(model, constant_current(I_load),
-                                    T_ambient=T_ambient, max_hours=24)
+        model = EquivalentCircuitModel(params)
+        tte = compute_time_to_empty_ecm(model, constant_current(I_load),
+                                        T_ambient=T_ambient, max_hours=24)
         tte_samples.append(tte if tte else 24.0)
     
     tte_samples = np.array(tte_samples)
@@ -423,38 +474,40 @@ def plot_uncertainty_histogram(mc_results: Dict,
     
     samples = mc_results['samples']
     
-    ax.hist(samples, bins=30, density=True, alpha=0.7, color='#2E86AB',
-            edgecolor='white', linewidth=1)
+    ax.hist(samples, bins=25, density=True, alpha=0.7, color='#5DADE2',
+            edgecolor='white', linewidth=1.2)
     
     # Fit and plot normal distribution
     x = np.linspace(samples.min(), samples.max(), 100)
     from scipy.stats import norm
     pdf = norm.pdf(x, mc_results['mean'], mc_results['std'])
-    ax.plot(x, pdf, 'r-', linewidth=2, label='Normal fit')
+    ax.plot(x, pdf, 'r-', linewidth=2.5, label='Normal fit')
     
-    # Mark statistics
-    ax.axvline(mc_results['mean'], color='red', linestyle='-', linewidth=2,
+    # Mark statistics with clearer lines
+    ax.axvline(mc_results['mean'], color='red', linestyle='-', linewidth=2.5,
                label=f"Mean: {mc_results['mean']:.2f}h")
-    ax.axvline(mc_results['p5'], color='orange', linestyle='--', linewidth=1.5,
+    ax.axvline(mc_results['p5'], color='orange', linestyle='--', linewidth=2,
                label=f"5th percentile: {mc_results['p5']:.2f}h")
-    ax.axvline(mc_results['p95'], color='orange', linestyle='--', linewidth=1.5,
+    ax.axvline(mc_results['p95'], color='orange', linestyle='--', linewidth=2,
                label=f"95th percentile: {mc_results['p95']:.2f}h")
     
     ax.set_xlabel('Time-to-Empty (hours)', fontsize=12)
     ax.set_ylabel('Probability Density', fontsize=12)
     ax.set_title('Monte Carlo Uncertainty Quantification\n(500mA load, 25°C ambient)',
                  fontsize=14, fontweight='bold')
-    ax.legend(loc='upper right')
+    
+    # Legend in upper right - no overlap with histogram
+    ax.legend(loc='upper right', fontsize=10, framealpha=0.95)
     ax.grid(True, alpha=0.3)
     
-    # Add text box with statistics
+    # Stats box in upper LEFT to avoid legend overlap
     stats_text = (f"N = {len(samples)}\n"
                   f"μ = {mc_results['mean']:.2f} h\n"
                   f"σ = {mc_results['std']:.2f} h\n"
                   f"90% CI: [{mc_results['p5']:.2f}, {mc_results['p95']:.2f}]")
     ax.text(0.02, 0.98, stats_text, transform=ax.transAxes,
             fontsize=10, verticalalignment='top',
-            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.95, edgecolor='gray'))
     
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
@@ -495,20 +548,43 @@ def calculate_sensitivity_indices_ecm():
     print("O-PRIZE SENSITIVITY INDICES (ECM Model)")
     print("="*60)
     
-    # Baseline simulation
-    def compute_tte(params):
-        """Compute time-to-empty for given parameters."""
+    # Use ENERGY EFFICIENCY as the metric (affected by R0 losses)
+    def compute_efficiency(params):
+        """Compute energy efficiency = Energy_out / Energy_ideal."""
         model = EquivalentCircuitModel(params)
         result = model.simulate(
-            I_func=lambda t: 500,  # 500mA moderate usage
-            t_span=(0, 16*3600),
+            I_func=lambda t: 1500,  # 1500mA high-load (gaming) - accentuates R0 losses
+            t_span=(0, 8*3600),
             T_amb=298.15
         )
-        return result['time_to_empty'] if result['time_to_empty'] else 16.0
+        
+        # Energy delivered to load = integral of V*I
+        dt = np.diff(result['t'])
+        V = result['voltage'][:-1]
+        I = result['current_A'][:-1]
+        energy_out = np.sum(V * I * dt) / 3600  # Wh
+        
+        # Ideal energy = Q_nom * V_nom
+        energy_ideal = params.Q_nom * params.V_nom
+        
+        return energy_out / energy_ideal if energy_ideal > 0 else 0
     
     base_params = ECMParameters()
+    base_eff = compute_efficiency(base_params)
+    print(f"\nBaseline Energy Efficiency: {base_eff:.3f} ({base_eff*100:.1f}%)")
+    
+    # Also compute TTE for comparison
+    def compute_tte(params):
+        model = EquivalentCircuitModel(params)
+        result = model.simulate(
+            I_func=lambda t: 1500,
+            t_span=(0, 8*3600),
+            T_amb=298.15
+        )
+        return result['time_to_empty'] if result['time_to_empty'] else 8.0
+    
     base_tte = compute_tte(base_params)
-    print(f"\nBaseline TTE: {base_tte:.3f} hours")
+    print(f"Baseline TTE: {base_tte:.3f} hours")
     
     # Parameters to analyze (with units)
     param_info = {
@@ -538,25 +614,25 @@ def calculate_sensitivity_indices_ecm():
         # +10% perturbation
         high_params = ECMParameters()
         setattr(high_params, param_name, base_value * (1 + perturbation))
-        high_tte = compute_tte(high_params)
+        high_eff = compute_efficiency(high_params)
         
         # -10% perturbation
         low_params = ECMParameters()
         setattr(low_params, param_name, base_value * (1 - perturbation))
-        low_tte = compute_tte(low_params)
+        low_eff = compute_efficiency(low_params)
         
-        # Calculate sensitivity index
-        # S = (ΔY/Y) / (ΔX/X) = (high - low) / base_tte / (2 * perturbation)
-        delta_tte = high_tte - low_tte
-        S = (delta_tte / base_tte) / (2 * perturbation)
+        # Calculate sensitivity index based on efficiency
+        # S = (ΔY/Y) / (ΔX/X) = (high - low) / base / (2 * perturbation)
+        delta_eff = high_eff - low_eff
+        S = (delta_eff / base_eff) / (2 * perturbation) if base_eff > 0 else 0
         
         sensitivities[param_name] = {
             'description': description,
             'unit': unit,
             'base_value': base_value,
             'S_index': S,
-            'low_tte': low_tte,
-            'high_tte': high_tte,
+            'low_eff': low_eff,
+            'high_eff': high_eff,
         }
         
         # Interpretation
@@ -715,54 +791,65 @@ def plot_sensitivity_indices_bar(sensitivities: dict = None,
     names = [data['description'] for _, data in sorted_params]
     values = [data['S_index'] for _, data in sorted_params]
     
-    # Color by sensitivity level
+    # Color by sensitivity level - use distinct, professional colors
     colors = []
     for v in values:
         if abs(v) > 0.8:
-            colors.append('#e74c3c')  # Red - High
+            colors.append('#C0392B')  # Dark Red - High
         elif abs(v) > 0.3:
-            colors.append('#f39c12')  # Orange - Medium
+            colors.append('#E67E22')  # Orange - Medium
         else:
-            colors.append('#27ae60')  # Green - Low/Robust
+            colors.append('#229954')  # Green - Low/Robust
     
     fig, ax = plt.subplots(figsize=(10, 6))
     
     y_pos = np.arange(len(names))
-    bars = ax.barh(y_pos, values, color=colors, edgecolor='black', alpha=0.8)
+    bars = ax.barh(y_pos, values, color=colors, edgecolor='#333333', linewidth=1.2, height=0.7)
     
-    # Add reference lines
-    ax.axvline(x=0, color='black', linewidth=1)
-    ax.axvline(x=1.0, color='gray', linestyle='--', alpha=0.5, label='Linear (S=1)')
-    ax.axvline(x=-1.0, color='gray', linestyle='--', alpha=0.5)
-    ax.axvline(x=0.3, color='orange', linestyle=':', alpha=0.5)
-    ax.axvline(x=-0.3, color='orange', linestyle=':', alpha=0.5)
+    # Add reference lines with better labels
+    ax.axvline(x=0, color='black', linewidth=1.5)
+    ax.axvline(x=1.0, color='#7F8C8D', linestyle='--', linewidth=1.5, alpha=0.7)
+    ax.axvline(x=-1.0, color='#7F8C8D', linestyle='--', linewidth=1.5, alpha=0.7)
+    
+    # Add threshold zones
+    ax.axvspan(-0.3, 0.3, alpha=0.1, color='green', zorder=0)
+    ax.axvspan(0.3, 0.8, alpha=0.1, color='orange', zorder=0)
+    ax.axvspan(-0.8, -0.3, alpha=0.1, color='orange', zorder=0)
+    ax.axvspan(0.8, 1.5, alpha=0.1, color='red', zorder=0)
+    ax.axvspan(-1.5, -0.8, alpha=0.1, color='red', zorder=0)
     
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(names)
-    ax.set_xlabel('Sensitivity Index (S)', fontsize=12)
-    ax.set_title('Parameter Sensitivity Analysis\n(S = % change in TTE per % change in parameter)', 
+    ax.set_yticklabels(names, fontsize=10)
+    ax.set_xlabel('Sensitivity Index (S)', fontsize=12, fontweight='bold')
+    ax.set_title('Parameter Sensitivity Analysis\n(S = % change in energy efficiency per % change in parameter)', 
                  fontsize=13, fontweight='bold')
     
-    # Add value labels
+    # Add value labels with better positioning
     for bar, val in zip(bars, values):
-        x_pos = val + 0.02 if val >= 0 else val - 0.02
+        x_pos = val + 0.03 if val >= 0 else val - 0.03
         ha = 'left' if val >= 0 else 'right'
-        ax.text(x_pos, bar.get_y() + bar.get_height()/2, f'{val:.3f}',
-                va='center', ha=ha, fontsize=9)
+        ax.text(x_pos, bar.get_y() + bar.get_height()/2, f'{val:+.3f}',
+                va='center', ha=ha, fontsize=9, fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.8, edgecolor='none'))
     
-    # Legend
+    # Legend with clear position
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor='#e74c3c', label='High (|S| > 0.8)'),
-        Patch(facecolor='#f39c12', label='Medium (0.3 < |S| < 0.8)'),
-        Patch(facecolor='#27ae60', label='Low/Robust (|S| < 0.3)'),
+        Patch(facecolor='#C0392B', edgecolor='black', label='High (|S| > 0.8)'),
+        Patch(facecolor='#E67E22', edgecolor='black', label='Medium (0.3 < |S| < 0.8)'),
+        Patch(facecolor='#229954', edgecolor='black', label='Low/Robust (|S| < 0.3)'),
     ]
-    ax.legend(handles=legend_elements, loc='lower right')
+    ax.legend(handles=legend_elements, loc='lower right', fontsize=9, framealpha=0.95)
     
-    ax.grid(True, alpha=0.3, axis='x')
-    ax.set_xlim(-1.5, 1.5)
+    ax.grid(True, alpha=0.4, axis='x', linestyle='-', linewidth=0.5)
+    ax.set_xlim(-1.3, 1.3)
+    ax.set_ylim(-0.5, len(names) - 0.5)
     
-    plt.tight_layout()
+    # Add interpretation note
+    note = "Positive S: output increases with parameter | Negative S: output decreases"
+    fig.text(0.5, 0.01, note, ha='center', fontsize=9, style='italic', color='#555555')
+    
+    plt.tight_layout(rect=[0, 0.03, 1, 1])
     plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
     print(f"Saved: {output_file}")
     plt.close()

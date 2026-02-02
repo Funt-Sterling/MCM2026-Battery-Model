@@ -518,9 +518,11 @@ def compare_all_personas(save_path: str = None):
     ax.set_xlim(0, 100)
     ax.axvline(x=20, color='red', linestyle='--', alpha=0.5)
     
-    for bar, soc in zip(bars, final_socs):
-        ax.text(soc + 2, bar.get_y() + bar.get_height()/2, f'{soc:.0f}%', 
-               va='center', fontweight='bold')
+    # Add percentage labels on bars - FIXED to show values
+    for bar, soc, name in zip(bars, final_socs, names):
+        label_x = soc + 2 if soc < 85 else soc - 8
+        ax.text(label_x, bar.get_y() + bar.get_height()/2, f'{soc:.0f}%', 
+               va='center', fontweight='bold', fontsize=10)
     
     plt.suptitle('Five User Personas: A Day in Battery Life', fontsize=14, fontweight='bold')
     plt.tight_layout()

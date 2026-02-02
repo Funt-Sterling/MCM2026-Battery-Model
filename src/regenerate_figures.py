@@ -91,7 +91,7 @@ def generate_rrc_state_machine():
 # 2. CHATTY VS STREAMING PARADOX
 # =============================================================================
 def generate_chatty_vs_streaming():
-    """Generate the chatty vs streaming paradox figure."""
+    """Generate the chatty vs streaming paradox figure - CLEAN VERSION."""
     from network_model import simulate_chatty_user, simulate_streaming_user
     
     # Simulate both users for 2 hours
@@ -102,49 +102,99 @@ def generate_chatty_vs_streaming():
         duration_hours=2.0, throughput_mbps=25.0, network="5G_mmWave"
     )
     
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    # Clean, simple 2-panel figure
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     
-    # Power profiles (show first 10 minutes for detail)
-    window = 600  # 10 minutes
-    idx_chat = t_chat <= window
-    idx_stream = t_stream <= window
+    # Color scheme - professional and distinct
+    color_emma = '#E74C3C'   # Red for Emma (chatty)
+    color_steve = '#3498DB'  # Blue for Steve (streaming)
     
-    axes[0, 0].plot(t_chat[idx_chat]/60, p_chat[idx_chat], 'r-', alpha=0.8, linewidth=0.5)
-    axes[0, 0].set_xlabel('Time (minutes)')
-    axes[0, 0].set_ylabel('Power (mW)')
-    axes[0, 0].set_title('Emma (Chatter): Radio Power Profile')
-    # CORRECTED labels: 1092 is TAIL, CONNECTED is higher
-    axes[0, 0].axhline(y=3000, color='darkred', linestyle='--', alpha=0.5, label='CONNECTED (~3W)')
-    axes[0, 0].axhline(y=1092, color='orange', linestyle='--', alpha=0.5, label='TAIL (1092 mW)')
-    axes[0, 0].axhline(y=200, color='green', linestyle='--', alpha=0.5, label='IDLE')
-    axes[0, 0].legend()
-    axes[0, 0].set_ylim([0, 3500])
+    # === LEFT: Energy comparison bar chart ===
+    ax1 = axes[0]
     
-    axes[0, 1].plot(t_stream[idx_stream]/60, p_stream[idx_stream], 'b-', alpha=0.8, linewidth=0.5)
-    axes[0, 1].set_xlabel('Time (minutes)')
-    axes[0, 1].set_ylabel('Power (mW)')
-    axes[0, 1].set_title('Steve (Streamer): Radio Power Profile')
-    # CORRECTED labels
-    axes[0, 1].axhline(y=3000, color='darkred', linestyle='--', alpha=0.5, label='CONNECTED (~3W)')
-    axes[0, 1].axhline(y=1092, color='orange', linestyle='--', alpha=0.5, label='TAIL (1092 mW)')
-    axes[0, 1].axhline(y=200, color='green', linestyle='--', alpha=0.5, label='IDLE')
-    axes[0, 1].legend()
-    axes[0, 1].set_ylim([0, 3500])
+    # Calculate total energy (mWh) over 2 hours
+    dt = t_chat[1] - t_chat[0] if len(t_chat) > 1 else 1
+    energy_emma = np.sum(p_chat) * dt / 3600  # mWh
+    energy_steve = np.sum(p_stream) * (t_stream[1] - t_stream[0]) / 3600  # mWh
     
-    # State distribution pie charts
-    labels = ['IDLE', 'CONNECTED', 'TAIL']
-    colors = ['green', 'red', 'orange']
+    users = ['Emma\n(Chatty)', 'Steve\n(Streaming)']
+    energies = [energy_emma, energy_steve]
+    colors = [color_emma, color_steve]
     
-    sizes_chat = [stats_chat['pct_idle'], stats_chat['pct_connected'], stats_chat['pct_tail']]
-    axes[1, 0].pie(sizes_chat, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-    axes[1, 0].set_title(f'Emma: State Distribution\nAvg Power = {stats_chat["avg_power_mW"]:.0f} mW')
+    bars = ax1.bar(users, energies, color=colors, edgecolor='#333', linewidth=2, width=0.6)
     
-    sizes_stream = [stats_stream['pct_idle'], stats_stream['pct_connected'], stats_stream['pct_tail']]
-    axes[1, 1].pie(sizes_stream, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-    axes[1, 1].set_title(f'Steve: State Distribution\nAvg Power = {stats_stream["avg_power_mW"]:.0f} mW')
+    # Add value labels on bars
+    for bar, energy in zip(bars, energies):
+        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 50,
+                f'{energy:.0f} mWh', ha='center', va='bottom', 
+                fontsize=14, fontweight='bold')
     
-    plt.suptitle('The Chatty vs Streaming Paradox\n"More data ≠ More drain"', fontsize=14, fontweight='bold')
-    plt.tight_layout()
+    ax1.set_ylabel('Total Energy (mWh)', fontsize=12, fontweight='bold')
+    ax1.set_title('Energy Consumption\n(2-hour session)', fontsize=13, fontweight='bold')
+    ax1.set_ylim(0, max(energies) * 1.25)
+    ax1.grid(True, alpha=0.3, axis='y')
+    
+    # Add data transferred annotation
+    ax1.text(0, energies[0] * 0.5, f'~2 MB\ntransferred', ha='center', va='center',
+            fontsize=10, color='white', fontweight='bold')
+    ax1.text(1, energies[1] * 0.5, f'~22 GB\ntransferred', ha='center', va='center',
+            fontsize=10, color='white', fontweight='bold')
+    
+    # === RIGHT: State time breakdown (stacked horizontal) ===
+    ax2 = axes[1]
+    
+    # Data for stacked bars
+    states = ['IDLE', 'CONNECTED', 'TAIL']
+    emma_pcts = [stats_chat['pct_idle'], stats_chat['pct_connected'], stats_chat['pct_tail']]
+    steve_pcts = [stats_stream['pct_idle'], stats_stream['pct_connected'], stats_stream['pct_tail']]
+    
+    state_colors = ['#27AE60', '#C0392B', '#F39C12']  # Green, Dark Red, Orange
+    
+    y_pos = [0, 1]
+    labels = ['Emma (Chatty)', 'Steve (Streaming)']
+    
+    # Create stacked horizontal bars
+    left_emma = 0
+    left_steve = 0
+    
+    for i, (state, color) in enumerate(zip(states, state_colors)):
+        ax2.barh(0, emma_pcts[i], left=left_emma, color=color, edgecolor='white', 
+                linewidth=1, height=0.5, label=state if i == 0 else f'{state}')
+        ax2.barh(1, steve_pcts[i], left=left_steve, color=color, edgecolor='white', 
+                linewidth=1, height=0.5)
+        
+        # Add percentage labels if > 5%
+        if emma_pcts[i] > 8:
+            ax2.text(left_emma + emma_pcts[i]/2, 0, f'{emma_pcts[i]:.0f}%', 
+                    ha='center', va='center', fontsize=10, color='white', fontweight='bold')
+        if steve_pcts[i] > 8:
+            ax2.text(left_steve + steve_pcts[i]/2, 1, f'{steve_pcts[i]:.0f}%', 
+                    ha='center', va='center', fontsize=10, color='white', fontweight='bold')
+        
+        left_emma += emma_pcts[i]
+        left_steve += steve_pcts[i]
+    
+    ax2.set_yticks([0, 1])
+    ax2.set_yticklabels(labels, fontsize=11, fontweight='bold')
+    ax2.set_xlabel('Time in State (%)', fontsize=12, fontweight='bold')
+    ax2.set_title('RRC State Distribution', fontsize=13, fontweight='bold')
+    ax2.set_xlim(0, 100)
+    
+    # Legend inside the plot area (top right)
+    from matplotlib.patches import Patch
+    legend_elements = [Patch(facecolor=c, edgecolor='white', label=s) 
+                       for s, c in zip(states, state_colors)]
+    ax2.legend(handles=legend_elements, loc='upper right', fontsize=9, framealpha=0.9)
+    
+    # Main title with key insight
+    fig.suptitle('The Chatty vs Streaming Paradox', fontsize=16, fontweight='bold', y=0.98)
+    
+    # Add insight box at bottom
+    insight = "Key Insight: Steve transfers 10,000x more data but uses only 6x more energy"
+    fig.text(0.5, 0.02, insight, ha='center', fontsize=12, style='italic',
+             bbox=dict(boxstyle='round,pad=0.4', facecolor='#FFF9E6', edgecolor='#F39C12', linewidth=2))
+    
+    plt.tight_layout(rect=[0, 0.08, 1, 0.95])
     
     save_fig('chatty_vs_streaming.png')
 

@@ -169,24 +169,26 @@ def generate_validation_plots(save_path: str = None):
     # ==========================================================================
     ax2 = axes[0, 1]
     
-    # Reference data
+    # Reference data (12 Wh battery at 1W = 12 hours ideal)
     ax2.scatter(REFERENCE_DISCHARGE_TIME, REFERENCE_DISCHARGE_SOC, s=80, c='blue',
                marker='s', label='Typical Smartphone', zorder=5)
     
-    # Our model simulation
-    model = SimpleECM(Q_nom=3.2, R0=0.03, R1=0.02, C1=800)  # 12 Wh battery
-    I_load = 1.0 / 3.7  # ~1W at 3.7V nominal = 0.27A
+    # Our model simulation - match the reference data behavior
+    # 12 Wh battery = 3.24 Ah at 3.7V nominal
+    model = SimpleECM(Q_nom=3.24, R0=0.05, R1=0.03, C1=1000)
+    I_load = 1.0 / 3.7  # 1W at 3.7V = 0.27A
     times, socs, voltages = model.simulate_discharge(I_load, 14)
     
+    # Model output - linear discharge for constant power approximation
     ax2.plot(times, socs, 'r-', linewidth=2, label='ECM Model')
     
     ax2.set_xlabel('Time (hours)')
     ax2.set_ylabel('State of Charge (%)')
     ax2.set_title('(b) Discharge Validation: 1W Constant Load')
-    ax2.legend()
+    ax2.legend(loc='upper right')
     ax2.grid(True, alpha=0.3)
     ax2.set_xlim(0, 14)
-    ax2.set_ylim(0, 100)
+    ax2.set_ylim(0, 105)
     
     # ==========================================================================
     # Plot 3: Aging Validation
@@ -197,14 +199,15 @@ def generate_validation_plots(save_path: str = None):
     ax3.scatter(NASA_CYCLES, NASA_CAPACITY, s=80, c='blue', marker='^',
                label='NASA B0005 Data', zorder=5)
     
-    # Our √N model
+    # Our √N model - use SAME alpha for plot and R² calculation!
+    alpha_fit = 0.022
     cycles_model = np.linspace(0, 600, 100)
-    capacity_model = aging_model(cycles_model, alpha=0.0089)
+    capacity_model = aging_model(cycles_model, alpha=alpha_fit)
     
     ax3.plot(cycles_model, capacity_model, 'r-', linewidth=2, 
             label='√N Model: $Q = Q_0(1 - α\\sqrt{N})$')
     
-    # ±2σ confidence band (assuming 5% variability)
+    # ±3% confidence band
     ax3.fill_between(cycles_model, 
                     capacity_model - 3,
                     capacity_model + 3,
@@ -213,19 +216,19 @@ def generate_validation_plots(save_path: str = None):
     ax3.set_xlabel('Cycle Count')
     ax3.set_ylabel('Remaining Capacity (%)')
     ax3.set_title('(c) Aging Validation: NASA B0005 Dataset')
-    ax3.legend()
+    ax3.legend(loc='upper right')
     ax3.grid(True, alpha=0.3)
     ax3.axhline(y=80, color='gray', linestyle='--', alpha=0.5)
     ax3.text(500, 81, '80% EOL threshold', fontsize=9)
     
-    # R² calculation with CORRECTED alpha
-    capacity_pred = aging_model(NASA_CYCLES, alpha=0.022)
+    # R² calculation with SAME alpha
+    capacity_pred = aging_model(NASA_CYCLES, alpha=alpha_fit)
     ss_res = np.sum((NASA_CAPACITY - capacity_pred)**2)
     ss_tot = np.sum((NASA_CAPACITY - np.mean(NASA_CAPACITY))**2)
     r2 = 1 - ss_res/ss_tot if ss_tot > 0 else 0
     ax3.text(0.05, 0.05, f'R² = {r2:.4f}', transform=ax3.transAxes, fontsize=10,
             bbox=dict(boxstyle='round', facecolor='wheat'))
-    ax3.text(0.05, 0.15, f'α = 0.022 (fitted)', transform=ax3.transAxes, fontsize=10,
+    ax3.text(0.05, 0.15, f'α = {alpha_fit} (fitted)', transform=ax3.transAxes, fontsize=10,
             bbox=dict(boxstyle='round', facecolor='wheat'))
     
     # ==========================================================================
@@ -245,17 +248,15 @@ def generate_validation_plots(save_path: str = None):
     ax4.set_title('(d) 5G Power States: Narayanan et al. (SIGCOMM 2021)\nCORRECTED: 1092 mW = TAIL power, not active!')
     ax4.grid(True, alpha=0.3, axis='y')
     
-    # Add value labels
+    # Add value labels on top of bars
     for bar, val in zip(bars, NARAYANAN_POWER):
-        ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 50,
+        ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 100,
                 f'{val}', ha='center', fontsize=9, fontweight='bold')
     
-    # Highlight the key insight - CORRECTED
-    ax4.annotate('mmWave TAIL power:\nHigher than 4G ACTIVE!',
-                xy=(3, 1092), xytext=(4.3, 1200),
-                fontsize=9, fontweight='bold',
-                arrowprops=dict(arrowstyle='->', color='red'),
-                bbox=dict(boxstyle='round', facecolor='lightyellow'))
+    # Clean annotation - no arrow, just position it better
+    ax4.text(0.72, 0.35, 'mmWave TAIL:\nHigher than\n4G ACTIVE!',
+            transform=ax4.transAxes, fontsize=9, fontweight='bold', color='red',
+            bbox=dict(boxstyle='round', facecolor='lightyellow', edgecolor='red'))
     
     plt.suptitle('Model Validation Against Published Data', fontsize=14, fontweight='bold')
     plt.tight_layout()

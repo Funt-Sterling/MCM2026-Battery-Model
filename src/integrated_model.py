@@ -448,16 +448,16 @@ def compare_all_profiles(save_path: str = None):
 
 
 def plot_system_diagram(save_path: str = None):
-    """Generate system block diagram for the paper."""
-    fig, ax = plt.subplots(figsize=(12, 8))
+    """Generate system block diagram for the paper - FIXED version."""
+    fig, ax = plt.subplots(figsize=(14, 9))
     
-    # Draw blocks
+    # Larger blocks with better spacing
     blocks = {
-        'battery': (0.15, 0.6, 0.18, 0.25),    # ECM
-        'thermal': (0.15, 0.25, 0.18, 0.25),   # Thermal
-        'network': (0.55, 0.6, 0.18, 0.25),    # 5G RRC
-        'load': (0.55, 0.25, 0.18, 0.25),      # Load Model
-        'output': (0.75, 0.42, 0.18, 0.16),    # Output
+        'battery': (0.08, 0.55, 0.22, 0.28),    # ECM
+        'thermal': (0.08, 0.18, 0.22, 0.28),    # Thermal
+        'network': (0.52, 0.55, 0.22, 0.28),    # 5G RRC
+        'load': (0.52, 0.18, 0.22, 0.28),       # Load Model
+        'output': (0.80, 0.35, 0.16, 0.22),     # Output
     }
     
     colors = {
@@ -468,73 +468,66 @@ def plot_system_diagram(save_path: str = None):
         'output': '#F39C12'
     }
     
+    # Simplified labels that fit in boxes
     labels = {
-        'battery': 'ECM Battery\n$\\frac{dSOC}{dt} = -\\frac{I}{Q}$\n$\\frac{dV_i}{dt} = \\frac{I - V_i/R_i}{C_i}$',
-        'thermal': 'Thermal Model\n$M_{th}\\frac{dT}{dt} = I^2R - hA(T-T_{amb})$',
-        'network': '5G RRC\nIDLE → CONNECTED → TAIL\n$P = f(state)$',
-        'load': 'Load Model\nOLED + CPU + GPU\n$P = \\sum P_i$',
-        'output': 'State Output\nSOC, V, T, Life'
+        'battery': 'ECM Battery\n\n$\\Delta SOC = -I/Q \\cdot \\Delta t$\n$\\Delta V_i = (I - V_i/R_i)/C_i \\cdot \\Delta t$',
+        'thermal': 'Thermal Model\n\n$M \\cdot \\Delta T = (I^2R - hA\\Delta T) \\cdot \\Delta t$',
+        'network': '5G RRC\n\nIDLE → CONNECTED → TAIL\n$P = f(state, throughput)$',
+        'load': 'Load Model\n\nOLED + CPU + GPU + Radio\n$P_{total} = \\sum P_i$',
+        'output': 'Output\n\nSOC, V\nT, Life'
     }
     
     for name, (x, y, w, h) in blocks.items():
         rect = plt.Rectangle((x, y), w, h, fill=True, 
-                             facecolor=colors[name], alpha=0.3,
-                             edgecolor=colors[name], linewidth=2)
+                             facecolor=colors[name], alpha=0.25,
+                             edgecolor=colors[name], linewidth=3)
         ax.add_patch(rect)
         ax.text(x + w/2, y + h/2, labels[name], ha='center', va='center',
-               fontsize=9, fontweight='bold')
+               fontsize=10, fontweight='bold')
     
-    # Draw arrows
-    # Battery → Thermal (bidirectional)
-    ax.annotate('', xy=(0.24, 0.50), xytext=(0.24, 0.60),
-               arrowprops=dict(arrowstyle='<->', color='black', lw=1.5))
-    ax.text(0.27, 0.55, 'T', fontsize=8)
+    # Draw arrows with labels
+    arrow_style = dict(arrowstyle='->', color='#2C3E50', lw=2.5, 
+                       connectionstyle='arc3,rad=0')
     
-    # Network → Load
-    ax.annotate('', xy=(0.64, 0.50), xytext=(0.64, 0.60),
-               arrowprops=dict(arrowstyle='->', color='black', lw=1.5))
-    ax.text(0.66, 0.55, '$P_{net}$', fontsize=8)
+    # Battery ↔ Thermal (bidirectional - temperature affects resistance)
+    ax.annotate('', xy=(0.19, 0.46), xytext=(0.19, 0.55),
+               arrowprops=dict(arrowstyle='<->', color='#2C3E50', lw=2.5))
+    ax.text(0.23, 0.505, 'T, $I^2R$', fontsize=9, fontweight='bold')
     
-    # Load → Battery
-    ax.annotate('', xy=(0.33, 0.72), xytext=(0.55, 0.72),
-               arrowprops=dict(arrowstyle='<-', color='black', lw=1.5))
-    ax.text(0.44, 0.75, 'I', fontsize=10)
+    # Network → Load (power demand)
+    ax.annotate('', xy=(0.63, 0.46), xytext=(0.63, 0.55),
+               arrowprops=dict(arrowstyle='->', color='#2C3E50', lw=2.5))
+    ax.text(0.66, 0.505, '$P_{net}$', fontsize=9, fontweight='bold')
     
-    # Load → Thermal
-    ax.annotate('', xy=(0.33, 0.37), xytext=(0.55, 0.37),
-               arrowprops=dict(arrowstyle='<-', color='black', lw=1.5))
-    ax.text(0.44, 0.40, '$Q_{heat}$', fontsize=8)
+    # Load → Battery (current draw)
+    ax.annotate('', xy=(0.30, 0.69), xytext=(0.52, 0.69),
+               arrowprops=dict(arrowstyle='<-', color='#2C3E50', lw=2.5))
+    ax.text(0.41, 0.73, 'I (current)', fontsize=10, fontweight='bold')
     
-    # All → Output
-    ax.annotate('', xy=(0.75, 0.50), xytext=(0.73, 0.50),
-               arrowprops=dict(arrowstyle='->', color='black', lw=1.5))
+    # Load → Thermal (heat generation)
+    ax.annotate('', xy=(0.30, 0.32), xytext=(0.52, 0.32),
+               arrowprops=dict(arrowstyle='<-', color='#2C3E50', lw=2.5))
+    ax.text(0.38, 0.36, '$Q_{heat}$', fontsize=9, fontweight='bold')
     
-    # Add title
+    # All → Output  
+    ax.annotate('', xy=(0.80, 0.46), xytext=(0.74, 0.46),
+               arrowprops=dict(arrowstyle='->', color='#2C3E50', lw=2.5))
+    
+    # Title
     ax.text(0.5, 0.95, 'Integrated Smartphone Battery Model', 
-           ha='center', fontsize=14, fontweight='bold', transform=ax.transAxes)
-    ax.text(0.5, 0.90, '(Continuous-Time Differential Equation Framework)',
-           ha='center', fontsize=10, transform=ax.transAxes)
-    
-    # Add equation box
-    eq_text = """Master System:
-$\\frac{d\\mathbf{x}}{dt} = f(\\mathbf{x}, \\mathbf{u}, t)$
-
-where $\\mathbf{x} = [SOC, V_1, V_2, T, Q_{loss}]^T$
-and $\\mathbf{u}$ = user behavior profile"""
-    
-    ax.text(0.02, 0.15, eq_text, fontsize=9, 
-           bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.8),
-           transform=ax.transAxes)
+           ha='center', fontsize=16, fontweight='bold', transform=ax.transAxes)
     
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis('off')
     
+    plt.tight_layout()
+    
     if save_path:
         plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
         print(f"Saved: {save_path}")
     
-    plt.show()
+    plt.close()
 
 
 if __name__ == "__main__":

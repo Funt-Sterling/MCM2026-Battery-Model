@@ -308,59 +308,76 @@ def draw_model_comparison():
     model = EquivalentCircuitModel(params)
     load_model = SmartphoneLoadModel()
     
+    # Use distinct, professional colors for each scenario
     scenarios = ['idle', 'light', 'moderate', 'heavy', 'gaming', 'navigation']
-    colors = plt.cm.viridis(np.linspace(0, 0.9, len(scenarios)))
+    scenario_colors = {
+        'idle': '#27AE60',      # Green
+        'light': '#3498DB',     # Blue
+        'moderate': '#9B59B6',  # Purple
+        'heavy': '#E67E22',     # Orange
+        'gaming': '#E74C3C',    # Red
+        'navigation': '#1ABC9C' # Teal
+    }
     
     # === Plot 1: SOC vs Time ===
     ax1 = axes[0, 0]
-    for scenario, color in zip(scenarios, colors):
+    for scenario in scenarios:
+        color = scenario_colors[scenario]
         I_func = create_scenario_current_func(scenario, load_model)
         result = model.simulate(I_func, t_span=(0, 12*3600), T_amb=298.15)
         ax1.plot(result['t_hours'], result['SOC_percent'], 
-                linewidth=2, label=scenario.capitalize(), color=color)
+                linewidth=2.5, label=scenario.capitalize(), color=color)
     
-    ax1.axhline(10, color='red', linestyle='--', alpha=0.5, label='Low battery (10%)')
-    ax1.set_xlabel('Time [hours]')
-    ax1.set_ylabel('State of Charge [%]')
-    ax1.set_title('Battery Drain Comparison', fontweight='bold')
-    ax1.legend(loc='upper right', ncol=2)
+    ax1.axhline(10, color='#C0392B', linestyle='--', linewidth=2, alpha=0.8, label='Low battery (10%)')
+    ax1.axhline(20, color='#F39C12', linestyle=':', linewidth=1.5, alpha=0.6, label='Warning (20%)')
+    ax1.set_xlabel('Time [hours]', fontsize=11)
+    ax1.set_ylabel('State of Charge [%]', fontsize=11)
+    ax1.set_title('Battery Drain Comparison', fontweight='bold', fontsize=12)
+    ax1.legend(loc='upper right', ncol=2, fontsize=9, framealpha=0.9)
     ax1.grid(True, alpha=0.3)
     ax1.set_xlim(0, 12)
     ax1.set_ylim(0, 100)
     
     # === Plot 2: Terminal Voltage ===
     ax2 = axes[0, 1]
-    for scenario, color in zip(scenarios, colors):
+    for scenario in scenarios:
+        color = scenario_colors[scenario]
         I_func = create_scenario_current_func(scenario, load_model)
         result = model.simulate(I_func, t_span=(0, 8*3600), T_amb=298.15)
         ax2.plot(result['t_hours'], result['voltage'], 
-                linewidth=2, label=scenario.capitalize(), color=color)
+                linewidth=2.5, label=scenario.capitalize(), color=color)
     
-    ax2.axhline(3.0, color='red', linestyle='--', label='Cutoff (3.0V)')
-    ax2.set_xlabel('Time [hours]')
-    ax2.set_ylabel('Terminal Voltage [V]')
-    ax2.set_title('Voltage Profile Comparison', fontweight='bold')
-    ax2.legend(loc='lower left', ncol=2)
+    ax2.axhline(3.0, color='#C0392B', linestyle='--', linewidth=2, label='Cutoff (3.0V)')
+    ax2.axhline(3.3, color='#F39C12', linestyle=':', linewidth=1.5, alpha=0.7, label='Low voltage (3.3V)')
+    ax2.set_xlabel('Time [hours]', fontsize=11)
+    ax2.set_ylabel('Terminal Voltage [V]', fontsize=11)
+    ax2.set_title('Voltage Profile Comparison', fontweight='bold', fontsize=12)
+    ax2.legend(loc='lower left', ncol=2, fontsize=9, framealpha=0.9)
     ax2.grid(True, alpha=0.3)
     ax2.set_xlim(0, 8)
+    ax2.set_ylim(2.9, 4.3)
     
     # === Plot 3: Temperature rise ===
     ax3 = axes[1, 0]
-    for scenario, color in zip(['light', 'moderate', 'heavy', 'gaming'], 
-                                 [colors[1], colors[2], colors[3], colors[4]]):
+    temp_scenarios = ['light', 'moderate', 'heavy', 'gaming']
+    for scenario in temp_scenarios:
+        color = scenario_colors[scenario]
         I_func = create_scenario_current_func(scenario, load_model)
         result = model.simulate(I_func, t_span=(0, 4*3600), T_amb=298.15)
         ax3.plot(result['t_hours'], result['T_celsius'], 
-                linewidth=2, label=scenario.capitalize(), color=color)
+                linewidth=2.5, label=scenario.capitalize(), color=color)
     
-    ax3.axhline(45, color='red', linestyle='--', alpha=0.7, label='Thermal limit (45°C)')
-    ax3.axhline(25, color='gray', linestyle=':', alpha=0.5, label='Ambient (25°C)')
-    ax3.set_xlabel('Time [hours]')
-    ax3.set_ylabel('Battery Temperature [°C]')
-    ax3.set_title('Thermal Response', fontweight='bold')
-    ax3.legend(loc='lower right')
+    ax3.axhline(45, color='#C0392B', linestyle='--', linewidth=2, label='Thermal limit (45°C)')
+    ax3.axhline(35, color='#E67E22', linestyle=':', linewidth=1.5, alpha=0.7, label='Warm (35°C)')
+    ax3.axhline(25, color='#7F8C8D', linestyle=':', linewidth=1.5, alpha=0.5, label='Ambient (25°C)')
+    ax3.fill_between([0, 4], 45, 55, alpha=0.15, color='red', label='_nolegend_')
+    ax3.set_xlabel('Time [hours]', fontsize=11)
+    ax3.set_ylabel('Battery Temperature [°C]', fontsize=11)
+    ax3.set_title('Thermal Response', fontweight='bold', fontsize=12)
+    ax3.legend(loc='lower right', fontsize=9, framealpha=0.9)
     ax3.grid(True, alpha=0.3)
     ax3.set_xlim(0, 4)
+    ax3.set_ylim(24, 50)
     
     # === Plot 4: Time-to-Empty bar chart ===
     ax4 = axes[1, 1]
@@ -372,17 +389,22 @@ def draw_model_comparison():
         tte = result['time_to_empty'] if result['time_to_empty'] else 24
         tte_list.append(tte)
     
-    bars = ax4.barh(scenarios, tte_list, color=colors, edgecolor='black')
-    ax4.set_xlabel('Time to Empty [hours]')
-    ax4.set_title('Battery Life by Usage Scenario', fontweight='bold')
-    ax4.set_xlim(0, max(tte_list) * 1.1)
+    # Use consistent colors for bars
+    bar_colors = [scenario_colors[s] for s in scenarios]
+    scenario_labels = [s.capitalize() for s in scenarios]
+    bars = ax4.barh(scenario_labels, tte_list, color=bar_colors, edgecolor='#333333', linewidth=1.2, height=0.7)
+    ax4.set_xlabel('Time to Empty [hours]', fontsize=11)
+    ax4.set_title('Battery Life by Usage Scenario', fontweight='bold', fontsize=12)
+    ax4.set_xlim(0, max(tte_list) * 1.15)
     
-    # Add value labels
+    # Add value labels with background
     for bar, tte in zip(bars, tte_list):
-        ax4.text(tte + 0.1, bar.get_y() + bar.get_height()/2,
-                f'{tte:.1f}h', va='center', fontsize=10)
+        ax4.text(tte + 0.2, bar.get_y() + bar.get_height()/2,
+                f'{tte:.1f}h', va='center', fontsize=10, fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.8, edgecolor='none'))
     
     ax4.grid(True, alpha=0.3, axis='x')
+    ax4.set_ylim(-0.5, len(scenarios) - 0.5)
     
     plt.tight_layout()
     return fig
@@ -513,25 +535,28 @@ def draw_aging_effects():
     capacity = np.array(capacity)
     cap_percent = (capacity / params.Q_nom) * 100
     
-    ax1.plot(cycles, cap_percent, 'b-', linewidth=2.5)
-    ax1.axhline(80, color='red', linestyle='--', label='80% (EOL definition)')
-    ax1.axhline(70, color='orange', linestyle='--', alpha=0.7, label='70%')
-    ax1.axvline(500, color='gray', linestyle=':', alpha=0.5, label='Reference (500 cycles)')
+    ax1.plot(cycles, cap_percent, '#2980B9', linewidth=3)
+    ax1.axhline(80, color='#C0392B', linestyle='--', linewidth=2, label='80% (EOL)')
+    ax1.axhline(70, color='#E67E22', linestyle='--', linewidth=1.5, alpha=0.8, label='70%')
+    ax1.axvline(500, color='#7F8C8D', linestyle=':', linewidth=1.5, alpha=0.7, label='500 cycles')
     
-    ax1.fill_between(cycles, 50, cap_percent, where=cap_percent<80, 
-                     alpha=0.3, color='red')
+    # Shade degraded zone
+    ax1.fill_between(cycles, 80, cap_percent, where=cap_percent<80, 
+                     alpha=0.25, color='#E74C3C', label='_nolegend_')
+    ax1.fill_between(cycles, cap_percent, 105, alpha=0.15, color='#3498DB', label='_nolegend_')
     
-    ax1.set_xlabel('Cycle Count')
-    ax1.set_ylabel('Capacity [% of original]')
-    ax1.set_title('Capacity Fade: √N Relationship', fontweight='bold')
-    ax1.legend(loc='lower left')
+    ax1.set_xlabel('Cycle Count', fontsize=11)
+    ax1.set_ylabel('Capacity [% of original]', fontsize=11)
+    ax1.set_title('Capacity Fade: √N Relationship', fontweight='bold', fontsize=12)
+    ax1.legend(loc='lower left', fontsize=9, framealpha=0.9)
     ax1.grid(True, alpha=0.3)
     ax1.set_xlim(0, 1500)
     ax1.set_ylim(50, 105)
     
-    # Add equation
-    ax1.text(750, 95, r'$C_{faded} = C \cdot (1 + \frac{\delta_C}{100} \sqrt{\frac{n}{N_{ref}}})$',
-             fontsize=11, ha='center', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    # Add equation with better positioning
+    ax1.text(1100, 95, r'$C = C_0 (1 - \delta_C \sqrt{n/N_{ref}})$',
+             fontsize=10, ha='center', 
+             bbox=dict(boxstyle='round,pad=0.4', facecolor='#FFF9E6', alpha=0.9, edgecolor='#F39C12'))
     
     # === Plot 2: Resistance increase ===
     ax2 = axes[0, 1]
@@ -545,28 +570,34 @@ def draw_aging_effects():
     R_factor = np.array(R_factor)
     R_percent = R_factor * 100
     
-    ax2.plot(cycles, R_percent, 'r-', linewidth=2.5)
-    ax2.axhline(100, color='gray', linestyle=':', alpha=0.5)
-    ax2.axhline(130, color='orange', linestyle='--', label='30% increase (ref)')
-    ax2.axhline(150, color='red', linestyle='--', label='50% increase')
+    ax2.plot(cycles, R_percent, '#C0392B', linewidth=3)
+    ax2.axhline(100, color='#7F8C8D', linestyle=':', linewidth=1.5, alpha=0.7, label='Baseline (100%)')
+    ax2.axhline(130, color='#E67E22', linestyle='--', linewidth=2, label='30% increase')
+    ax2.axhline(150, color='#C0392B', linestyle='--', linewidth=2, label='50% increase')
     
-    ax2.set_xlabel('Cycle Count')
-    ax2.set_ylabel('Resistance [% of original]')
-    ax2.set_title('Resistance Growth: √N Relationship', fontweight='bold')
-    ax2.legend(loc='upper left')
+    # Shade growth zone
+    ax2.fill_between(cycles, 100, R_percent, alpha=0.2, color='#E74C3C', label='_nolegend_')
+    
+    ax2.set_xlabel('Cycle Count', fontsize=11)
+    ax2.set_ylabel('Resistance [% of original]', fontsize=11)
+    ax2.set_title('Resistance Growth: √N Relationship', fontweight='bold', fontsize=12)
+    ax2.legend(loc='upper left', fontsize=9, framealpha=0.9)
     ax2.grid(True, alpha=0.3)
     ax2.set_xlim(0, 1500)
+    ax2.set_ylim(95, 200)
     
-    ax2.text(750, 175, r'$R_{faded} = R \cdot (1 + \frac{\delta_R}{100} \sqrt{\frac{n}{N_{ref}}})$',
-             fontsize=11, ha='center', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    ax2.text(1100, 175, r'$R = R_0 (1 + \delta_R \sqrt{n/N_{ref}})$',
+             fontsize=10, ha='center', 
+             bbox=dict(boxstyle='round,pad=0.4', facecolor='#FFF9E6', alpha=0.9, edgecolor='#F39C12'))
     
     # === Plot 3: Battery life at different ages ===
     ax3 = axes[1, 0]
     
     cycle_counts = [0, 200, 500, 800, 1000]
-    colors_age = plt.cm.YlOrRd(np.linspace(0.2, 0.9, len(cycle_counts)))
+    # Use distinct colors instead of colormap
+    age_colors = ['#27AE60', '#3498DB', '#9B59B6', '#E67E22', '#C0392B']
     
-    for n_cyc, color in zip(cycle_counts, colors_age):
+    for n_cyc, color in zip(cycle_counts, age_colors):
         params_aged = ECMParameters(n_cycles=n_cyc)
         model_aged = EquivalentCircuitModel(params_aged)
         
@@ -576,14 +607,16 @@ def draw_aging_effects():
             T_amb=298.15
         )
         
+        label = 'New' if n_cyc == 0 else f'{n_cyc} cycles'
         ax3.plot(result['t_hours'], result['SOC_percent'], 
-                color=color, linewidth=2, label=f'{n_cyc} cycles')
+                color=color, linewidth=2.5, label=label)
     
-    ax3.axhline(10, color='red', linestyle='--', alpha=0.5)
-    ax3.set_xlabel('Time [hours]')
-    ax3.set_ylabel('State of Charge [%]')
-    ax3.set_title('Discharge Profile at Different Ages', fontweight='bold')
-    ax3.legend(title='Battery Age')
+    ax3.axhline(10, color='#C0392B', linestyle='--', linewidth=2, alpha=0.7, label='Critical (10%)')
+    ax3.axhline(20, color='#F39C12', linestyle=':', linewidth=1.5, alpha=0.6, label='_nolegend_')
+    ax3.set_xlabel('Time [hours]', fontsize=11)
+    ax3.set_ylabel('State of Charge [%]', fontsize=11)
+    ax3.set_title('Discharge Profile at Different Ages', fontweight='bold', fontsize=12)
+    ax3.legend(title='Battery Age', loc='upper right', fontsize=9, framealpha=0.9)
     ax3.grid(True, alpha=0.3)
     ax3.set_xlim(0, 12)
     ax3.set_ylim(0, 100)
@@ -591,7 +624,7 @@ def draw_aging_effects():
     # === Plot 4: Time-to-Empty vs Age ===
     ax4 = axes[1, 1]
     
-    cycle_range = np.array([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
+    cycle_range = np.array([0, 200, 400, 600, 800, 1000])
     tte_age = []
     
     for n_cyc in cycle_range:
@@ -607,19 +640,30 @@ def draw_aging_effects():
         tte = result['time_to_empty'] if result['time_to_empty'] else 16
         tte_age.append(tte)
     
-    ax4.bar(cycle_range, tte_age, width=80, color=plt.cm.YlOrRd(cycle_range/1000),
-            edgecolor='black')
+    # Create color gradient from green to red
+    n_bars = len(cycle_range)
+    bar_colors = ['#27AE60', '#3498DB', '#9B59B6', '#E67E22', '#E74C3C', '#C0392B'][:n_bars]
     
-    ax4.set_xlabel('Cycle Count')
-    ax4.set_ylabel('Battery Life [hours]')
-    ax4.set_title('Battery Life Degradation Over Time', fontweight='bold')
+    bars = ax4.bar(cycle_range, tte_age, width=150, color=bar_colors,
+            edgecolor='#333333', linewidth=1.2)
+    
+    ax4.set_xlabel('Cycle Count', fontsize=11)
+    ax4.set_ylabel('Battery Life [hours]', fontsize=11)
+    ax4.set_title('Battery Life Degradation Over Time', fontweight='bold', fontsize=12)
     ax4.grid(True, alpha=0.3, axis='y')
+    ax4.set_xlim(-100, 1100)
     
-    # Add percentage labels
+    # Add percentage labels with better formatting
     tte_new = tte_age[0]
-    for i, (cyc, tte) in enumerate(zip(cycle_range, tte_age)):
+    for i, (cyc, tte, bar) in enumerate(zip(cycle_range, tte_age, bars)):
         pct = (tte / tte_new) * 100
-        ax4.text(cyc, tte + 0.2, f'{pct:.0f}%', ha='center', fontsize=8)
+        # Position label above bar with background
+        ax4.text(cyc, tte + 0.3, f'{pct:.0f}%', ha='center', fontsize=10, fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.8, edgecolor='none'))
+    
+    # Add insight annotation arrow
+    ax4.annotate('', xy=(900, tte_age[-1]), xytext=(100, tte_age[0]),
+                arrowprops=dict(arrowstyle='->', color='#7F8C8D', lw=2, ls='--'))
     
     plt.tight_layout()
     return fig
@@ -797,30 +841,34 @@ def draw_thermal_runaway_phase_plane():
                edgecolors='black', linewidths=2)
 
     # Annotate equilibrium points
+    # Annotate equilibrium points with VISIBLE text (black with background box)
     ax.annotate(f'Gaming Equilibrium\n(T={T_eq_gaming:.0f}°C)',
                 xy=(T_eq_gaming, Q_eq_gaming),
-                xytext=(T_eq_gaming + 5, Q_eq_gaming + 0.05),
-                fontsize=10, fontweight='bold', color='darkred',
-                arrowprops=dict(arrowstyle='->', color='darkred', lw=1.5))
+                xytext=(T_eq_gaming + 7, Q_eq_gaming + 0.06),
+                fontsize=10, fontweight='bold', color='black',
+                arrowprops=dict(arrowstyle='->', color='darkred', lw=2),
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='#FFCDD2', edgecolor='darkred', alpha=0.95))
 
     ax.annotate(f'Normal Equilibrium\n(T={T_eq_normal:.0f}°C)',
                 xy=(T_eq_normal, Q_eq_normal),
-                xytext=(T_eq_normal - 10, Q_eq_normal + 0.04),
-                fontsize=10, fontweight='bold', color='darkorange',
-                arrowprops=dict(arrowstyle='->', color='darkorange', lw=1.5))
+                xytext=(T_eq_normal - 12, Q_eq_normal + 0.05),
+                fontsize=10, fontweight='bold', color='black',
+                arrowprops=dict(arrowstyle='->', color='darkorange', lw=2),
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='#FFE0B2', edgecolor='darkorange', alpha=0.95))
 
-    # Add operating region shading
-    ax.axvspan(10, 25, alpha=0.1, color='blue', label='Cold (Reduced Efficiency)')
-    ax.axvspan(25, 40, alpha=0.1, color='green', label='Optimal (25-40°C)')
-    ax.axvspan(40, 45, alpha=0.15, color='yellow')
-    ax.axvspan(45, 60, alpha=0.15, color='red')
+    # Add operating region shading with labels in legend
+    ax.axvspan(10, 25, alpha=0.15, color='blue', label='Cold (Reduced Efficiency)')
+    ax.axvspan(25, 40, alpha=0.15, color='green', label='Optimal (25-40°C)')
+    ax.axvspan(40, 45, alpha=0.2, color='yellow', label='Caution Zone')
+    ax.axvspan(45, 60, alpha=0.2, color='red', label='Danger Zone')
 
-    # Throttle line
-    ax.axvline(42, color='purple', linestyle=':', linewidth=2, label='Throttle Threshold')
-    ax.text(43, 0.15, 'Thermal\nThrottling\nActivates', fontsize=9, color='purple',
-            fontweight='bold', va='center')
+    # Throttle line with better visibility
+    ax.axvline(42, color='purple', linestyle=':', linewidth=2.5, label='Throttle Threshold')
+    ax.text(44, 0.22, 'Thermal\nThrottling\nActivates', fontsize=10, color='black',
+            fontweight='bold', va='center',
+            bbox=dict(boxstyle='round,pad=0.3', facecolor='#E1BEE7', edgecolor='purple', alpha=0.95))
 
-    # Physics explanation box
+    # Physics explanation box - move to avoid overlap
     physics_text = (
         "Stability Criterion:\n"
         "• If $Q_{gen} < Q_{cool}$: System cools → Stable\n"
@@ -829,7 +877,7 @@ def draw_thermal_runaway_phase_plane():
     )
     ax.text(0.02, 0.98, physics_text, transform=ax.transAxes,
             fontsize=9, verticalalignment='top',
-            bbox=dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='gray'))
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.95, edgecolor='gray', linewidth=1.5))
 
     # Labels and title
     ax.set_xlabel('Battery Temperature (°C)', fontsize=12)
@@ -838,10 +886,11 @@ def draw_thermal_runaway_phase_plane():
                  '(The Electro-Thermal Feedback Loop Visualized)',
                  fontsize=13, fontweight='bold')
 
-    ax.legend(loc='upper left', fontsize=9, ncol=2, bbox_to_anchor=(0, -0.12))
+    # Legend outside plot to avoid overlap
+    ax.legend(loc='upper center', fontsize=9, ncol=4, bbox_to_anchor=(0.5, -0.10))
     ax.grid(True, alpha=0.3)
     ax.set_xlim(10, 60)
-    ax.set_ylim(0, max(Q_gen_gaming) * 1.1)
+    ax.set_ylim(0, max(Q_gen_gaming) * 1.15)
 
     plt.tight_layout()
     return fig
@@ -947,12 +996,15 @@ def draw_generalization_foldable():
     life_std = t[np.argmax(soc_std < 20)] if np.any(soc_std < 20) else 24
     life_fold = t[np.argmax(soc_fold < 20)] if np.any(soc_fold < 20) else 24
 
+    # Stagger annotations to avoid overlap
     ax1.annotate(f'Battery life: {life_std:.1f}h', xy=(life_std, 20),
-                 xytext=(life_std-3, 35), fontsize=10, color='blue',
-                 arrowprops=dict(arrowstyle='->', color='blue'))
+                 xytext=(life_std-4, 42), fontsize=10, color='blue', fontweight='bold',
+                 arrowprops=dict(arrowstyle='->', color='blue', lw=1.5),
+                 bbox=dict(boxstyle='round,pad=0.2', facecolor='#BBDEFB', edgecolor='blue', alpha=0.9))
     ax1.annotate(f'Battery life: {life_fold:.1f}h', xy=(life_fold, 20),
-                 xytext=(life_fold+1, 35), fontsize=10, color='red',
-                 arrowprops=dict(arrowstyle='->', color='red'))
+                 xytext=(life_fold+2, 32), fontsize=10, color='red', fontweight='bold',
+                 arrowprops=dict(arrowstyle='->', color='red', lw=1.5),
+                 bbox=dict(boxstyle='round,pad=0.2', facecolor='#FFCDD2', edgecolor='red', alpha=0.9))
 
     # Plot 2: Temperature comparison
     ax2 = axes[1]
@@ -960,7 +1012,7 @@ def draw_generalization_foldable():
     ax2.plot(t, temp_fold, 'r-', linewidth=2, label=params_fold['name'])
 
     ax2.axhline(42, color='purple', linestyle=':', linewidth=2, label='Throttle Threshold')
-    ax2.axhspan(40, 50, alpha=0.1, color='orange')
+    ax2.axhspan(40, 50, alpha=0.15, color='orange', label='Caution Zone')
 
     ax2.set_xlabel('Time of Day (hours)', fontsize=11)
     ax2.set_ylabel('Battery Temperature (°C)', fontsize=11)
@@ -970,19 +1022,19 @@ def draw_generalization_foldable():
     ax2.set_xlim(0, 24)
     ax2.set_ylim(20, 50)
 
-    # Add parameter table
+    # Add parameter table - move to bottom right
     table_text = (
         f"Parameter Adaptation:\n"
-        f"{'Parameter':<15} {'Standard':<12} {'Foldable':<12}\n"
-        f"{'-'*39}\n"
-        f"{'Capacity (Ah)':<15} {params_standard['Q_nom']:<12.2f} {params_fold['Q_nom']:<12.2f}\n"
-        f"{'Thermal Mass':<15} {params_standard['M_th']:<12} {params_fold['M_th']:<12}\n"
-        f"{'Display (mW)':<15} {params_standard['P_display_max']:<12} {params_fold['P_display_max']:<12}\n"
-        f"{'hA (W/K)':<15} {params_standard['hA']:<12.2f} {params_fold['hA']:<12.2f}"
+        f"{'Parameter':<15} {'Standard':<10} {'Foldable':<10}\n"
+        f"{'-'*35}\n"
+        f"{'Capacity (Ah)':<15} {params_standard['Q_nom']:<10.2f} {params_fold['Q_nom']:<10.2f}\n"
+        f"{'Thermal Mass':<15} {params_standard['M_th']:<10} {params_fold['M_th']:<10}\n"
+        f"{'Display (mW)':<15} {params_standard['P_display_max']:<10} {params_fold['P_display_max']:<10}\n"
+        f"{'hA (W/K)':<15} {params_standard['hA']:<10.2f} {params_fold['hA']:<10.2f}"
     )
-    ax2.text(0.02, 0.02, table_text, transform=ax2.transAxes,
-             fontsize=8, family='monospace', verticalalignment='bottom',
-             bbox=dict(boxstyle='round', facecolor='white', alpha=0.9))
+    ax2.text(0.02, 0.35, table_text, transform=ax2.transAxes,
+             fontsize=8, family='monospace', verticalalignment='top',
+             bbox=dict(boxstyle='round', facecolor='white', alpha=0.95, edgecolor='gray'))
 
     plt.suptitle('Model Generalization: Adaptation to High-Power Foldable Devices',
                  fontsize=14, fontweight='bold')
