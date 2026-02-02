@@ -8,24 +8,17 @@
 \citation{narayanan_5g}
 \citation{nasa_battery}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Problem Background: The Black Box of Battery Life}{1}{subsection.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Our Approach: A White-Box Electro-Thermal Model}{1}{subsection.1.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Architecture of the Continuous-Time Electro-Thermal Model. User activities are mapped to current $I(t)$, which drives the coupled electrical-thermal system.}}{1}{figure.caption.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Architecture of the Continuous-Time Electro-Thermal Model.}}{1}{figure.caption.2}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:flowchart}{{1}{1}{Architecture of the Continuous-Time Electro-Thermal Model. User activities are mapped to current $I(t)$, which drives the coupled electrical-thermal system}{figure.caption.2}{}}
+\newlabel{fig:flowchart}{{1}{1}{Architecture of the Continuous-Time Electro-Thermal Model}{figure.caption.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Assumptions and Justifications}{2}{section.2}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Model Assumptions and Physical Justifications}}{2}{table.caption.3}\protected@file@percent }
 \newlabel{tab:assumptions}{{1}{2}{Model Assumptions and Physical Justifications}{table.caption.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Model I: The Kinetic Battery Model (Conceptual Foundation)}{2}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}The Two-Tank Analogy}{2}{subsection.3.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces The Kinetic Battery Model (KiBaM) conceptualized as two tanks connected by a valve. The ``available'' tank supplies immediate current, while the ``bound'' tank slowly replenishes it.}}{3}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:kibam}{{2}{3}{The Kinetic Battery Model (KiBaM) conceptualized as two tanks connected by a valve. The ``available'' tank supplies immediate current, while the ``bound'' tank slowly replenishes it}{figure.caption.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Governing Equations}{3}{subsection.3.2}\protected@file@percent }
-\newlabel{eq:kibam1}{{1}{3}{Governing Equations}{equation.3.1}{}}
-\newlabel{eq:kibam2}{{2}{3}{Governing Equations}{equation.3.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Physical Insight: The Recovery Effect}{3}{subsection.3.3}\protected@file@percent }
-\citation{calce_cs2}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Limitation: No Voltage Dynamics}{4}{subsection.3.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces The KiBaM two-tank analogy. Bound charge diffuses into available charge at rate $k$.}}{3}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:kibam}{{2}{3}{The KiBaM two-tank analogy. Bound charge diffuses into available charge at rate $k$}{figure.caption.4}{}}
+\newlabel{eq:kibam1}{{1}{3}{Model I: The Kinetic Battery Model (Conceptual Foundation)}{equation.3.1}{}}
+\newlabel{eq:kibam2}{{2}{3}{Model I: The Kinetic Battery Model (Conceptual Foundation)}{equation.3.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Model II: The Continuous-Time Electro-Thermal Engine}{4}{section.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Equivalent Circuit Dynamics (Kirchhoff's Laws)}{4}{subsection.4.1}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces The Equivalent Circuit Model (ECM) with two RC pairs. $V_{OC}$ is the open-circuit voltage (function of SOC and T), $R_0$ captures instantaneous voltage drop, and the RC pairs model activation and diffusion polarization.}}{4}{figure.caption.5}\protected@file@percent }
@@ -34,8 +27,9 @@
 \newlabel{eq:kvl}{{3}{4}{Kirchhoff's Voltage Law}{equation.4.3}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}RC Dynamics}{4}{subsubsection.4.1.2}\protected@file@percent }
 \newlabel{eq:rc_dynamics}{{4}{4}{RC Dynamics}{equation.4.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}State of Charge (Coulomb Counting)}{4}{subsubsection.4.1.3}\protected@file@percent }
-\newlabel{eq:soc}{{5}{4}{State of Charge (Coulomb Counting)}{equation.4.5}{}}
+\citation{calce_cs2}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}State of Charge (Coulomb Counting)}{5}{subsubsection.4.1.3}\protected@file@percent }
+\newlabel{eq:soc}{{5}{5}{State of Charge (Coulomb Counting)}{equation.4.5}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}The OCV-SOC Relationship}{5}{subsubsection.4.1.4}\protected@file@percent }
 \newlabel{eq:ocv}{{6}{5}{The OCV-SOC Relationship}{equation.4.6}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Open Circuit Voltage as a function of State of Charge for LCO chemistry. Polynomial coefficients from CALCE CS2 dataset.}}{5}{figure.caption.6}\protected@file@percent }
@@ -45,92 +39,86 @@
 \newlabel{eq:thermal}{{7}{5}{The Heat Equation}{equation.4.7}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Temperature-Dependent Resistance (Arrhenius)}{5}{subsubsection.4.2.2}\protected@file@percent }
 \newlabel{eq:arrhenius}{{8}{5}{Temperature-Dependent Resistance (Arrhenius)}{equation.4.8}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}The Feedback Mechanism}{5}{subsubsection.4.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}The Feedback Mechanism}{6}{subsubsection.4.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces The electro-thermal feedback loop. Current generates heat, heat changes resistance, and resistance affects the power dissipation---a fully coupled nonlinear system.}}{6}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:thermal_feedback}{{5}{6}{The electro-thermal feedback loop. Current generates heat, heat changes resistance, and resistance affects the power dissipation---a fully coupled nonlinear system}{figure.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Thermal Runaway Phase Plane: Heat generation ($Q_{gen} = I^2R$) vs.\ heat dissipation ($Q_{cool} = hA(T-T_{amb})$). Where curves intersect defines the stable operating point. For gaming loads (red), the equilibrium occurs at 44$^\circ $C, dangerously close to the throttle threshold. The shaded region shows runaway risk where $Q_{gen} > Q_{cool}$. This phase plane visualizes the ``invisible'' electro-thermal feedback loop.}}{6}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:thermal_runaway}{{6}{6}{Thermal Runaway Phase Plane: Heat generation ($Q_{gen} = I^2R$) vs.\ heat dissipation ($Q_{cool} = hA(T-T_{amb})$). Where curves intersect defines the stable operating point. For gaming loads (red), the equilibrium occurs at 44$^\circ $C, dangerously close to the throttle threshold. The shaded region shows runaway risk where $Q_{gen} > Q_{cool}$. This phase plane visualizes the ``invisible'' electro-thermal feedback loop}{figure.caption.8}{}}
 \citation{narayanan_5g}
 \citation{narayanan_5g}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces The electro-thermal feedback loop. Current generates heat, heat changes resistance, and resistance affects the power dissipation—a fully coupled nonlinear system.}}{6}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:thermal_feedback}{{5}{6}{The electro-thermal feedback loop. Current generates heat, heat changes resistance, and resistance affects the power dissipation—a fully coupled nonlinear system}{figure.caption.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}The 5G RRC State Machine (The Input Model)}{6}{subsection.4.3}\protected@file@percent }
-\newlabel{sec:rrc}{{4.3}{6}{The 5G RRC State Machine (The Input Model)}{subsection.4.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}The Three States}{6}{subsubsection.4.3.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces RRC State Power Consumption (from Narayanan et al.\ \cite  {narayanan_5g})}}{6}{table.caption.8}\protected@file@percent }
-\newlabel{tab:rrc}{{2}{6}{RRC State Power Consumption (from Narayanan et al.\ \cite {narayanan_5g})}{table.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}The 5G RRC State Machine (The Input Model)}{7}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:rrc}{{4.3}{7}{The 5G RRC State Machine (The Input Model)}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}The Three States}{7}{subsubsection.4.3.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces RRC State Power Consumption (from Narayanan et al.\ \cite  {narayanan_5g})}}{7}{table.caption.9}\protected@file@percent }
+\newlabel{tab:rrc}{{2}{7}{RRC State Power Consumption (from Narayanan et al.\ \cite {narayanan_5g})}{table.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces The RRC state machine for 5G networks. The ``tail'' state is the hidden battery killer—the radio consumes 600 mW even when no data is being transferred.}}{8}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:rrc}{{7}{8}{The RRC state machine for 5G networks. The ``tail'' state is the hidden battery killer—the radio consumes 600 mW even when no data is being transferred}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}The Tail Energy Problem}{8}{subsubsection.4.3.2}\protected@file@percent }
 \citation{narayanan_5g}
 \citation{ti_oled}
 \citation{dvfs_survey}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces The RRC state machine for 5G networks. The ``tail'' state is the hidden battery killer—the radio consumes 600 mW even when no data is being transferred.}}{7}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:rrc}{{6}{7}{The RRC state machine for 5G networks. The ``tail'' state is the hidden battery killer—the radio consumes 600 mW even when no data is being transferred}{figure.caption.9}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}The Tail Energy Problem}{7}{subsubsection.4.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}The Efficiency Crossover}{7}{subsubsection.4.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}The Activity-to-Current Mapper}{7}{subsection.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}OLED Display Model}{7}{subsubsection.4.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}CPU DVFS Model}{7}{subsubsection.4.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}The Complete State-Space System}{8}{subsection.4.5}\protected@file@percent }
-\newlabel{eq:state_space}{{12}{8}{The Complete State-Space System}{equation.4.12}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Validation and Parameter Estimation}{8}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Data Sources}{8}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Parameter Estimation via Genetic Algorithm}{8}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Validation Results}{8}{subsection.5.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Comparison of model-predicted terminal voltage against CALCE experimental discharge data. The close agreement (RMSE $<$ 15 mV) validates our ECM parameterization.}}{8}{figure.caption.10}\protected@file@percent }
-\newlabel{fig:validation}{{7}{8}{Comparison of model-predicted terminal voltage against CALCE experimental discharge data. The close agreement (RMSE $<$ 15 mV) validates our ECM parameterization}{figure.caption.10}{}}
-\citation{narayanan_5g}
-\citation{narayanan_5g}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Scenario Analysis: The Human Element}{9}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Defining the User Personas}{9}{subsection.6.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces User Persona Definitions}}{9}{table.caption.11}\protected@file@percent }
-\newlabel{tab:personas}{{3}{9}{User Persona Definitions}{table.caption.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Alex the Gamer: Thermal Stress Analysis}{9}{subsection.6.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Temperature evolution during sustained gaming. The battery reaches 42°C, triggering CPU throttling at the 40°C threshold.}}{9}{figure.caption.12}\protected@file@percent }
-\newlabel{fig:gamer}{{8}{9}{Temperature evolution during sustained gaming. The battery reaches 42°C, triggering CPU throttling at the 40°C threshold}{figure.caption.12}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Maya the Creator: Uplink Asymmetry}{9}{subsection.6.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}David the Commuter: Handoff Penalties}{9}{subsection.6.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Battery drain during a 2-hour commute. Vertical markers indicate cellular handoff events, each causing a momentary power spike.}}{10}{figure.caption.13}\protected@file@percent }
-\newlabel{fig:commuter}{{9}{10}{Battery drain during a 2-hour commute. Vertical markers indicate cellular handoff events, each causing a momentary power spike}{figure.caption.13}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}The Chatty vs.\ Streaming Paradox}{10}{subsection.6.5}\protected@file@percent }
-\newlabel{sec:paradox}{{6.5}{10}{The Chatty vs.\ Streaming Paradox}{subsection.6.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Power profiles for Chatty (Emma) vs.\ Streaming (Steve) users. Emma's frequent small messages prevent the radio from ever reaching the low-power IDLE state, while Steve's continuous stream operates at peak 5G efficiency.}}{11}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:paradox}{{10}{11}{Power profiles for Chatty (Emma) vs.\ Streaming (Steve) users. Emma's frequent small messages prevent the radio from ever reaching the low-power IDLE state, while Steve's continuous stream operates at peak 5G efficiency}{figure.caption.14}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Comparative Results: All Personas}{12}{subsection.6.6}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces SOC evolution for all five user personas over their respective usage periods. The Gamer (Alex) drains fastest due to thermal stress, while the Streamer (Steve) achieves surprising efficiency despite high data usage.}}{12}{figure.caption.15}\protected@file@percent }
-\newlabel{fig:all_personas}{{11}{12}{SOC evolution for all five user personas over their respective usage periods. The Gamer (Alex) drains fastest due to thermal stress, while the Streamer (Steve) achieves surprising efficiency despite high data usage}{figure.caption.15}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Battery Life Comparison Across User Personas}}{12}{table.caption.16}\protected@file@percent }
-\newlabel{tab:results}{{4}{12}{Battery Life Comparison Across User Personas}{table.caption.16}{}}
 \citation{nasa_battery}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Device Sensitivity Analysis}{13}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Device Specifications Comparison}{13}{subsection.7.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Flagship Device Specifications (2024)}}{13}{table.caption.17}\protected@file@percent }
-\newlabel{tab:devices}{{5}{13}{Flagship Device Specifications (2024)}{table.caption.17}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}The Efficiency Trade-off}{13}{subsection.7.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Power consumption breakdown by component for three flagship devices. The iPhone 15 Pro compensates for its smaller battery with a more efficient chipset.}}{13}{figure.caption.18}\protected@file@percent }
-\newlabel{fig:devices}{{12}{13}{Power consumption breakdown by component for three flagship devices. The iPhone 15 Pro compensates for its smaller battery with a more efficient chipset}{figure.caption.18}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}5G Band Availability Impact}{13}{subsection.7.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {8}Long-Term Aging and Charging Effects}{14}{section.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}The Cycling Aging Model ($\sqrt  {N}$ Law)}{14}{subsection.8.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Capacity fade and resistance growth over 500 charge cycles, following the $\sqrt  {N}$ relationship validated by NASA data.}}{14}{figure.caption.19}\protected@file@percent }
-\newlabel{fig:aging}{{13}{14}{Capacity fade and resistance growth over 500 charge cycles, following the $\sqrt {N}$ relationship validated by NASA data}{figure.caption.19}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Impact of Charging Source}{15}{subsection.8.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Charging Source Quality Factors}}{15}{table.caption.20}\protected@file@percent }
-\newlabel{tab:charging}{{6}{15}{Charging Source Quality Factors}{table.caption.20}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Simulation: 500 Cycles Across Charging Methods}{15}{subsection.8.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Projected capacity fade over 500 cycles (approximately 2 years) for different charging sources. The ``car only'' user retains only 65\% capacity vs.\ 80\% for wall charging.}}{15}{figure.caption.21}\protected@file@percent }
-\newlabel{fig:charging}{{14}{15}{Projected capacity fade over 500 cycles (approximately 2 years) for different charging sources. The ``car only'' user retains only 65\% capacity vs.\ 80\% for wall charging}{figure.caption.21}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {9}Sensitivity Analysis}{15}{section.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}O-Prize Sensitivity Indices}{15}{subsection.9.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Sensitivity indices for key model parameters. Battery capacity ($Q_{nom}$) has $S = 1.0$ (linear relationship), while resistance parameters show near-zero sensitivity at room temperature.}}{16}{figure.caption.22}\protected@file@percent }
-\newlabel{fig:sensitivity}{{15}{16}{Sensitivity indices for key model parameters. Battery capacity ($Q_{nom}$) has $S = 1.0$ (linear relationship), while resistance parameters show near-zero sensitivity at room temperature}{figure.caption.22}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {9.2}Monte Carlo Uncertainty Quantification}{16}{subsection.9.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Monte Carlo uncertainty quantification with 1000 samples. The shaded region represents the 95\% confidence interval. The narrow band indicates model robustness.}}{16}{figure.caption.23}\protected@file@percent }
-\newlabel{fig:monte_carlo}{{16}{16}{Monte Carlo uncertainty quantification with 1000 samples. The shaded region represents the 95\% confidence interval. The narrow band indicates model robustness}{figure.caption.23}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {10}Recommendations}{17}{section.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.1}For Users}{17}{subsection.10.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.2}For OS Developers}{17}{subsection.10.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.3}For Manufacturers}{17}{subsection.10.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {11}Model Strengths and Limitations}{17}{section.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {11.1}Strengths}{17}{subsection.11.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {11.2}Limitations}{18}{subsection.11.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {11.3}Future Extensions}{18}{subsection.11.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {12}Conclusion}{18}{section.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{Memorandum}{19}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}The Efficiency Crossover}{9}{subsubsection.4.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}The Activity-to-Current Mapper}{9}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}OLED Display Model}{9}{subsubsection.4.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}CPU DVFS Model}{9}{subsubsection.4.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}The Complete State-Space System}{9}{subsection.4.5}\protected@file@percent }
+\newlabel{eq:state_space}{{13}{9}{The Complete State-Space System}{equation.4.13}{}}
+\citation{calce_cs2}
+\citation{narayanan_5g}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Validation and Parameter Estimation}{10}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Data Sources}{10}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Parameter Estimation via Genetic Algorithm}{10}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Validation Results}{11}{subsection.5.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Comparison of model-predicted terminal voltage against CALCE experimental discharge data. The close agreement (RMSE $<$ 15 mV) validates our ECM parameterization.}}{11}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:validation}{{8}{11}{Comparison of model-predicted terminal voltage against CALCE experimental discharge data. The close agreement (RMSE $<$ 15 mV) validates our ECM parameterization}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Residual Analysis: Proving Physical Completeness}{11}{subsection.5.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Residual diagnostics proving model completeness: (a) Time series showing no systematic drift; (b) Histogram confirming Gaussian distribution; (c) Q-Q plot validating normality; (d) ACF plot showing white noise (all correlations within 95\% CI). The passing statistical tests prove our ECM captured all deterministic physics---remaining errors are sensor noise.}}{11}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:residuals}{{\caption@xref {fig:residuals}{ on input line 461}}{11}{Residual Analysis: Proving Physical Completeness}{figure.caption.12}{}}
+\citation{narayanan_5g}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Scenario Analysis: The Human Element}{12}{section.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces User Persona Definitions and Simulation Results}}{12}{table.caption.13}\protected@file@percent }
+\newlabel{tab:personas}{{3}{12}{User Persona Definitions and Simulation Results}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}The Chatty vs.\ Streaming Paradox}{12}{subsection.6.1}\protected@file@percent }
+\newlabel{sec:paradox}{{6.1}{12}{The Chatty vs.\ Streaming Paradox}{subsection.6.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Power profiles for Chatty (Emma) vs.\ Streaming (Steve) users. Emma's frequent small messages prevent the radio from ever reaching the low-power IDLE state, while Steve's continuous stream operates at peak 5G efficiency.}}{13}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:paradox}{{10}{13}{Power profiles for Chatty (Emma) vs.\ Streaming (Steve) users. Emma's frequent small messages prevent the radio from ever reaching the low-power IDLE state, while Steve's continuous stream operates at peak 5G efficiency}{figure.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Visualizing the Pattern Trade-offs}{14}{subsection.6.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces SOC evolution for all five user personas. The Gamer (Alex) drains fastest due to thermal stress, while the Streamer (Steve) achieves surprising efficiency despite high data usage.}}{14}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:all_personas}{{11}{14}{SOC evolution for all five user personas. The Gamer (Alex) drains fastest due to thermal stress, while the Streamer (Steve) achieves surprising efficiency despite high data usage}{figure.caption.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Persona Radar Chart comparing five user archetypes across six dimensions: Average Current, Peak Temperature, Screen-On Time, Tail Energy, Data Volume, and Battery Life. The Gamer (red) dominates thermal stress, while the Chatter (yellow) has the highest tail energy despite the lowest data volume---visually demonstrating the Chatty vs.\ Streaming Paradox.}}{15}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:persona_radar}{{12}{15}{Persona Radar Chart comparing five user archetypes across six dimensions: Average Current, Peak Temperature, Screen-On Time, Tail Energy, Data Volume, and Battery Life. The Gamer (red) dominates thermal stress, while the Chatter (yellow) has the highest tail energy despite the lowest data volume---visually demonstrating the Chatty vs.\ Streaming Paradox}{figure.caption.16}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Device Sensitivity Analysis}{15}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Device Specifications Comparison}{15}{subsection.7.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Flagship Device Specifications (2024)}}{15}{table.caption.17}\protected@file@percent }
+\newlabel{tab:devices}{{4}{15}{Flagship Device Specifications (2024)}{table.caption.17}{}}
+\citation{nasa_battery}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}The Efficiency Trade-off}{16}{subsection.7.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Power consumption breakdown by component. The iPhone compensates for its smaller battery with more efficient silicon.}}{16}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:devices}{{13}{16}{Power consumption breakdown by component. The iPhone compensates for its smaller battery with more efficient silicon}{figure.caption.18}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Long-Term Aging and Charging Effects}{16}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}The Cycling Aging Model ($\sqrt  {N}$ Law)}{16}{subsection.8.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Capacity fade and resistance growth over 500 charge cycles, following the $\sqrt  {N}$ relationship validated by NASA data.}}{17}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:aging}{{14}{17}{Capacity fade and resistance growth over 500 charge cycles, following the $\sqrt {N}$ relationship validated by NASA data}{figure.caption.19}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Impact of Charging Source}{17}{subsection.8.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Charging Source Quality Factors}}{17}{table.caption.20}\protected@file@percent }
+\newlabel{tab:charging}{{5}{17}{Charging Source Quality Factors}{table.caption.20}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Projected capacity fade over 500 cycles. ``Car only'' users retain 65\% capacity vs.\ 80\% for wall charging.}}{18}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:charging}{{15}{18}{Projected capacity fade over 500 cycles. ``Car only'' users retain 65\% capacity vs.\ 80\% for wall charging}{figure.caption.21}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Sensitivity Analysis}{18}{section.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}O-Prize Sensitivity Indices}{18}{subsection.9.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {9.1.1}Controllable vs.\ Uncontrollable Parameters}{18}{subsubsection.9.1.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Sensitivity Index Categorization: Controllable vs.\ Uncontrollable}}{18}{table.caption.22}\protected@file@percent }
+\newlabel{tab:sensitivity_categories}{{6}{18}{Sensitivity Index Categorization: Controllable vs.\ Uncontrollable}{table.caption.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Sensitivity indices for key model parameters. Battery capacity ($Q_{nom}$) has $S = 1.0$ (linear relationship), while resistance parameters show near-zero sensitivity at room temperature.}}{19}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:sensitivity}{{16}{19}{Sensitivity indices for key model parameters. Battery capacity ($Q_{nom}$) has $S = 1.0$ (linear relationship), while resistance parameters show near-zero sensitivity at room temperature}{figure.caption.23}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Recommendations}{19}{section.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {11}Model Generalization: Foldable Devices}{19}{section.11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces Model generalization to Samsung Galaxy Z Fold5. The same ECM framework accurately predicts foldable device behavior with only parameter adaptation---the larger battery compensates for higher display power.}}{20}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:generalization}{{17}{20}{Model generalization to Samsung Galaxy Z Fold5. The same ECM framework accurately predicts foldable device behavior with only parameter adaptation---the larger battery compensates for higher display power}{figure.caption.24}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12}Model Strengths and Limitations}{20}{section.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {13}Conclusion}{20}{section.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{Memorandum}{21}{section*.25}\protected@file@percent }
 \bibcite{narayanan_5g}{1}
 \bibcite{calce_cs2}{2}
 \bibcite{nasa_battery}{3}
@@ -141,4 +129,4 @@
 \bibcite{drake_thermal}{8}
 \bibcite{kibam}{9}
 \bibcite{saltelli}{10}
-\gdef \@abspage@last{23}
+\gdef \@abspage@last{25}

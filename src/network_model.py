@@ -48,16 +48,17 @@ class NetworkConfig:
     # ==========================================================================
     # IDLE POWER (RRC_IDLE state - radio sleeping)
     # ==========================================================================
-    power_4g_idle: float = 100.0       # ~100 mW typical
+    power_4g_idle: float = 178.0       # Corrected to 178 mW (User/Paper source)
     power_5g_low_idle: float = 150.0   # Slightly higher baseline
-    power_5g_mm_idle: float = 200.0    # mmWave has higher idle
+    power_5g_mm_idle: float = 300.0    # mmWave has higher idle (updated estimate)
     
     # ==========================================================================
     # TAIL POWER (DRX period - FROM TABLE 2 - the 1092 mW value!)
     # This is the "hidden" drain after data transfer stops
     # ==========================================================================
-    power_4g_tail: float = 178.0       # Verizon 4G Table 2
+    power_4g_tail: float = 400.0       # Estimated mid-range
     power_5g_low_tail: float = 400.0   # Average of 249-593 from Table 2
+
     power_5g_mm_tail: float = 1092.0   # Verizon mmWave Table 2 - THE KEY NUMBER!
     
     # Tail duration (inactivity timer before entering IDLE)
@@ -501,12 +502,18 @@ def compare_chatty_vs_streaming(save_path: str = None):
     axes[0, 1].plot(t_stream[idx_stream]/60, p_stream[idx_stream], 'b-', alpha=0.8, linewidth=0.5)
     axes[0, 1].set_xlabel('Time (minutes)')
     axes[0, 1].set_ylabel('Power (mW)')
-    axes[0, 1].set_title('Steve (Streamer): Radio Power Profile')
+    axes[0, 1].set_title('Steve (Streamer): Radio Power Profile (Efficient Block)')
     axes[0, 1].axhline(y=1092, color='darkred', linestyle='--', alpha=0.5, label='CONNECTED')
     axes[0, 1].axhline(y=600, color='orange', linestyle='--', alpha=0.5, label='TAIL')
     axes[0, 1].axhline(y=300, color='green', linestyle='--', alpha=0.5, label='IDLE')
     axes[0, 1].legend()
     axes[0, 1].set_ylim([0, 1200])
+    
+    # ANNOTATE THE PARADOX - VISUAL GAP
+    axes[0, 0].text(t_chat[100]/60, 1150, "BARCODE EFFECT:\nFrequent spikes + Tail Energy", 
+                   color='red', fontsize=10, fontweight='bold')
+    axes[0, 1].text(t_stream[100]/60, 1150, "BLOCK EFFECT:\nEfficient Transfer then Sleep", 
+                   color='blue', fontsize=10, fontweight='bold')
     
     # State distribution pie charts
     labels = ['IDLE', 'CONNECTED', 'TAIL']

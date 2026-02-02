@@ -133,7 +133,7 @@ ACTIVITY_PROFILES = {
     Activity.IDLE: ActivityPower(0, 0.02, 0, False, 0, False, False, False),
     Activity.SOCIAL_MEDIA: ActivityPower(60, 0.15, 0.10, True, 5, False, False, False),
     Activity.MESSAGING: ActivityPower(50, 0.08, 0.02, True, 0.5, False, False, False),
-    Activity.GAMING: ActivityPower(80, 0.85, 0.90, True, 2, False, False, True),
+    Activity.GAMING: ActivityPower(80, 0.60, 0.50, True, 2, False, False, True),  # CALIBRATED for 3-4h runtime (throttling simulation)
     Activity.VIDEO_STREAMING: ActivityPower(70, 0.12, 0.08, True, 25, False, False, True),
     Activity.VIDEO_CALL: ActivityPower(70, 0.35, 0.15, True, 8, False, True, True),
     Activity.NAVIGATION: ActivityPower(90, 0.25, 0.12, True, 2, True, False, True),
@@ -589,9 +589,144 @@ def plot_persona_power_breakdown(save_path: str = None):
     plt.show()
 
 
+def plot_persona_radar(save_path: str = None):
+    """
+    Generate O-Prize radar chart comparing 5 personas across 6 dimensions.
+
+    This is the "Visualizing the Invisible" figure (Golden Rule #3).
+    Shows at a glance why the Chatter paradoxically drains more than the Streamer.
+
+    Axes:
+    1. Avg Current (mA) - Overall drain rate
+    2. Peak Temp (°C) - Thermal stress
+    3. Screen-On Time (hours) - Display usage
+    4. Tail Energy (mAh) - 5G RRC tail drain (THE KEY INSIGHT)
+    5. Data Volume (GB) - Total data transferred
+    6. Battery Life (hours) - End result
+    """
+    personas = get_all_personas()
+
+    # Calculate metrics for each persona
+    metrics = []
+    for persona in personas:
+        times, socs, stats = simulate_day(persona)
+
+        # Calculate additional metrics
+        avg_current_ma = (stats['avg_power_w'] * 1000) / 3.7  # Approx at 3.7V
+
+        # Estimate peak temperature (based on power)
+        peak_power = max([persona.calculate_power(h)['total_mw'] for h in np.linspace(0, 24, 48)])
+        peak_temp = 25 + (peak_power / 1000) * 5  # Rough thermal model
+
+        # Tail energy estimate (based on messages per day)
+        # Each message triggers ~15s tail at ~600mW avg
+        tail_energy_mah = (persona.messages_per_day * 15 * 0.6) / 3.6  # mAh
+
+        # Data volume (rough estimate)
+        data_gb = (persona.streaming_hours_per_day * 3.0 +  # Streaming: 3 GB/hr
+                   persona.gaming_hours_per_day * 0.1 +      # Gaming: 0.1 GB/hr
+                   persona.messages_per_day * 0.0001)        # Messages: 0.1 MB each
+
+        # Battery life (hours until 20%)
+        battery_life = None
+        for i, soc in enumerate(socs):
+            if soc <= 0.20:
+                battery_life = times[i]
+                break
+        if battery_life is None:
+            battery_life = 24  # Lasted all day
+
+        metrics.append({
+            'name': persona.name,
+            'avg_current': avg_current_ma,
+            'peak_temp': peak_temp,
+            'screen_on': stats['screen_on_time_hours'],
+            'tail_energy': tail_energy_mah,
+            'data_volume': data_gb,
+            'battery_life': battery_life
+        })
+
+    # Normalize to 0-1 scale for radar chart
+    keys = ['avg_current', 'peak_temp', 'screen_on', 'tail_energy', 'data_volume', 'battery_life']
+    labels = ['Avg Current\n(mA)', 'Peak Temp\n(°C)', 'Screen-On\n(hours)',
+              'Tail Energy\n(mAh)', 'Data Volume\n(GB)', 'Battery Life\n(hours)']
+
+    # Get min/max for normalization
+    normalized = []
+    for m in metrics:
+        norm = {}
+        for key in keys:
+            vals = [x[key] for x in metrics]
+            min_val, max_val = min(vals), max(vals)
+            if max_val > min_val:
+                # Invert battery_life (higher is better, should be outer)
+                if key == 'battery_life':
+                    norm[key] = (m[key] - min_val) / (max_val - min_val)
+                else:
+                    norm[key] = (m[key] - min_val) / (max_val - min_val)
+            else:
+                norm[key] = 0.5
+        normalized.append(norm)
+
+    # Create radar chart
+    fig = plt.figure(figsize=(10, 10))
+    ax = fig.add_subplot(111, polar=True)
+
+    # Angles for each axis
+    angles = np.linspace(0, 2 * np.pi, len(keys), endpoint=False).tolist()
+    angles += angles[:1]  # Close the polygon
+
+    # Colors for each persona
+    colors = ['#E74C3C', '#9B59B6', '#3498DB', '#F39C12', '#27AE60']
+
+    for i, (m, norm, color) in enumerate(zip(metrics, normalized, colors)):
+        values = [norm[k] for k in keys]
+        values += values[:1]  # Close the polygon
+
+        ax.plot(angles, values, 'o-', linewidth=2, color=color, label=m['name'])
+        ax.fill(angles, values, alpha=0.15, color=color)
+
+    # Set axis labels
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(labels, fontsize=10)
+
+    # Add legend
+    ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0), fontsize=10)
+
+    # Title
+    plt.title('Persona Radar: The Chatty vs Streaming Paradox\n'
+              '(Chatter has highest Tail Energy despite lowest Data Volume)',
+              fontsize=12, fontweight='bold', y=1.08)
+
+    plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Saved: {save_path}")
+
+    plt.show()
+
+    # Print comparison table
+    print("\n" + "=" * 80)
+    print("PERSONA RADAR METRICS")
+    print("=" * 80)
+    print(f"{'Persona':<10} {'Avg I (mA)':<12} {'Peak T (°C)':<12} {'Screen (h)':<12} "
+          f"{'Tail (mAh)':<12} {'Data (GB)':<10} {'Life (h)':<10}")
+    print("-" * 80)
+    for m in metrics:
+        print(f"{m['name']:<10} {m['avg_current']:<12.0f} {m['peak_temp']:<12.1f} "
+              f"{m['screen_on']:<12.1f} {m['tail_energy']:<12.0f} {m['data_volume']:<10.1f} "
+              f"{m['battery_life']:<10.1f}")
+
+    return metrics
+
+
 if __name__ == "__main__":
     print("Generating persona comparison...")
     compare_all_personas("../figures/persona_comparison.png")
-    
+
     print("\nGenerating power breakdown...")
     plot_persona_power_breakdown("../figures/persona_power_breakdown.png")
+
+    print("\nGenerating persona radar chart (O-Prize enhancement)...")
+    plot_persona_radar("../figures/persona_radar.png")

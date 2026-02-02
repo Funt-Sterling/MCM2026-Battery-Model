@@ -56,6 +56,9 @@ class DeviceSpecs:
     # Weight/dimensions
     weight_g: float
     thickness_mm: float
+    
+    # NEW: Thermal Mass for heat capacity simulation (M * c_p)
+    thermal_mass_j_k: float  # Joules per Kelvin
 
 
 # Real device data
@@ -80,7 +83,8 @@ IPHONE_15_PRO = DeviceSpecs(
     thermal_design_power_w=8.5,
     max_safe_temp_c=35,
     weight_g=187,
-    thickness_mm=8.25
+    thickness_mm=8.25,
+    thermal_mass_j_k=48.0  # Aluminum/Titanium frame
 )
 
 SAMSUNG_S24_ULTRA = DeviceSpecs(
@@ -104,7 +108,8 @@ SAMSUNG_S24_ULTRA = DeviceSpecs(
     thermal_design_power_w=9.2,
     max_safe_temp_c=37,
     weight_g=232,
-    thickness_mm=8.6
+    thickness_mm=8.6,
+    thermal_mass_j_k=65.0  # Large copper vapor chamber
 )
 
 PIXEL_8_PRO = DeviceSpecs(
@@ -128,7 +133,8 @@ PIXEL_8_PRO = DeviceSpecs(
     thermal_design_power_w=7.8,
     max_safe_temp_c=36,
     weight_g=213,
-    thickness_mm=8.8
+    thickness_mm=8.8,
+    thermal_mass_j_k=52.0  # Aluminum structure
 )
 
 ALL_DEVICES = [IPHONE_15_PRO, SAMSUNG_S24_ULTRA, PIXEL_8_PRO]
@@ -266,6 +272,44 @@ class BatteryAgingModel:
         
         # Calculate new capacity
         degradation = self.alpha * np.sqrt(self.cycles) * source.sigma_aging
+        self.capacity = self.initial_capacity * (1 - degradation)
+        self.capacity = max(0, self.capacity)
+        
+        self.history.append((self.cycles, self.capacity, source.name))
+        
+        return self.capacity
+    
+    def get_arrhenius_factor(self, temp_c: float) -> float:
+        """
+        Calculate aging acceleration due to temperature.
+        Arrhenius Law: k = A * exp(-Ea / RT)
+        
+        Doubles aging rate for every ~10°C rise above 25°C.
+        """
+        if temp_c <= 25:
+            return 1.0
+            
+        # Simplified doubling rule: 2^((T-25)/10)
+        # Matches empirical Li-ion data roughly
+        return 2.0 ** ((temp_c - 25.0) / 10.0)
+
+    def add_cycle(self, source: ChargingSource, depth_of_discharge: float = 0.8):
+        """
+        Add a charge cycle with given source and DOD.
+        Includes TEMPERATURE ACCELERATION (Arrhenius).
+        """
+        # Effective cycles (DOD affects wear)
+        effective_cycles = depth_of_discharge ** 1.5
+        self.cycles += effective_cycles
+        
+        # Temperature from source (e.g. car is hot, wireless is hot)
+        # Assume base temp 25C + source rise
+        aging_temp_c = 25.0 + source.temp_rise_c
+        temp_accel = self.get_arrhenius_factor(aging_temp_c)
+        
+        # Calculate new capacity with Temperature Acceleration
+        # Degradation ∝ √N * σ * Arrhenius(T)
+        degradation = self.alpha * np.sqrt(self.cycles) * source.sigma_aging * temp_accel
         self.capacity = self.initial_capacity * (1 - degradation)
         self.capacity = max(0, self.capacity)
         

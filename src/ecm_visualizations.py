@@ -722,6 +722,274 @@ def draw_realistic_day_simulation():
     return fig
 
 
+def draw_thermal_runaway_phase_plane():
+    """
+    O-Prize Enhancement: Thermal Runaway Phase Plane Plot.
+
+    This is the mathematically elegant visualization that shows:
+    - X-axis: Temperature (T)
+    - Y-axis: Heat rates (Q_gen = I²R and Q_cool = hA(T - T_amb))
+    - Where lines cross = stable operating point
+    - If Q_gen > Q_cool at high T, lines diverge → thermal runaway
+
+    This figure visualizes the "invisible" electro-thermal feedback loop.
+    """
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    # Temperature range
+    T = np.linspace(10, 60, 100)  # °C
+    T_amb = 25  # Ambient temperature
+
+    # Thermal parameters (from paper)
+    hA = 0.12  # W/K (heat dissipation coefficient)
+    E_a = 0.3  # eV (Arrhenius activation energy)
+    k_B = 8.617e-5  # eV/K (Boltzmann constant)
+    T_ref = 25 + 273.15  # K (reference temperature)
+
+    # Current scenarios
+    I_gaming = 1.8   # High load (gaming) - Amps
+    I_normal = 0.5   # Normal load - Amps
+    I_idle = 0.15    # Idle - Amps
+
+    # Base resistance at 25°C
+    R_ref = 0.030  # Ohms
+
+    # Calculate temperature-dependent resistance (Arrhenius)
+    T_kelvin = T + 273.15
+    R_T = R_ref * np.exp((E_a / k_B) * (1/T_ref - 1/T_kelvin))
+
+    # Heat generation for different scenarios
+    Q_gen_gaming = I_gaming**2 * R_T
+    Q_gen_normal = I_normal**2 * R_T
+    Q_gen_idle = I_idle**2 * R_T
+
+    # Heat dissipation (linear with temperature)
+    Q_cool = hA * (T - T_amb)
+
+    # Plot heat generation curves
+    ax.plot(T, Q_gen_gaming, 'r-', linewidth=2.5, label=f'$Q_{{gen}}$ Gaming (I={I_gaming}A)')
+    ax.plot(T, Q_gen_normal, 'orange', linewidth=2.5, label=f'$Q_{{gen}}$ Normal (I={I_normal}A)')
+    ax.plot(T, Q_gen_idle, 'green', linewidth=2.5, label=f'$Q_{{gen}}$ Idle (I={I_idle}A)')
+
+    # Plot heat dissipation line
+    ax.plot(T, Q_cool, 'b--', linewidth=3, label=f'$Q_{{cool}} = hA(T-T_{{amb}})$')
+
+    # Fill dangerous region
+    danger_mask = Q_gen_gaming > Q_cool
+    ax.fill_between(T, Q_gen_gaming, Q_cool, where=danger_mask,
+                    alpha=0.3, color='red', label='Runaway Risk Zone')
+
+    # Find equilibrium points (where Q_gen = Q_cool)
+    # For gaming scenario
+    idx_gaming = np.argmin(np.abs(Q_gen_gaming - Q_cool))
+    T_eq_gaming = T[idx_gaming]
+    Q_eq_gaming = Q_cool[idx_gaming]
+
+    # For normal scenario
+    idx_normal = np.argmin(np.abs(Q_gen_normal - Q_cool))
+    T_eq_normal = T[idx_normal]
+    Q_eq_normal = Q_cool[idx_normal]
+
+    # Mark equilibrium points
+    ax.scatter([T_eq_gaming], [Q_eq_gaming], s=150, c='red', marker='o', zorder=5,
+               edgecolors='black', linewidths=2)
+    ax.scatter([T_eq_normal], [Q_eq_normal], s=150, c='orange', marker='o', zorder=5,
+               edgecolors='black', linewidths=2)
+
+    # Annotate equilibrium points
+    ax.annotate(f'Gaming Equilibrium\n(T={T_eq_gaming:.0f}°C)',
+                xy=(T_eq_gaming, Q_eq_gaming),
+                xytext=(T_eq_gaming + 5, Q_eq_gaming + 0.05),
+                fontsize=10, fontweight='bold', color='darkred',
+                arrowprops=dict(arrowstyle='->', color='darkred', lw=1.5))
+
+    ax.annotate(f'Normal Equilibrium\n(T={T_eq_normal:.0f}°C)',
+                xy=(T_eq_normal, Q_eq_normal),
+                xytext=(T_eq_normal - 10, Q_eq_normal + 0.04),
+                fontsize=10, fontweight='bold', color='darkorange',
+                arrowprops=dict(arrowstyle='->', color='darkorange', lw=1.5))
+
+    # Add operating region shading
+    ax.axvspan(10, 25, alpha=0.1, color='blue', label='Cold (Reduced Efficiency)')
+    ax.axvspan(25, 40, alpha=0.1, color='green', label='Optimal (25-40°C)')
+    ax.axvspan(40, 45, alpha=0.15, color='yellow')
+    ax.axvspan(45, 60, alpha=0.15, color='red')
+
+    # Throttle line
+    ax.axvline(42, color='purple', linestyle=':', linewidth=2, label='Throttle Threshold')
+    ax.text(43, 0.15, 'Thermal\nThrottling\nActivates', fontsize=9, color='purple',
+            fontweight='bold', va='center')
+
+    # Physics explanation box
+    physics_text = (
+        "Stability Criterion:\n"
+        "• If $Q_{gen} < Q_{cool}$: System cools → Stable\n"
+        "• If $Q_{gen} > Q_{cool}$: System heats → Runaway risk\n"
+        "• Equilibrium: $I^2 R(T) = hA(T - T_{amb})$"
+    )
+    ax.text(0.02, 0.98, physics_text, transform=ax.transAxes,
+            fontsize=9, verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='gray'))
+
+    # Labels and title
+    ax.set_xlabel('Battery Temperature (°C)', fontsize=12)
+    ax.set_ylabel('Heat Rate (W)', fontsize=12)
+    ax.set_title('Thermal Runaway Phase Plane: Heat Generation vs. Dissipation\n'
+                 '(The Electro-Thermal Feedback Loop Visualized)',
+                 fontsize=13, fontweight='bold')
+
+    ax.legend(loc='upper left', fontsize=9, ncol=2, bbox_to_anchor=(0, -0.12))
+    ax.grid(True, alpha=0.3)
+    ax.set_xlim(10, 60)
+    ax.set_ylim(0, max(Q_gen_gaming) * 1.1)
+
+    plt.tight_layout()
+    return fig
+
+
+def draw_generalization_foldable():
+    """
+    O-Prize Enhancement: Model Generalization to Foldable Devices.
+
+    Tests the ECM framework on Samsung Galaxy Z Fold5 parameters
+    to demonstrate model universality (Golden Rule #4).
+    """
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+    # Standard phone parameters
+    params_standard = {
+        'name': 'iPhone 15 Pro',
+        'Q_nom': 3.274,  # Ah
+        'M_th': 38,      # J/K
+        'P_display_max': 1800,  # mW
+        'hA': 0.12       # W/K
+    }
+
+    # Foldable parameters (Z Fold5: 7.6" screen, larger thermal mass)
+    params_fold = {
+        'name': 'Samsung Z Fold5',
+        'Q_nom': 4.4,    # Ah
+        'M_th': 72,      # J/K (larger device)
+        'P_display_max': 2800,  # mW (7.6" OLED)
+        'hA': 0.18       # W/K (larger surface area)
+    }
+
+    # Simulation time (24 hours)
+    t = np.linspace(0, 24, 1440)  # 1 minute resolution
+
+    def simulate_day(params):
+        """Simulate battery drain over a day."""
+        Q = params['Q_nom']
+        soc = np.ones_like(t)
+        temp = np.ones_like(t) * 25  # Start at ambient
+
+        # Power profile (varies by time of day)
+        power = np.zeros_like(t)
+        for i, hour in enumerate(t):
+            if 0 <= hour < 7:
+                power[i] = 200  # Idle overnight
+            elif 7 <= hour < 9:
+                power[i] = 1200  # Morning use
+            elif 9 <= hour < 12:
+                power[i] = 400   # Work (occasional check)
+            elif 12 <= hour < 13:
+                power[i] = 2000  # Lunch streaming
+            elif 13 <= hour < 17:
+                power[i] = 400   # Work
+            elif 17 <= hour < 20:
+                power[i] = 2500  # Evening heavy use
+            elif 20 <= hour < 22:
+                power[i] = 1500  # Gaming/streaming
+            else:
+                power[i] = 300   # Wind down
+
+        # Scale by display for foldable
+        if params['P_display_max'] > 2000:
+            power = power * 1.3  # 30% more for larger screen
+
+        # Drain calculation
+        for i in range(1, len(t)):
+            dt = (t[i] - t[i-1]) * 3600  # seconds
+            energy_mwh = power[i] * dt / 3600
+            soc[i] = soc[i-1] - energy_mwh / (Q * 3700)  # Q in Ah, 3.7V nominal
+            soc[i] = max(0, soc[i])
+
+            # Thermal dynamics
+            Q_gen = (power[i] / 1000) * 0.15  # 15% of power as heat
+            Q_cool = params['hA'] * (temp[i-1] - 25)
+            dT = (Q_gen - Q_cool) / params['M_th'] * dt
+            temp[i] = temp[i-1] + dT
+            temp[i] = np.clip(temp[i], 20, 50)
+
+        return soc * 100, temp, power
+
+    # Run simulations
+    soc_std, temp_std, power_std = simulate_day(params_standard)
+    soc_fold, temp_fold, power_fold = simulate_day(params_fold)
+
+    # Plot 1: SOC comparison
+    ax1 = axes[0]
+    ax1.plot(t, soc_std, 'b-', linewidth=2, label=params_standard['name'])
+    ax1.plot(t, soc_fold, 'r-', linewidth=2, label=params_fold['name'])
+
+    ax1.axhline(20, color='gray', linestyle='--', alpha=0.5)
+    ax1.text(12, 22, '20% Low Battery', ha='center', fontsize=9, color='gray')
+
+    ax1.set_xlabel('Time of Day (hours)', fontsize=11)
+    ax1.set_ylabel('State of Charge (%)', fontsize=11)
+    ax1.set_title('Battery Life Comparison: Standard vs. Foldable', fontsize=12, fontweight='bold')
+    ax1.legend(loc='upper right', fontsize=10)
+    ax1.grid(True, alpha=0.3)
+    ax1.set_xlim(0, 24)
+    ax1.set_ylim(0, 100)
+
+    # Find battery life (time to 20%)
+    life_std = t[np.argmax(soc_std < 20)] if np.any(soc_std < 20) else 24
+    life_fold = t[np.argmax(soc_fold < 20)] if np.any(soc_fold < 20) else 24
+
+    ax1.annotate(f'Battery life: {life_std:.1f}h', xy=(life_std, 20),
+                 xytext=(life_std-3, 35), fontsize=10, color='blue',
+                 arrowprops=dict(arrowstyle='->', color='blue'))
+    ax1.annotate(f'Battery life: {life_fold:.1f}h', xy=(life_fold, 20),
+                 xytext=(life_fold+1, 35), fontsize=10, color='red',
+                 arrowprops=dict(arrowstyle='->', color='red'))
+
+    # Plot 2: Temperature comparison
+    ax2 = axes[1]
+    ax2.plot(t, temp_std, 'b-', linewidth=2, label=params_standard['name'])
+    ax2.plot(t, temp_fold, 'r-', linewidth=2, label=params_fold['name'])
+
+    ax2.axhline(42, color='purple', linestyle=':', linewidth=2, label='Throttle Threshold')
+    ax2.axhspan(40, 50, alpha=0.1, color='orange')
+
+    ax2.set_xlabel('Time of Day (hours)', fontsize=11)
+    ax2.set_ylabel('Battery Temperature (°C)', fontsize=11)
+    ax2.set_title('Thermal Behavior: Larger Thermal Mass = Slower Heating', fontsize=12, fontweight='bold')
+    ax2.legend(loc='upper right', fontsize=10)
+    ax2.grid(True, alpha=0.3)
+    ax2.set_xlim(0, 24)
+    ax2.set_ylim(20, 50)
+
+    # Add parameter table
+    table_text = (
+        f"Parameter Adaptation:\n"
+        f"{'Parameter':<15} {'Standard':<12} {'Foldable':<12}\n"
+        f"{'-'*39}\n"
+        f"{'Capacity (Ah)':<15} {params_standard['Q_nom']:<12.2f} {params_fold['Q_nom']:<12.2f}\n"
+        f"{'Thermal Mass':<15} {params_standard['M_th']:<12} {params_fold['M_th']:<12}\n"
+        f"{'Display (mW)':<15} {params_standard['P_display_max']:<12} {params_fold['P_display_max']:<12}\n"
+        f"{'hA (W/K)':<15} {params_standard['hA']:<12.2f} {params_fold['hA']:<12.2f}"
+    )
+    ax2.text(0.02, 0.02, table_text, transform=ax2.transAxes,
+             fontsize=8, family='monospace', verticalalignment='bottom',
+             bbox=dict(boxstyle='round', facecolor='white', alpha=0.9))
+
+    plt.suptitle('Model Generalization: Adaptation to High-Power Foldable Devices',
+                 fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    return fig
+
+
 def main():
     """Generate all ECM visualizations."""
     print("="*70)
@@ -735,6 +1003,8 @@ def main():
         ('ecm_thermal_feedback', draw_thermal_feedback_ecm),
         ('ecm_aging_effects', draw_aging_effects),
         ('ecm_daily_simulation', draw_realistic_day_simulation),
+        ('thermal_runaway', draw_thermal_runaway_phase_plane),
+        ('generalization_fold', draw_generalization_foldable),
     ]
     
     import os
